@@ -1,0 +1,15 @@
+{
+  "name": "template-project",
+  "version": "1.0.0",
+  "description": "Template pour des projets full Stack",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"npm start --prefix server\" \"npm start --prefix client\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}
