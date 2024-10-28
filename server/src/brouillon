@@ -1,0 +1,59 @@
+import { Router } from 'express';
+import { User } from '../models/User';
+import * as fs from 'fs';
+import * as csv from 'csv-parser';
+import { generatePassword, hashPassword } from '../utils/passwordUtils';
+
+const router = Router();
+
+router.post('/import', async (req, res) => {
+  const users: { login: string; password: string }[] = [];
+
+  fs.createReadStream('data/users.csv')
+    .pipe(csv())
+    .on('data', async (row) => {
+      const nom = row['Nom'].toLowerCase();
+      const prenom = row['Prénom'].toLowerCase();
+      const login = `${nom}.${prenom}`;
+      const password = generatePassword();
+      const hashedPassword = await hashPassword(password);
+
+      users.push({ login, password: hashedPassword });
+    })
+    .on('end', async () => {
+      try {
+        await User.insertMany(users);
+        res.status(201).json({ message: 'Utilisateurs ajoutés avec succès.' });
+      } catch (error) {
+        res.status(500).json({ error: 'Erreur lors de l\'ajout des utilisateurs.' });
+      }
+    });
+
+  // Handle any errors in the CSV parsing
+  .on('error', (error) => {
+    res.status(500).json({ error: 'Erreur lors de la lecture du fichier CSV.' });
+  });
+});
+
+export default router;
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+import * as bcrypt from 'bcrypt';
+
+export const generatePassword = (length: number = 12): string => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+  let password = '';
+  for (let i = 0; i < length; i++) {
+    password += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return password;
+};
+
+export const hashPassword = async (password: string): Promise<string> => {
+  const saltRounds = 10;
+  return await bcrypt.hash(password, saltRounds);
+};
+

@@ -11,10 +11,10 @@ export const CreateUser = async (userData : IUser): Promise<ResponseType> => {
 
     try {
         let user = await User.findOne(sanitizeFilter({ name: userData.username }));
-        if (!user) {
+        if (user) {
             response.status = 400
             response.success = false
-            response.msg = 'Vous êtes étrangé  à la maison AMANKOU'
+            response.msg = 'Un utilisateur existe déjà a ce nom'
             return response;
         }
 
@@ -29,15 +29,16 @@ export const CreateUser = async (userData : IUser): Promise<ResponseType> => {
         }
 
         const hashedPassword = await bcrypt.hash(userData.password, 10);
-        const newAgent = new User(sanitizeFilter({
+        const newUser = new User(sanitizeFilter({
             username: userData.username,
             password: hashedPassword,
         }));
 
-        await newAgent.save();
+        await newUser.save();
 
+        const {password, ...newUserWithPasswd} = newUser.toObject();
         response.msg = "Inscription réussie avec succès";
-        response.data = newAgent
+        response.data = newUserWithPasswd
     } catch (e : any) {
         response.status = 500
         response.success = false;

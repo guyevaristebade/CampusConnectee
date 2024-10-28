@@ -7,13 +7,14 @@ import {User} from "../models";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import {getCookieOptions} from "../utils";
+import {verifyIp} from "../middlewares";
 
 const useSecureAuth : boolean = process.env.NODE_ENV !== 'development';
 
 export const UserRouter : Router = express.Router();
 
 
-UserRouter.post('/register', async (req : Request, res: Response) => {
+UserRouter.post('/register',async (req : Request, res: Response) => {
     const response: ResponseType = await CreateUser(req.body)
     res.send(response);
 })
@@ -49,12 +50,12 @@ UserRouter.post('/login', async (req: Request, res: Response) => {
             return res.send(response);
         }
 
-        const { password: _, ...tokenContent } = user.toObject();
-        const token: string = jwt.sign({ id: (user as any)._id }, process.env.JWT_SECRET || '', { expiresIn: '30d' });
+        const { password : _ , ...tokenContent } = user.toObject();
+        const token: string = jwt.sign({ user : tokenContent }, process.env.JWT_SECRET_KEY || '', { expiresIn: '30d' });
 
-        res.cookie('farm-token', token, getCookieOptions(useSecureAuth));
+        res.cookie('fee_token', token, getCookieOptions(useSecureAuth));
 
-        response.data = { user: tokenContent, token };
+        response.data = { user : tokenContent, token };
         response.status = 200
 
         return res.send(response);
@@ -71,7 +72,7 @@ UserRouter.get('/', authenticated, async (req, res) => {
         success: true,
     };
 
-    const token = req.cookies['farm-token'];
+    const token = req.cookies['fee_token'];
 
     if (token) {
         response.data = { user: (req as any).user, token };
@@ -86,7 +87,7 @@ UserRouter.delete('/', authenticated, (req: Request, res: Response) => {
         success: true,
     }
 
-    res.cookie('farm-token', '', {
+    res.cookie('fee_token', '', {
         maxAge: -100,
     })
 

@@ -2,7 +2,7 @@ import { NextFunction, Response, Request } from 'express'
 import jwt from 'jsonwebtoken'
 
 export const authenticated = async (req: Request, res: Response, next: NextFunction): Promise<unknown> => {
-    let token = (req as any).cookies['farm-token']
+    let token = (req as any).cookies['fee_token']
 
     if (!token) {
         token = (req as any).headers.bearer
@@ -13,7 +13,7 @@ export const authenticated = async (req: Request, res: Response, next: NextFunct
     }
 
     try {
-        (req as any).user = jwt.verify(token, process.env.JWT_SECRET || '')
+        (req as any).user = jwt.verify(token, process.env.JWT_SECRET_KEY || '')
         next()
     } catch (err) {
         return res.status(400).send({ success: false, msg: 'Token invalide' })
