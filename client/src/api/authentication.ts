@@ -1,7 +1,8 @@
 import { instance } from "../utils";
+import { LoginResponseData, ResponseType } from "../types";
 
 // login
-export const login = async (username: string, password: string) => {
+export const login = async (username: string, password: string) : Promise<ResponseType<any>> => {
   try {
     const response = await instance.post('/auth/login', { username , password});
     return response.data;
@@ -12,7 +13,7 @@ export const login = async (username: string, password: string) => {
 
 
 // register
-export const register = async (username: string, password: string, permissions : string) : Promise<ResponseType> => {
+export const register = async (username: string, password: string, permissions : string) : Promise<ResponseType<any>> => {
     try {
       const response = await instance.post('/auth/register', {username, password, permissions});
       return response.data;
@@ -22,7 +23,7 @@ export const register = async (username: string, password: string, permissions :
 }
 
 // logout
-export const logout = async (): Promise<ResponseType> =>{
+export const logout = async () : Promise<ResponseType<any>> =>{
     try {
       const response = await instance.post('/auth/logout');
       return response.data;

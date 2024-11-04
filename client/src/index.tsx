@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import {BrowserRouter} from "react-router-dom";
-import {UserContextProvider} from "./context";
+import {AuthContextProvider} from "./context";
 
 // eslint-disable-next-line
 const root = ReactDOM.createRoot(
@@ -12,9 +12,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
       <BrowserRouter>
-        <UserContextProvider>
+        <AuthContextProvider>
             <App />
-        </UserContextProvider>
+        </AuthContextProvider>
       </BrowserRouter>
   </React.StrictMode>
 );

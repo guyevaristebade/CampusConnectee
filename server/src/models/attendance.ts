@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 import {getDate} from "../utils";
 
-const FeeSchema : Schema = new Schema({
+const AttendanceSchema : Schema = new Schema({
     student_id:{
         type: Schema.Types.ObjectId,
         ref: 'User'
@@ -32,6 +32,6 @@ const FeeSchema : Schema = new Schema({
     }
 })
 
-FeeSchema.set('timestamps', true)
+AttendanceSchema.set('timestamps', true)
 
-export const Fee = model('Emargement', FeeSchema);
+export const Attendance = model('Attendance', AttendanceSchema);

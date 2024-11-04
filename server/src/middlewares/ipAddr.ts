@@ -21,6 +21,7 @@ export const verifyIp = async (req: Request, res: Response, next: NextFunction):
 
         // Vérification de l'adresse IP
         if (ip !== process.env.CAMPUS_IP_ADDRESS) {
+            console.log(ip)
             return res.status(401).send({success: false, msg: 'Accès non autorisé'});
         }
 

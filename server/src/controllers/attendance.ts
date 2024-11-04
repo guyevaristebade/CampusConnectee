@@ -1,5 +1,5 @@
 import {FeeDocument, IArrival, IDate, IDeparture, ResponseType} from "../types";
-import { Fee } from "../models";
+import { Attendance } from "../models";
 import { getDate, timeDifferenceInDecimal, timeToDecimal } from "../utils";
 import moment from "moment";
 
@@ -17,7 +17,7 @@ export const registerStudentArrival = async (arrivalData: IArrival, studentId: n
     };
 
     try {
-        const studentArrivalRecord = await Fee.find({ student_id: studentId, today_date: getDate() });
+        const studentArrivalRecord = await Attendance.find({ student_id: studentId, today_date: getDate() });
 
         if (studentArrivalRecord.length > 0) {
             responsePayload.success = false;
@@ -26,7 +26,7 @@ export const registerStudentArrival = async (arrivalData: IArrival, studentId: n
             return responsePayload;
         }
 
-        const newArrivalRecord = new Fee({
+        const newArrivalRecord = new Attendance({
             student_id: studentId,
             arrival_time: arrivalData.arrival_time,
             total_hours: timeToDecimal(arrivalData.arrival_time),
@@ -59,7 +59,7 @@ export const registerStudentDeparture = async (departureData: IDeparture, studen
     };
 
     try {
-        const attendanceRecord = await Fee.find({
+        const attendanceRecord = await Attendance.find({
             student_id: studentId,
             today_date: getDate()
         });
@@ -74,7 +74,7 @@ export const registerStudentDeparture = async (departureData: IDeparture, studen
 
         const durationInDecimal: string = timeDifferenceInDecimal(attendanceRecord[0].arrival_time as string, departureData.departure_time);
 
-        const updatedDepartureRecord = await Fee.findOneAndUpdate(
+        const updatedDepartureRecord = await Attendance.findOneAndUpdate(
             {
                 student_id: studentId,
                 today_date: getDate(),
@@ -111,7 +111,7 @@ export const fetchAttendanceRecordsByDate = async (dateFilter: IDate): Promise<R
     };
 
     try {
-        const attendanceRecords = await Fee.find({ today_date: dateFilter.today_date });
+        const attendanceRecords = await Attendance.find({ today_date: dateFilter.today_date });
         responsePayload.data = attendanceRecords;
     } catch (e: any) {
         responsePayload.success = false;
@@ -136,7 +136,7 @@ export const fetchAllAttendanceRecords = async (): Promise<ResponseType> => {
     try {
         //populate({ path : "student_id", select : "-password"})
         // Permet de retourner les informations de l'utilisation en enlevant le champ password
-        const attendanceRecords = await Fee.find().populate({ path : "student_id", select : "-password"}).sort({date : -1})
+        const attendanceRecords = await Attendance.find().populate({ path : "student_id", select : "-password"}).sort({date : -1})
         responsePayload.data = attendanceRecords;
     } catch (e: any) {
         responsePayload.success = false;
@@ -160,7 +160,7 @@ export const fetchAttendanceRecordsByStudentId = async (student_id: string): Pro
     };
 
     try {
-        const studentAttendance = await Fee.find({ student_id }).sort({ today_date: -1 });
+        const studentAttendance = await Attendance.find({ student_id }).sort({ today_date: -1 });
         responsePayload.data = studentAttendance;
     } catch (e: any) {
         responsePayload.success = false;
@@ -196,7 +196,7 @@ export const getTotalHoursPerWeek = async () => {
         const startOfWeek = moment().isoWeekday(1).startOf('isoWeek').toDate(); // Lundi
         const endOfWeek = moment().isoWeekday(7).endOf('isoWeek').toDate(); // Dimanche
 
-        const totalHoursPerWeek = await Fee.aggregate([
+        const totalHoursPerWeek = await Attendance.aggregate([
             {
                 $match: {
                     createdAt: { $gte: startOfWeek, $lte: endOfWeek }
@@ -257,7 +257,7 @@ export const getTotalHoursPerWeekByStudent = async (student_id : string) : Promi
         const startOfWeek = moment().startOf('week').toDate();
         const endOfWeek = moment().endOf('week').toDate();
 
-        const emargement = await Fee.find<{ student_id: string; createdAt: Date }>({
+        const emargement = await Attendance.find<{ student_id: string; createdAt: Date }>({
             student_id,
             createdAt: { $gte: startOfWeek, $lte: endOfWeek }
         }) as FeeDocument[];
@@ -284,7 +284,7 @@ export const getCurrentDayAttendance = async () : Promise<ResponseType> =>{
     };
     
     try{
-        const attendances = await Fee.find({today_date : getDate()})
+        const attendances = await Attendance.find({today_date : getDate()})
         responsePayload.data = attendances
     }catch (e : any) {
         responsePayload.success = false;
