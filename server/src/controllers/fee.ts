@@ -1,4 +1,4 @@
-import { IArrival, IDate, IDeparture, ResponseType } from "../types";
+import {FeeDocument, IArrival, IDate, IDeparture, ResponseType} from "../types";
 import { Fee } from "../models";
 import { getDate, timeDifferenceInDecimal, timeToDecimal } from "../utils";
 import moment from "moment";
@@ -124,6 +124,7 @@ export const fetchAttendanceRecordsByDate = async (dateFilter: IDate): Promise<R
 
 /**
  * Récupère tous les enregistrements d'émargement.
+ *
  * @returns {Promise<ResponseType>} Un objet contenant le statut de la requête et les données récupérées.
  * */
 export const fetchAllAttendanceRecords = async (): Promise<ResponseType> => {
@@ -133,7 +134,9 @@ export const fetchAllAttendanceRecords = async (): Promise<ResponseType> => {
     };
 
     try {
-        const attendanceRecords = await Fee.find();
+        //populate({ path : "student_id", select : "-password"})
+        // Permet de retourner les informations de l'utilisation en enlevant le champ password
+        const attendanceRecords = await Fee.find().populate({ path : "student_id", select : "-password"}).sort({date : -1})
         responsePayload.data = attendanceRecords;
     } catch (e: any) {
         responsePayload.success = false;
@@ -189,8 +192,9 @@ export const getTotalHoursPerWeek = async () => {
     };
 
     try {
-        const startOfWeek = moment().startOf('week').toDate();
-        const endOfWeek = moment().endOf('week').toDate();
+
+        const startOfWeek = moment().isoWeekday(1).startOf('isoWeek').toDate(); // Lundi
+        const endOfWeek = moment().isoWeekday(7).endOf('isoWeek').toDate(); // Dimanche
 
         const totalHoursPerWeek = await Fee.aggregate([
             {
@@ -237,3 +241,56 @@ export const getTotalHoursPerWeek = async () => {
     return responsePayload;
 }
 
+
+
+/**
+ * Récupère les heures total par semaine pour l'étudiant connecté
+ * */
+export const getTotalHoursPerWeekByStudent = async (student_id : string) : Promise<ResponseType> =>{
+    let responsePayload: ResponseType = {
+        success: true,
+        status: 200
+    };
+
+    try{
+
+        const startOfWeek = moment().startOf('week').toDate();
+        const endOfWeek = moment().endOf('week').toDate();
+
+        const emargement = await Fee.find<{ student_id: string; createdAt: Date }>({
+            student_id,
+            createdAt: { $gte: startOfWeek, $lte: endOfWeek }
+        }) as FeeDocument[];
+
+        const totalHours = emargement.reduce((acc, curr) => acc + (curr.total_hours || 0), 0);
+
+        responsePayload.data = {totalHoursPerWeek: totalHours};
+
+    }catch (e : any) {
+        responsePayload.success = false;
+        responsePayload.status = 500;
+        responsePayload.msg = e.message;
+    }
+
+    return responsePayload;
+}
+
+
+export const getCurrentDayAttendance = async () : Promise<ResponseType> =>{
+
+    let responsePayload: ResponseType = {
+        success: true,
+        status: 200
+    };
+    
+    try{
+        const attendances = await Fee.find({today_date : getDate()})
+        responsePayload.data = attendances
+    }catch (e : any) {
+        responsePayload.success = false;
+        responsePayload.status = 500;
+        responsePayload.msg = e.message;
+    }
+
+    return responsePayload
+}

@@ -1,17 +1,21 @@
 import express, { Router, Request, Response } from 'express';
 import { ResponseType } from "../types";
-import { authenticated } from "../middlewares";
+import {authenticated, verifyIp} from "../middlewares";
 import {
     fetchAllAttendanceRecords,
-    fetchAttendanceRecordsByDate, fetchAttendanceRecordsByStudentId, getTotalHoursPerWeek,
+    fetchAttendanceRecordsByDate,
+    fetchAttendanceRecordsByStudentId, getCurrentDayAttendance,
+    getTotalHoursPerWeek,
+    getTotalHoursPerWeekByStudent,
     registerStudentArrival,
     registerStudentDeparture
-} from "../controllers/Fee";
+} from "../controllers";
+
 
 export const FeeRouter: Router = express.Router();
 
 // Route pour enregistrer une arrivée
-FeeRouter.post('/arrival', authenticated, async (req: Request, res: Response) => {
+FeeRouter.post('/arrival', authenticated, verifyIp, async (req: Request, res: Response) => {
     const studentId = (req as any).user.user._id;
     const response: ResponseType = await registerStudentArrival(req.body, studentId);
     res.status(response.status as number).send(response);
@@ -19,15 +23,40 @@ FeeRouter.post('/arrival', authenticated, async (req: Request, res: Response) =>
 
 
 // Route pour enregistrer un départ
-FeeRouter.put('/departure', authenticated, async (req: Request, res: Response) => {
+FeeRouter.put('/departure', authenticated, verifyIp, async (req: Request, res: Response) => {
     const studentId = (req as any).user.user._id;
     const response: ResponseType = await registerStudentDeparture(req.body, studentId);
     res.status(response.status as number).send(response);
 });
 
 
+
+// total d'heure par semaine par étudiant
+// cette route sera utilisé pour restituer tous les étudiants et le total de leurs heures pour la semaine en cours
+FeeRouter.get('/total_hours_per_week_by_student', async (req: Request, res: Response) => {
+    const response: ResponseType = await getTotalHoursPerWeek();
+    res.status(response.status as number).send(response);
+})
+
+//total d'heure par semaine pour un étudiant donnée
+// cette route va permettre aux étudiants de connaitre le nombre d'heures qu'on fait pendant la semaine en cours
+FeeRouter.get('/student/total_hours_per_week', authenticated, async (req : Request, res: Response) => {
+    const studentId = (req as any).user.user._id;
+    const response : ResponseType = await getTotalHoursPerWeekByStudent(studentId);
+    res.status(response.status as number).send(response);
+})
+
+// Route pour les émargements de la journée en cours
+FeeRouter.get('/', authenticated, async (req : Request, res: Response) => {
+    const response : ResponseType = await getCurrentDayAttendance();
+    res.status(response.status as number).send(response)
+})
+
+
+
+
 /*
-Cette partie sera débloqué si les responsable souhaite aller plus loin
+Cette partie sera débloqué si les responsables souhaitent aller plus loin
 
 //Route pour obtenir les enregistrements d'émargement pour une période spécifique
 // Cette route sera utilisée pour rendre tous les enregistrements (réservé aux responsables)
@@ -38,16 +67,13 @@ FeeRouter.get('/period', authenticated, async (req: Request, res: Response) => {
 */
 
 // Route pour obtenir tous les enregistrements d'émargement
-FeeRouter.get('/', authenticated, async (req: Request, res: Response) => {
+// A voir si c'est utile
+/*FeeRouter.get('/', authenticated, async (req: Request, res: Response) => {
     const response: ResponseType = await fetchAllAttendanceRecords();
     res.status(response.status as number ).send(response);
-});
+});*/
 
-//
-FeeRouter.get('/total_hour_per_week', async (req: Request, res: Response) => {
-    const response: ResponseType = await getTotalHoursPerWeek();
-    res.status(response.status as number).send(response);
-})
+
 /*
 pour aller plus loin
 

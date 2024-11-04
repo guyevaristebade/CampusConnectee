@@ -6,7 +6,8 @@ import {passwordValidators} from "../utils";
 
 export const CreateUser = async (userData : IUser): Promise<ResponseType> => {
     let response: ResponseType = {
-        success : true
+        success : true,
+        status: 201
     }
 
     try {
@@ -39,6 +40,7 @@ export const CreateUser = async (userData : IUser): Promise<ResponseType> => {
         const {password, ...newUserWithPasswd} = newUser.toObject();
         response.msg = "Inscription réussie avec succès";
         response.data = newUserWithPasswd
+
     } catch (e : any) {
         response.status = 500
         response.success = false;

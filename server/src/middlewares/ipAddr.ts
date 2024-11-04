@@ -2,12 +2,18 @@ import { NextFunction, Request, Response } from "express";
 import axios from "axios";
 
 /**
- * Ce middleware permet de vérifier si l'étudiant est bien sur le campus
- * Elle utilise une api qui permet d'avoir l'adresse Ip actuelle de l'étudiant
- * puis la compare à celle du campus
- * Si l'étudiant est sur le campus l'accès lui sera autorisé
- * dans le cas contaire l'accès lui est refusé
+ * Middleware pour vérifier l'adresse IP de l'utilisateur.
+ *
+ * Cette fonction effectue les actions suivantes :
+ * 1. Effectue une requête HTTP pour récupérer l'adresse IP de l'utilisateur.
+ * 2. Compare cette adresse IP à l'adresse IP autorisée (définie par `CAMPUS_IP_ADDRESS`).
+ * 3. Si l'adresse IP ne correspond pas, renvoie une réponse 401 (Accès non autorisé).
+ * 4. Si l'adresse IP est correcte, passe au middleware suivant dans la chaîne.
+ *
+ * En cas d'erreur lors de la récupération de l'adresse IP, renvoie une réponse 400
+ * avec un message d'erreur approprié.
  * */
+
 export const verifyIp = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
         const response = await axios.get(process.env.URL_GET_STUDENT_IP as string);

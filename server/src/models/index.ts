@@ -1,2 +1,3 @@
-export * from './User'
-export * from './Fee'
+export * from './user'
+export * from './fee'
+export * from './file'
