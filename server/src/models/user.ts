@@ -14,8 +14,8 @@ const UserSchema : Schema = new Schema({
     },
     permissions : {
         type : String,
-        enum : ['student', 'responsible'],
-        default : 'student'
+        enum : ['Administrator', 'Responsible'],
+        default : 'Responsible'
     }
 });
 

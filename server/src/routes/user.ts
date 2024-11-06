@@ -61,7 +61,6 @@ UserRouter.post('/login', verifyIp , async (req: Request, res: Response) => {
 UserRouter.get('/', authenticated, async (req, res) => {
     const token = req.cookies['fee_token'];
     const user = (req as any).user;
-    console.log(user)
     return res.status(200).send({
         success: true,
         data: {

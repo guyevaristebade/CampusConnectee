@@ -4,7 +4,8 @@ import {getDate} from "../utils";
 const AttendanceSchema : Schema = new Schema({
     student_id:{
         type: Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'Student',
+        required: true
     },
     today_date: {
         type: String,

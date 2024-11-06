@@ -24,7 +24,7 @@ export const Login: React.FC = () => {
     };
 
     return (
-        <Layout style={{ minHeight: "100vh", backgroundColor: "#f0f2f5" }}>
+        
             <Content style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "20px" }}>
                 <Row justify="center" style={{ width: "100%", maxWidth: "400px" }}>
                     <Col span={24}>
@@ -67,7 +67,6 @@ export const Login: React.FC = () => {
                     </Col>
                 </Row>
             </Content>
-        </Layout>
     );
 };
 

@@ -10,16 +10,16 @@ import moment from "moment";
  * @param arrivalData - Données relatives à l'arrivée de l'étudiant.
  * @param studentId - ID de l'étudiant.
  * @returns {Promise<ResponseType>} Un objet contenant le statut de la requête et les données récupérées. */
-export const registerStudentArrival = async (arrivalData: IArrival, studentId: number): Promise<ResponseType> => {
+export const registerStudentArrival = async (arrivalData: IArrival): Promise<ResponseType> => {
     let responsePayload: ResponseType = {
         success: true,
         status: 200
     };
 
     try {
-        const studentArrivalRecord = await Attendance.find({ student_id: studentId, today_date: getDate() });
+        const studentArrivalRecord = await Attendance.findOne({ student_id: arrivalData.student_id, today_date: getDate() });
 
-        if (studentArrivalRecord.length > 0) {
+        if (studentArrivalRecord) {
             responsePayload.success = false;
             responsePayload.status = 400;
             responsePayload.msg = "Vous êtes déjà enregistré";
@@ -27,7 +27,7 @@ export const registerStudentArrival = async (arrivalData: IArrival, studentId: n
         }
 
         const newArrivalRecord = new Attendance({
-            student_id: studentId,
+            student_id: arrivalData.student_id,
             arrival_time: arrivalData.arrival_time,
             total_hours: timeToDecimal(arrivalData.arrival_time),
             is_registered: true
@@ -52,31 +52,38 @@ export const registerStudentArrival = async (arrivalData: IArrival, studentId: n
  * @param departureData - Données relatives au départ de l'étudiant.
  * @param studentId - ID de l'étudiant.
  * @returns {Promise<ResponseType>} Un objet contenant le statut de la requête et les données récupérées. */
-export const registerStudentDeparture = async (departureData: IDeparture, studentId: number): Promise<ResponseType> => {
+export const registerStudentDeparture = async (departureData: IDeparture): Promise<ResponseType> => {
     let responsePayload: ResponseType = {
         success: true,
         status: 200
     };
 
     try {
-        const attendanceRecord = await Attendance.find({
-            student_id: studentId,
+        const attendanceRecord = await Attendance.findOne({
+            student_id: departureData.student_id,
             today_date: getDate()
         });
 
+        if(!attendanceRecord){
+            responsePayload.success = false;
+            responsePayload.status = 404;
+            responsePayload.msg = "Vous ne pouvez pas enregistrez de départ";
+            return responsePayload;
+        }
+
         // Vérifie si l'étudiant à déjà modifié son heure de départ
-        if (attendanceRecord && !attendanceRecord[0].is_registered) {
+        if (attendanceRecord && !attendanceRecord.is_registered) {
             responsePayload.success = false;
             responsePayload.status = 400;
             responsePayload.msg = "Vous ne pouvez plus modifier votre heure de départ";
             return responsePayload;
         }
 
-        const durationInDecimal: string = timeDifferenceInDecimal(attendanceRecord[0].arrival_time as string, departureData.departure_time);
+        const durationInDecimal: string = timeDifferenceInDecimal(attendanceRecord?.arrival_time as string, departureData.departure_time);
 
         const updatedDepartureRecord = await Attendance.findOneAndUpdate(
             {
-                student_id: studentId,
+                student_id: departureData.student_id,
                 today_date: getDate(),
             },
             {
@@ -90,6 +97,7 @@ export const registerStudentDeparture = async (departureData: IDeparture, studen
 
         responsePayload.msg = "Enregistré avec succès";
         responsePayload.data = updatedDepartureRecord;
+        
     } catch (e: any) {
         responsePayload.status = 500;
         responsePayload.success = false;

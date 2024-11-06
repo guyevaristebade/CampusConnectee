@@ -15,17 +15,15 @@ import {
 export const FeeRouter: Router = express.Router();
 
 // Route pour enregistrer une arrivée
-FeeRouter.post('/arrival', authenticated, verifyIp, async (req: Request, res: Response) => {
-    const studentId = (req as any).user.user._id;
-    const response: ResponseType = await registerStudentArrival(req.body, studentId);
+FeeRouter.post('/arrival', async (req: Request, res: Response) => {
+    const response: ResponseType = await registerStudentArrival(req.body);
     res.status(response.status as number).send(response);
 });
 
 
 // Route pour enregistrer un départ
-FeeRouter.put('/departure', authenticated, verifyIp, async (req: Request, res: Response) => {
-    const studentId = (req as any).user.user._id;
-    const response: ResponseType = await registerStudentDeparture(req.body, studentId);
+FeeRouter.put('/departure', async (req: Request, res: Response) => {
+    const response: ResponseType = await registerStudentDeparture(req.body);
     res.status(response.status as number).send(response);
 });
 
