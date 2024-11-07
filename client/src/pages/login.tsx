@@ -24,7 +24,6 @@ export const Login: React.FC = () => {
     };
 
     return (
-        
             <Content style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "20px" }}>
                 <Row justify="center" style={{ width: "100%", maxWidth: "400px" }}>
                     <Col span={24}>
