@@ -65,12 +65,12 @@ export const DeparturePage: React.FC = () => {
     },[])
 
     return (
-        <Content style={{ padding: "30px 15px" }}>
+        <Content style={{ padding: "20px",display: "flex", justifyContent: "center", alignItems: "center" }}>
             {/* Affiche les confettis si showConfetti est true */}
             {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
 
-            <Row justify="center" style={{ textAlign: "center" }}>
-                <Col xs={24} sm={20} md={16} lg={12} xl={10}>
+            <Row justify="center" style={{ textAlign: "center", maxWidth : "400px", width: "100%" }}>
+                <Col span={24}>
                     <Title level={3} style={{ marginBottom: "20px", fontSize: "clamp(20px, 4vw, 28px)" }}>
                         Vous êtes sur le départ ?
                     </Title>

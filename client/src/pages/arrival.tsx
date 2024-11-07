@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Layout, Form, Typography, Button, Row, Col, Input, Select, message } from "antd";
+import { Layout, Form, Typography, Button, Row, Col, Input, Select, message, TimePicker } from "antd";
 import Confetti from 'react-confetti';
 import { IArrival, IStudentType } from '../types';
 import { fetchAllStudent, registeredArrival } from '../api';
@@ -67,13 +67,14 @@ export const ArrivalPage: React.FC = () => {
             })
     },[])
 
+
     return (
         <Content style={{ padding: "20px",display: "flex", justifyContent: "center", alignItems: "center" }}>
             {/* Affiche les confettis si showConfetti est true */}
             {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
 
-            <Row justify="center" style={{ textAlign: "center", maxWidth : "400px", width: "100%", }}>
-                <Col xs={24} sm={20} md={16} lg={12} xl={10}>
+            <Row justify="center" style={{ textAlign: "center", maxWidth : "400px", width: "100%" }}>
+                <Col span={24}>
                     <Title level={3} style={{ marginBottom: "20px", fontSize: "clamp(20px, 4vw, 28px)" }}>
                         Bienvenu sur le campus connecté
                     </Title>
@@ -87,14 +88,14 @@ export const ArrivalPage: React.FC = () => {
                     >
                         <Form.Item
                             name="student_id"
-                            rules={[{ required: true, message: 'Veuillez entrer votre nom d\'utilisateur!' }]}
+                            rules={[{ required: true, message: 'Veuillez entrer     votre nom d\'utilisateur!' }]}
                         >
                             <Select
                                 size='large'
                                 placeholder="Choisissez un utilisateur"
                                 showSearch
                                 options={studentOptions}
-                                style={{ textAlign: 'left' }}
+                                style={{ textAlign: 'left',  }}
                                 filterOption={(input, option) => option ? option.label.includes(input.toLowerCase()) : false}
     
                                 filterSort={(a, b) => {
@@ -111,7 +112,6 @@ export const ArrivalPage: React.FC = () => {
                         >
                             <Input
                                 type='time'
-                                
                                 placeholder="08:24"
                                 style={{ fontSize: "18px", padding: "10px" }}
                             />
