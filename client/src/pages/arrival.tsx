@@ -39,16 +39,13 @@ export const ArrivalPage: React.FC = () => {
                     message.success(" 🎉 Vous êtes officiellement arrivé ! Félicitations, vous avez réussi à vous lever ce matin 😉");
                     
                     setShowConfetti(true);
-                    setTimeout(() => setShowConfetti(false), 3000); // on montre les confétti pendant 3s
+                    setTimeout(() => setShowConfetti(false), 3000); 
                     form.resetFields();
                 }else{
                     message.error("Oups ! Une erreur s'est glissée par ici... Nos développeurs sont en mode super-héros, mais ils ont besoin de votre signal pour intervenir !");
-                    //message.error(data.msg)
-                    
                 }
             })
     };
-
 
     useEffect(() => {
         window.addEventListener("resize", handleResize);
@@ -56,7 +53,6 @@ export const ArrivalPage: React.FC = () => {
     }, [handleResize]);
 
     useEffect(() => {
-        // Récupère les étudiants
         fetchAllStudent()
             .then((data) => {
                 if(data.success){
@@ -73,14 +69,14 @@ export const ArrivalPage: React.FC = () => {
             {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
 
             <Row justify="center" style={{ textAlign: "center" }}>
-                <Col xs={24} sm={20} md={16} lg={12} xl={10}>
+                <Col span={12}>
                     <Title level={3} style={{ marginBottom: "20px", fontSize: "clamp(20px, 4vw, 28px)" }}>
                         Bienvenu sur le campus connecté
                     </Title>
 
                     <Form
                         form={form}
-                        name="login"
+                        name="login-form"
                         initialValues={{ remember: true }}
                         onFinish={onFinish}
                         style={{ maxWidth: "100%" }}
@@ -95,12 +91,12 @@ export const ArrivalPage: React.FC = () => {
                                 showSearch
                                 options={studentOptions}
                                 style={{ textAlign: 'left' }}
-                                filterOption={(input, option) => option ? option.label.includes(input.toLowerCase()) : false}
+                                filterOption={(input, option) => option ? option.label.includes(input.toLowerCase()) : false} // permet de ranger les nom des étudiants suivant un ordre alphabétique
     
                                 filterSort={(a, b) => {
                                     const nameA = `${a.label}`.toLowerCase(); 
                                     const nameB = `${b.label}`.toLowerCase(); 
-                                    return nameA.localeCompare(nameB); // trier par ordre alphabétique
+                                    return nameA.localeCompare(nameB); 
                                 }}
                             />
                         </Form.Item>

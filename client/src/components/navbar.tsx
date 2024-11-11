@@ -2,7 +2,7 @@ import React from 'react'
 import { Switch, Layout } from 'antd'
 import { Link } from 'react-router-dom'
 
-const {Header } = Layout
+const { Header } = Layout
 export const NavBar = () => {
     return (
         <Header style={{

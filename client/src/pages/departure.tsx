@@ -41,7 +41,6 @@ export const DeparturePage: React.FC = () => {
                     form.resetFields();
                 }else{
                     message.error("Oups ! Une erreur s'est glissée par ici... Nos développeurs sont en mode super-héros, mais ils ont besoin de votre signal pour intervenir !");
-                    //message.error(data.msg)
                 }
             })
         
@@ -70,7 +69,7 @@ export const DeparturePage: React.FC = () => {
             {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
 
             <Row justify="center" style={{ textAlign: "center" }}>
-                <Col xs={24} sm={20} md={16} lg={12} xl={10}>
+                <Col span={12}>
                     <Title level={3} style={{ marginBottom: "20px", fontSize: "clamp(20px, 4vw, 28px)" }}>
                         Vous êtes sur le départ ?
                     </Title>

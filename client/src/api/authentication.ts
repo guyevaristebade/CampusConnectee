@@ -1,5 +1,5 @@
 import { instance } from "../utils";
-import { LoginResponseData, ResponseType } from "../types";
+import { ResponseType } from "../types";
 
 // login
 export const login = async (username: string, password: string) : Promise<ResponseType<any>> => {

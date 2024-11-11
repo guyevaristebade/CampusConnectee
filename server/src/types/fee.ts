@@ -26,3 +26,8 @@ export interface FeeDocument {
     departure_time: string;
 }
 
+
+export interface IDateType {
+    start_date : Date;
+    end_date : Date;
+}

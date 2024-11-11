@@ -19,17 +19,6 @@ export const MaintenancePage: React.FC = () => {
                         <Text type="secondary" style={{ fontSize: '16px' }}>
                             Nous travaillons actuellement pour améliorer notre site. Nous serons de retour sous peu !
                         </Text>
-                        <div style={{ marginTop: '30px' }}>
-                            <Button 
-                                type="primary" 
-                                size="large" 
-                                icon={<ReloadOutlined />} 
-                                onClick={handleRefresh}
-                                style={{ fontSize: '16px' }}
-                            >
-                                Actualiser
-                            </Button>
-                        </div>
                     </Col>
                 </Row>
             </Content>

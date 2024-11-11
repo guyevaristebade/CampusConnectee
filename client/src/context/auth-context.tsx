@@ -1,11 +1,8 @@
-import React, {createContext, useEffect, useState} from "react";
-import {useLocation, useNavigate} from "react-router-dom";
+import React, { createContext, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {useQuery} from "../hooks";
-import {isLoggedIn, login as loginApi,logout as logoutApi, register as registerApi} from '../api'
-import {IChildren, IUserData} from "../types";
-
-
-
+import { isLoggedIn, login as loginApi,logout as logoutApi, register as registerApi } from '../api'
+import { IChildren, IUserData } from "../types";
 
 
 
@@ -25,15 +22,15 @@ export const AuthContext : React.Context<AuthProviderProps> = createContext<Auth
 });
 
 
-export const AuthContextProvider =  ({children}: IChildren) => {
-    const [user, setUser] = useState<IUserData | null >({_id: '3', username: 'Guy', permissions: 'Responsible'})
+export const AuthContextProvider =  ({ children } : IChildren) => {
+    const [user, setUser] = useState<IUserData | null>(null);
     const navigate = useNavigate()
     const location = useLocation()
     const query = useQuery();
 
 
     const redirect = () => {
-        navigate(query.get('redirect_uri') || '/');
+        navigate(query.get('redirect_uri') || '/dashboard'); // redirect to dashboard
     }
 
 
@@ -51,7 +48,7 @@ export const AuthContextProvider =  ({children}: IChildren) => {
 
     const register = async (username: string, password: string, permissions : string) => {
         // TODO
-        // const response = await registerApi(username, password, permissions);
+        
     }
 
     const logout = async () => {
@@ -59,20 +56,20 @@ export const AuthContextProvider =  ({children}: IChildren) => {
         setUser(null);
     };
 
-    useEffect(() => {
-        isLoggedIn()
-            .then((data ) => {
-                if (data.success && data.data?.user) {
-                    const user = data.data.user
-                    setUser(user);
-                    if (location.pathname === '/login') {
-                        redirect()
-                    }
-                }   else if (!location.pathname.match(/^(\/|\/login)$/)) {
-                    navigate(`/login?redirect_uri=${encodeURI(location.pathname)}`)
-                }
-            })
-    }, []);
+    // useEffect(() => {
+    //     isLoggedIn()
+    //         .then((data ) => {
+    //             if (data.success && data.data?.user) {
+    //                 const user = data.data.user
+    //                 setUser(user);
+    //                 if (location.pathname === '/login') {
+    //                     redirect()
+    //                 }
+    //             }   else if (!location.pathname.match(/^(\/|\/login)$/)) {
+    //                 navigate(`/login?redirect_uri=${encodeURI(location.pathname)}`)
+    //             }
+    //         })
+    // }, []);
 
     useEffect(() => {
         if (location.pathname === '/logout') {

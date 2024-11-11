@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import { Student } from './models';
 
 dotenv.config();
 
@@ -29,7 +30,7 @@ app.use('/api/attendance', FeeRouter)
 app.use('/api/student', StudentRouter)
 
 connectDB();
-createStudentWithCsvFile(filePath)
+// createStudentWithCsvFile(filePath)
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
