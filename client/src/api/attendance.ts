@@ -44,3 +44,13 @@ export const fetchAllAttendanceByRangeDate = async (dates: IDateType): Promise<R
         return error.response.data;
     }
 }
+
+
+export const fetchStatistics = async () : Promise<ResponseType<any>> =>{
+    try {
+        const response = await instance.get('/attendance/statistics');
+        return response.data; 
+    } catch (error : any) {
+        return error.response.data;
+    }
+}

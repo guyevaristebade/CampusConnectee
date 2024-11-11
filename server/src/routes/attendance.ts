@@ -4,6 +4,7 @@ import { ResponseType } from "../types";
 import {
     fetchDailyAttendance,
     getAttendanceByRangeDate,
+    getStatistics,
     getTotalStudentHoursPerWeek,
     registerStudentArrival,
     registerStudentDeparture
@@ -43,5 +44,11 @@ FeeRouter.get('/current_day', async (req : Request, res: Response) => {
 
 FeeRouter.get('/range_date', async (req : Request, res: Response) => {
     const response : ResponseType = await getAttendanceByRangeDate(req.body);
+    res.status(response.status as number).send(response)
+})
+
+FeeRouter.get('/statistics', async (req : Request, res: Response) => {
+    // Appel à la fonction de calcul des statistiques
+    const response : ResponseType = await getStatistics();
     res.status(response.status as number).send(response)
 })
