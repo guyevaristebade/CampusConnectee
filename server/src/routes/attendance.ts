@@ -5,6 +5,7 @@ import {
     fetchDailyAttendance,
     getAttendanceByRangeDate,
     getStatistics,
+    getTotalHoursPerWeekByStudent,
     getTotalStudentHoursPerWeek,
     registerStudentArrival,
     registerStudentDeparture
@@ -30,7 +31,7 @@ FeeRouter.put('/departure', async (req: Request, res: Response) => {
 
 // total d'heure par semaine par étudiant
 // cette route sera utilisé pour restituer tous les étudiants et le total de leurs heures pour la semaine en cours
-FeeRouter.get('/total_hours_per_week_by_student', async (req: Request, res: Response) => {
+FeeRouter.get('/student/total_hours_per_week', async (req: Request, res: Response) => {
     const response: ResponseType = await getTotalStudentHoursPerWeek();
     res.status(response.status as number).send(response);
 })
@@ -46,6 +47,7 @@ FeeRouter.get('/range_date', async (req : Request, res: Response) => {
     const response : ResponseType = await getAttendanceByRangeDate(req.body);
     res.status(response.status as number).send(response)
 })
+
 
 FeeRouter.get('/statistics', async (req : Request, res: Response) => {
     // Appel à la fonction de calcul des statistiques

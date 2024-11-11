@@ -18,3 +18,9 @@ export interface IStatistics {
     daily_student: number;
     presence_rate: number;
 }
+
+export interface IStudent{
+    _id : string;
+    last_name : string;
+    first_name : string;
+}
