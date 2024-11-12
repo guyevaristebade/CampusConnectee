@@ -1,4 +1,4 @@
-import { IArrival, IDateType, IDeparture, ResponseType } from "../types";
+import { IArrival, IDateType, IDeparture, IRangeDateType, ResponseType } from "../types";
 import { instance } from "../utils";
 
 // Permet d'enregistrer l'arrivée d'un étudiant
@@ -59,6 +59,15 @@ export const fetchStatistics = async () : Promise<ResponseType<any>> =>{
 export const fetchTotalSTudentHoursPerWeek = async () : Promise<ResponseType<any>> =>{
     try {
         const response = await instance.get('/attendance/student/total_hours_per_week');
+        return response.data; 
+    } catch (error : any) {
+        return error.response.data;
+    }
+}
+
+export const fetchAttendanceByRangeDate = async (dates : any) : Promise<ResponseType<any>> =>{
+    try {
+        const response = await instance.get('/attendance/range_date',dates);
         return response.data; 
     } catch (error : any) {
         return error.response.data;

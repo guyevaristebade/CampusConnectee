@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Image, Layout, Menu, Button, Table, DatePicker, Typography, Row, Col, Tag, Statistic } from 'antd';
-import { DownloadOutlined, LogoutOutlined, UnorderedListOutlined, CalendarOutlined, AppstoreOutlined, FieldTimeOutlined, TableOutlined } from '@ant-design/icons';
-import { fetchAllStudent, fetchDailyAttendance, fetchStatistics, fetchTotalSTudentHoursPerWeek } from '../api';
+import { Image, Layout, Menu, Button, Table, Typography,DatePicker, Row, Col, Tag, Statistic } from 'antd';
+import { DownloadOutlined, LogoutOutlined, CalendarOutlined, AppstoreOutlined, FieldTimeOutlined, TableOutlined } from '@ant-design/icons';
+import { fetchAllStudent, fetchAttendanceByRangeDate, fetchDailyAttendance, fetchStatistics, fetchTotalSTudentHoursPerWeek } from '../api';
+import dayjs from 'dayjs';
 import { IStatistics, IStudent } from '../types';
 
 const { Header, Content, Sider } = Layout;
@@ -16,6 +17,10 @@ export const ResponsiblePage: React.FC = () => {
     const [selectedKey, setSelectedKey] = useState<string>('dashboard');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(5);
+    const [rangeDate, setRangeDate] = useState<{startDate : string,endDate : string}>({
+        startDate : "",
+        endDate : ""
+    });
 
     // Columns configuration for the tables
     const columns = [
@@ -54,7 +59,7 @@ export const ResponsiblePage: React.FC = () => {
 
     const menuItems = [
         { key: 'dashboard', icon: <AppstoreOutlined />, label: 'Dashboard' },
-        { key: 'attendance', icon: <CalendarOutlined />, label: 'Émargement quotidien' },
+        { key: 'dailyAttendance', icon: <CalendarOutlined />, label: 'Émargement quotidien' },
         { key: 'totalHoursPerWeek', icon: <TableOutlined />, label: 'Émargement hebdomadaire' },
         { key: 'dateRange', icon: <FieldTimeOutlined />, label: 'Émargement par intervale' },
     ];
@@ -65,6 +70,7 @@ export const ResponsiblePage: React.FC = () => {
         first_name: student.first_name,
         action: <Button type="default" className="bg-red-600 text-white cursor-pointer" onClick={() => onDeleteStudent(student._id)}>Supprimer</Button>,
     }));
+
 
     // Fetch data on initial render
     useEffect(() => {
@@ -91,8 +97,10 @@ export const ResponsiblePage: React.FC = () => {
     }, []);
 
     const onDateRangeChange = (dates: any) => {
-        console.log(dates);
+        console.log(dates)
     };
+    
+    
 
     const onMenuClick = (e: any) => {
         setSelectedKey(e.key);
@@ -111,6 +119,7 @@ export const ResponsiblePage: React.FC = () => {
         // Implement XLSX download logic here if needed
     };
 
+
     return (
         <Layout style={{ minHeight: '100vh' }}>
             <Sider width={250} className="bg-white text-black">
@@ -121,18 +130,52 @@ export const ResponsiblePage: React.FC = () => {
             </Sider>
 
             <Layout>
-                <Header className="bg-white" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Header className="bg-white flex  items-center justify-end">
+                    Bonjour, Utilisateur
                     <Button
                         type="text"
                         icon={<LogoutOutlined />}
-                        style={{ color: '#fff', backgroundColor: 'red', cursor: 'pointer' }}
+                        className='text-white bg-red-600 cursor-pointer mx-2'
                     >
                         Déconnexion
                     </Button>
                 </Header>
 
                 <Content style={{ padding: '20px 40px' }}>
-                    {selectedKey === 'attendance' && (
+                    {selectedKey === 'dashboard' && (
+                        <>
+                            <Title className="mb-8" level={3}>Dashboard</Title>
+                            <Row gutter={[16, 16]}>
+                                <Col span={8}>
+                                    <Statistic className="bg-white p-4 rounded" value={statistics?.total_student} title="Nombre total d'élève" />
+                                </Col>
+                                <Col span={8}>
+                                    <Statistic className="bg-white p-4 rounded" value={statistics?.daily_student} title="Nombre d'élève présent aujourd'hui" />
+                                </Col>
+                                <Col span={8}>
+                                    <Statistic className="bg-white p-4 rounded" value={statistics?.presence_rate} suffix="%" title="Taux de présence journalier" />
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col span={24}>
+                                    <Title className="my-12" level={3}>Liste des étudiants du campus</Title>
+                                    <Table
+                                        columns={studentColumns}
+                                        dataSource={studentData}
+                                        rowKey="_id"
+                                        pagination={{
+                                            current: currentPage,
+                                            pageSize: pageSize,
+                                            total: students.length,
+                                            onChange: (page, pageSize) => handleTableChange({ current: page, pageSize }),
+                                        }}
+                                    />
+                                </Col>
+                            </Row>
+                        </>
+                    )}
+
+                    {selectedKey === 'dailyAttendance' && (
                         <>
                             <Title level={3}>Émargement de la journée</Title>
                             <Table
@@ -179,38 +222,13 @@ export const ResponsiblePage: React.FC = () => {
                         </>
                     )}
 
-                    {selectedKey === 'dashboard' && (
+                    {selectedKey === 'dateRange' && (
                         <>
-                            <Title className="mb-8" level={3}>Dashboard</Title>
-                            <Row gutter={[16, 16]}>
-                                <Col span={8}>
-                                    <Statistic className="bg-white p-4 rounded" value={statistics?.total_student} title="Nombre total d'élève" />
-                                </Col>
-                                <Col span={8}>
-                                    <Statistic className="bg-white p-4 rounded" value={statistics?.daily_student} title="Nombre d'élève présent aujourd'hui" />
-                                </Col>
-                                <Col span={8}>
-                                    <Statistic className="bg-white p-4 rounded" value={statistics?.presence_rate} suffix="%" title="Taux de présence journalier" />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col span={24}>
-                                    <Title className="my-12" level={3}>Liste des étudiants du campus</Title>
-                                    <Table
-                                        columns={studentColumns}
-                                        dataSource={studentData}
-                                        rowKey="_id"
-                                        pagination={{
-                                            current: currentPage,
-                                            pageSize: pageSize,
-                                            total: students.length,
-                                            onChange: (page, pageSize) => handleTableChange({ current: page, pageSize }),
-                                        }}
-                                    />
-                                </Col>
-                            </Row>
+                            <Title level={3}>Émargement par intervalle de date</Title>
+                            <RangePicker format="YYYY-MM-DD" onChange={onDateRangeChange}/>
                         </>
                     )}
+
                 </Content>
             </Layout>
         </Layout>

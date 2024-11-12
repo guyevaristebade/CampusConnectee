@@ -27,7 +27,7 @@ export interface FeeDocument {
 }
 
 
-export interface IDateType {
+export interface IRangeDateType {
     start_date : Date;
     end_date : Date;
 }

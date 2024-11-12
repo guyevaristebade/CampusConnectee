@@ -1,4 +1,4 @@
-import {FeeDocument, IArrival, IDate, IDateType, IDeparture, ResponseType} from "../types";
+import {FeeDocument, IArrival, IDate, IDeparture, IRangeDateType, ResponseType} from "../types";
 import { Attendance } from "../models";
 import { getDate, timeDifferenceInDecimal, timeToDecimal } from "../utils";
 import moment from "moment";
@@ -179,9 +179,11 @@ export const getTotalStudentHoursPerWeek = async () => {
     };
 
     try {
-
+        
         const startOfWeek = moment().isoWeekday(1).startOf('isoWeek').toDate(); // Lundi
         const endOfWeek = moment().isoWeekday(7).endOf('isoWeek').toDate(); // Dimanche
+        
+        console.log(startOfWeek,endOfWeek)
 
         const totalHoursPerWeek = await Attendance.aggregate([
             {
@@ -250,6 +252,8 @@ export const getTotalHoursPerWeekByStudent = async (student_id : string) : Promi
         const startOfWeek = moment().startOf('week').toDate();
         const endOfWeek = moment().endOf('week').toDate();
 
+        console.log(startOfWeek,endOfWeek)
+
         const emargement = await Attendance.find<{ student_id: string; createdAt: Date }>({
             student_id,
             createdAt: { $gte: startOfWeek, $lte: endOfWeek }
@@ -305,22 +309,28 @@ export const fetchDailyAttendance = async () : Promise<ResponseType> =>{
 
 
 //renvoyer des vrai date pour calculer ce qu'il y à faire 
-export const getAttendanceByRangeDate = async (dates: IDateType): Promise<ResponseType> => {
+export const getAttendanceByRangeDate = async (dates: IRangeDateType): Promise<ResponseType> => {
     let responsePayload : ResponseType = {
         success : true,
         status : 200
     }
 
     try {
-        const startDate = new Date(dates.start_date)
-        const endDate = new Date(dates.end_date)
+        const startDate = dates.start_date
+        const endDate = dates.end_date
         
-        startDate.setHours(0, 0, 0, 0);
-        endDate.setHours(23, 59, 59, 999);
+        // startDate.setHours(23)
+        // startDate.setMinutes(0)
+        // startDate.setSeconds(0)
 
+        // endDate.setHours(22)
+        // endDate.setMinutes(59)
+        // endDate.setSeconds(59)
+
+        // console.log(startDate, endDate)
         const attendances = await Attendance.find({
             createdAt : { $gte : startDate, $lte : endDate }
-        })
+        })  
 
         if(attendances.length == 0) {
             responsePayload.status = 404;

@@ -24,3 +24,8 @@ export interface IStudent{
     last_name : string;
     first_name : string;
 }
+
+export interface IRangeDateType{
+    start_date : string;
+    end_date : string;
+}
