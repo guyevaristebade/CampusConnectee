@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Image, Layout, Menu, Button, Table, Typography, Row, Col, Tag, Statistic } from 'antd';
+import { Image, Layout, Menu, Button, Table, Typography, Row, Col, Tag, Statistic, message } from 'antd';
 import { DownloadOutlined, LogoutOutlined, CalendarOutlined, AppstoreOutlined, FieldTimeOutlined, TableOutlined } from '@ant-design/icons';
 import { fetchAllStudent, fetchDailyAttendance, fetchStatistics, fetchTotalSTudentHoursPerWeek } from '../api';
 import { IStatistics, IStudent } from '../types';
 import { useAuth } from '../hooks';
+import { exportToExcel } from '../utils';
 
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
@@ -70,7 +71,6 @@ export const ResponsiblePage: React.FC = () => {
     };
     
     
-
     const onMenuClick = (e: any) => {
         setSelectedKey(e.key);
     };
@@ -84,8 +84,13 @@ export const ResponsiblePage: React.FC = () => {
         setPageSize(pagination.pageSize);
     };
 
-    const handleDownloadXLSX = () => {
-        // Implement XLSX download logic here if needed
+    const handleDownloadXLSX = (data : any[], title : string) => {
+        const xlsx = exportToExcel(data,title)
+        if(xlsx){
+            message.success("Ficher téléchargé avec succès")
+        }else{
+            message.error("Erreur lors du téléchargement du fichier Excel")
+        }
     };
 
     const onLogout = async () => {
@@ -185,7 +190,7 @@ export const ResponsiblePage: React.FC = () => {
                             <Button
                                 icon={<DownloadOutlined />}
                                 style={{ marginTop: '10px' }}
-                                onClick={handleDownloadXLSX}
+                                onClick={() => handleDownloadXLSX(dailyAttendance, "emmargement_journalier")}
                             >
                                 Télécharger en PDF
                             </Button>
@@ -212,7 +217,8 @@ export const ResponsiblePage: React.FC = () => {
                                     />
                                 </Col>
                                 <Col span={24}>
-                                    <Button icon={<DownloadOutlined />} style={{ marginTop: '10px' }}>
+                                    <Button onClick={() => handleDownloadXLSX(attendancePerWeek, "emmargement_hebdomadaire")}
+ icon={<DownloadOutlined />} className='mt-2.5 text-green'>
                                         Télécharger en PDF
                                     </Button>
                                 </Col>
