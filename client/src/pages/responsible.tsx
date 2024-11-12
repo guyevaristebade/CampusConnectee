@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Image, Layout, Menu, Button, Table, Typography,DatePicker, Row, Col, Tag, Statistic } from 'antd';
+import { Image, Layout, Menu, Button, Table, Typography, Row, Col, Tag, Statistic } from 'antd';
 import { DownloadOutlined, LogoutOutlined, CalendarOutlined, AppstoreOutlined, FieldTimeOutlined, TableOutlined } from '@ant-design/icons';
-import { fetchAllStudent, fetchAttendanceByRangeDate, fetchDailyAttendance, fetchStatistics, fetchTotalSTudentHoursPerWeek } from '../api';
-import dayjs from 'dayjs';
+import { fetchAllStudent, fetchDailyAttendance, fetchStatistics, fetchTotalSTudentHoursPerWeek } from '../api';
 import { IStatistics, IStudent } from '../types';
+import { useAuth } from '../hooks';
 
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
-const { RangePicker } = DatePicker;
 
 export const ResponsiblePage: React.FC = () => {
+    const { user, logout } = useAuth();
     const [dailyAttendance, setDailyAttendance] = useState<any[]>([]);
     const [statistics, setStatistics] = useState<IStatistics | null>(null);
     const [students, setStudents] = useState<IStudent[]>([]);
@@ -17,33 +17,30 @@ export const ResponsiblePage: React.FC = () => {
     const [selectedKey, setSelectedKey] = useState<string>('dashboard');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(5);
-    const [rangeDate, setRangeDate] = useState<{startDate : string,endDate : string}>({
-        startDate : "",
-        endDate : ""
-    });
+
 
     // Columns configuration for the tables
     const columns = [
         { title: 'Nom', dataIndex: 'last_name', key: 'last_name' },
-        { title: 'Prénom', dataIndex: 'first_name', key: 'first_name' },
-        { title: 'Heure d\'arrivée', dataIndex: 'arrival_time', key: 'arrival_time' },
-        { title: 'Heure de départ', dataIndex: 'departure_time', key: 'departure_time' },
-        { title: 'Total d\'heures', dataIndex: 'total_hours', key: 'total_hours' },
+        { title: 'Prénom', dataIndex: 'first_name', key: 'first_name_1' },
+        { title: 'Heure d\'arrivée', dataIndex: 'arrival_time', key: 'arrival_time_1' },
+        { title: 'Heure de départ', dataIndex: 'departure_time', key: 'departure_time_1' },
+        { title: 'Total d\'heures', dataIndex: 'total_hours', key: 'total_hours_1' },
         { 
             title: 'Statut', 
             dataIndex: 'status', 
-            key: 'status',
+            key: 'status_1',
             render: (text: string) => text === 'completed' ? <Tag color="green">Terminé</Tag> : <Tag color="orange">En cours</Tag>
         }
     ];
 
     const attendancePerWeekColumns = [
-        { title: 'Nom', dataIndex: 'last_name', key: 'last_name' },
-        { title: 'Prénom', dataIndex: 'first_name', key: 'first_name' },
+        { title: 'Nom', dataIndex: 'last_name', key: 'last_name_2' },
+        { title: 'Prénom', dataIndex: 'first_name', key: 'first_name_2' },
         { 
             title: 'Total d\'heure', 
             dataIndex: 'total_hours', 
-            key: 'total_hours',
+            key: 'total_hours_2',
             render: (value: number) => {
                 const color = value < 12 ? 'red' : 'green';
                 return <Tag color={color} className='w-[50px] text-center'>{value}</Tag>;
@@ -54,47 +51,19 @@ export const ResponsiblePage: React.FC = () => {
     const studentColumns = [
         { title: 'Nom', dataIndex: 'last_name', key: 'last_name' },
         { title: 'Prénom', dataIndex: 'first_name', key: 'first_name' },
-        { title: 'Action', dataIndex: 'action', key: 'action' },
+        // { title: 'Action', dataIndex: 'action', key: 'action', render : (record : any) => {
+        //     return <Button type="default" className="bg-red-600 text-white cursor-pointer" onClick={() => onDeleteStudent(record)}>Supprimer</Button>;
+        // }},
     ];
 
     const menuItems = [
         { key: 'dashboard', icon: <AppstoreOutlined />, label: 'Dashboard' },
         { key: 'dailyAttendance', icon: <CalendarOutlined />, label: 'Émargement quotidien' },
         { key: 'totalHoursPerWeek', icon: <TableOutlined />, label: 'Émargement hebdomadaire' },
-        { key: 'dateRange', icon: <FieldTimeOutlined />, label: 'Émargement par intervale' },
+        // { key: 'dateRange', icon: <FieldTimeOutlined />, label: 'Émargement par intervale' },
     ];
 
-    const studentData = students.map((student) => ({
-        key: student._id,
-        last_name: student.last_name,
-        first_name: student.first_name,
-        action: <Button type="default" className="bg-red-600 text-white cursor-pointer" onClick={() => onDeleteStudent(student._id)}>Supprimer</Button>,
-    }));
 
-
-    // Fetch data on initial render
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [attendance, allStudents, stat, totalHours] = await Promise.all([
-                    fetchDailyAttendance(),
-                    fetchAllStudent(),
-                    fetchStatistics(),
-                    fetchTotalSTudentHoursPerWeek(),
-                ]);
-
-                if (attendance.success) setDailyAttendance(attendance.data);
-                if (allStudents.success) setStudents(allStudents.data);
-                if (stat.success) setStatistics(stat.data);
-                if (totalHours.success) setAttendancePerWeek(totalHours.data);
-
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-
-        fetchData();
-    }, []);
 
     const onDateRangeChange = (dates: any) => {
         console.log(dates)
@@ -119,6 +88,34 @@ export const ResponsiblePage: React.FC = () => {
         // Implement XLSX download logic here if needed
     };
 
+    const onLogout = async () => {
+        await logout();
+    }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [attendance, allStudents, stat, totalHours] = await Promise.all([
+                    fetchDailyAttendance(),
+                    fetchAllStudent(),
+                    fetchStatistics(),
+                    fetchTotalSTudentHoursPerWeek(),
+                ]);
+
+                if (attendance.success) setDailyAttendance(attendance.data);
+                if (allStudents.success) setStudents(allStudents.data);
+                if (stat.success) setStatistics(stat.data);
+                if (totalHours.success) setAttendancePerWeek(totalHours.data);
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
@@ -131,10 +128,11 @@ export const ResponsiblePage: React.FC = () => {
 
             <Layout>
                 <Header className="bg-white flex  items-center justify-end">
-                    Bonjour, Utilisateur
+                    Bonjour, {user?.username}
                     <Button
                         type="text"
                         icon={<LogoutOutlined />}
+                        onClick={onLogout}
                         className='text-white bg-red-600 cursor-pointer mx-2'
                     >
                         Déconnexion
@@ -161,7 +159,7 @@ export const ResponsiblePage: React.FC = () => {
                                     <Title className="my-12" level={3}>Liste des étudiants du campus</Title>
                                     <Table
                                         columns={studentColumns}
-                                        dataSource={studentData}
+                                        dataSource={students}
                                         rowKey="_id"
                                         pagination={{
                                             current: currentPage,
@@ -221,14 +219,6 @@ export const ResponsiblePage: React.FC = () => {
                             </Row>
                         </>
                     )}
-
-                    {selectedKey === 'dateRange' && (
-                        <>
-                            <Title level={3}>Émargement par intervalle de date</Title>
-                            <RangePicker format="YYYY-MM-DD" onChange={onDateRangeChange}/>
-                        </>
-                    )}
-
                 </Content>
             </Layout>
         </Layout>

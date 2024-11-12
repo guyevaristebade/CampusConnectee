@@ -6,7 +6,6 @@ import cookieParser from "cookie-parser";
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { Student } from './models';
 
 dotenv.config();
 
@@ -22,6 +21,7 @@ app.use(bodyParser.json());
 app.use(cookieParser())
 app.use(cors({
     origin: 'http://localhost:3000',
+    methods: ['GET', 'POST','DELETE', 'OPTIONS', 'PUT'],
     credentials: true
 }));
 

@@ -1,23 +1,26 @@
 import React from 'react';
-import {Form, Input, Button, Typography, Row, Col, Layout, message} from 'antd';
-import {useAuth} from "../hooks";
+import { Form, Input, Button, Typography, Row, Col, Layout } from 'antd';
+import { useAuth } from "../hooks";
+import { UserLogin } from '../types';
 
 const { Title } = Typography;
 const { Content } = Layout;
 
-interface userData{
-    username: string;
-    password: string;
-}
+
 
 export const Login: React.FC = () => {
 
     const { login } = useAuth();
-    const onFinish = async (values: userData) => {
-        //if (!values.password || !values.username) return;
-        const response = await login(values.username, values.password);
-        console.log(response);
+
+    const onSubmit = async (values: UserLogin) => {
+        try {
+            const response = await login(values)
+            console.log(response);
+        } catch (error) {
+            console.error('Login failed:', error);
+        }
     };
+
 
     const onFinishFailed = (errorInfo: any) => {
         console.log('Failed:', errorInfo);
@@ -25,14 +28,14 @@ export const Login: React.FC = () => {
 
     return (
         
-            <Content style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "20px" }}>
+            <Content className='flex justify-center p-[200px] items-center' style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "20px" }}>
                 <Row justify="center" style={{ width: "100%", maxWidth: "400px" }}>
                     <Col span={24}>
                         <Title level={2} style={{ textAlign: "center", marginBottom: "30px" }}>Connexion</Title>
                         <Form
-                            name="login"
+                            name="login-form"
                             initialValues={{ remember: true }}
-                            onFinish={onFinish}
+                            onFinish={onSubmit}
                             onFinishFailed={onFinishFailed}
                             style={{ maxWidth: "100%" }}
                         >

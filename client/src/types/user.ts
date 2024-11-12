@@ -3,3 +3,8 @@ export interface IUserData{
     username: string;
     permissions: string
 }
+
+export interface UserLogin{
+    username: string;
+    password: string;
+}

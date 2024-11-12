@@ -13,7 +13,14 @@ export const AppRouter : React.FC = () =>{
             <Route element={<Main/>}>
                 <Route path='arrival'  element={<ArrivalPage/>} />
                 <Route path="departure"  element={<DeparturePage/>} />
-                <Route path='login'  element={<Login/>} />
+                <Route
+                    path='login'
+                    element={
+                        <AuthContextProvider>
+                            <Login />
+                        </AuthContextProvider>
+                    }
+                />            
             </Route>
             {/* <Route
                 path='login'
