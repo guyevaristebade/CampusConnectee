@@ -22,15 +22,6 @@ export const AppRouter : React.FC = () =>{
                     }
                 />            
             </Route>
-            {/* <Route
-                path='login'
-                element={
-                    <AuthContextProvider>
-                        <Login />
-                    </AuthContextProvider>
-                }
-            /> */}
-
             <Route
                 path='dashboard'
                 element={
