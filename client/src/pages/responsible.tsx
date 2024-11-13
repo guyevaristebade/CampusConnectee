@@ -123,10 +123,10 @@ export const ResponsiblePage: React.FC = () => {
 
 
     return (
-        <Layout style={{ minHeight: '100vh' }}>
+        <Layout className='min-h-screen'> {/* min-h-screen => min-height : 100vh */}
             <Sider width={250} className="bg-white text-black">
-                <div className="logo text-black mb-6" style={{ textAlign: 'center', padding: '20px' }}>
-                    <Image width={200} src="/CC_RVB.png" preview={false} />
+                <div className="logo text-black mb-6 text-center p-5">
+                    <Image width={200} src="/logo_cc_nemours.jpg" preview={false} />
                 </div>
                 <Menu mode="inline" selectedKeys={[selectedKey]} onClick={onMenuClick} items={menuItems} className="bg-white" />
             </Sider>

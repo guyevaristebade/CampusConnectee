@@ -32,6 +32,27 @@ app.use('/api/student', StudentRouter)
 connectDB();
 // createStudentWithCsvFile(filePath)
 
+
+const getGeolocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const { latitude, longitude } = position.coords;
+            console.log("longitude => " + longitude)
+            console.log("latitude  => " + latitude)
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    } else {
+      console.log(null)
+    }
+  };
+  
+
+  getGeolocation();
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

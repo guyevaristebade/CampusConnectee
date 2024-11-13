@@ -183,7 +183,6 @@ export const getTotalStudentHoursPerWeek = async () => {
         const startOfWeek = moment().isoWeekday(1).startOf('isoWeek').toDate(); // Lundi
         const endOfWeek = moment().isoWeekday(7).endOf('isoWeek').toDate(); // Dimanche
         
-        console.log(startOfWeek,endOfWeek)
 
         const totalHoursPerWeek = await Attendance.aggregate([
             {
@@ -252,7 +251,6 @@ export const getTotalHoursPerWeekByStudent = async (student_id : string) : Promi
         const startOfWeek = moment().startOf('week').toDate();
         const endOfWeek = moment().endOf('week').toDate();
 
-        console.log(startOfWeek,endOfWeek)
 
         const emargement = await Attendance.find<{ student_id: string; createdAt: Date }>({
             student_id,
@@ -318,16 +316,7 @@ export const getAttendanceByRangeDate = async (dates: IRangeDateType): Promise<R
     try {
         const startDate = dates.start_date
         const endDate = dates.end_date
-        
-        // startDate.setHours(23)
-        // startDate.setMinutes(0)
-        // startDate.setSeconds(0)
 
-        // endDate.setHours(22)
-        // endDate.setMinutes(59)
-        // endDate.setSeconds(59)
-
-        // console.log(startDate, endDate)
         const attendances = await Attendance.find({
             createdAt : { $gte : startDate, $lte : endDate }
         })  

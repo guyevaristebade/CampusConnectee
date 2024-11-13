@@ -7,7 +7,7 @@ import { Layout } from 'antd';
 
 export const Main : React.FC  = () =>{
     return (
-        <Layout style={{ minHeight: "100vh", backgroundColor : "#1d1f21" }}>
+        <Layout className="min-h-screen bg-white">
             <NavBar/>
             <Outlet />
             <Foot/>

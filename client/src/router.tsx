@@ -1,11 +1,9 @@
 import React from 'react';
 import {Route, Routes} from "react-router-dom";
 import {ArrivalPage, Login, MaintenancePage, ResponsiblePage, Unknown} from "./pages";
-import {Main, PrivateRoute} from "./components";
-import { DeparturePage } from './pages/departure';
+import {Main, PrivateRoute } from "./components";
+import { DeparturePage } from './pages';
 import { AuthContextProvider } from './context';
-
-
 
 export const AppRouter : React.FC = () =>{
     return (
