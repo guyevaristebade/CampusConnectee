@@ -52,7 +52,7 @@ const GeolocationComponent: React.FC = () => {
   }, []);
 
   return (
-    <div>
+    <div className=''>
       <h2>Géolocalisation de l'utilisateur</h2>
       {location.error ? (
         <p style={{ color: 'red' }}>Erreur: {location.error}</p>

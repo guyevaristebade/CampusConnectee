@@ -5,6 +5,7 @@ import { fetchAllStudent, fetchDailyAttendance, fetchStatistics, fetchTotalSTude
 import { IStatistics, IStudent } from '../types';
 import { useAuth } from '../hooks';
 import { exportToExcel } from '../utils';
+import { DataTable } from '../components';
 
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
@@ -15,7 +16,7 @@ export const ResponsiblePage: React.FC = () => {
     const [statistics, setStatistics] = useState<IStatistics | null>(null);
     const [students, setStudents] = useState<IStudent[]>([]);
     const [attendancePerWeek, setAttendancePerWeek] = useState<any[]>([]);
-    const [selectedKey, setSelectedKey] = useState<string>('dashboard');
+    const [selectedMenuKey, setSelectedMenuKey] = useState<string>('dashboard');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(5);
 
@@ -52,16 +53,27 @@ export const ResponsiblePage: React.FC = () => {
     const studentColumns = [
         { title: 'Nom', dataIndex: 'last_name', key: 'last_name' },
         { title: 'Prénom', dataIndex: 'first_name', key: 'first_name' },
-        // { title: 'Action', dataIndex: 'action', key: 'action', render : (record : any) => {
-        //     return <Button type="default" className="bg-red-600 text-white cursor-pointer" onClick={() => onDeleteStudent(record)}>Supprimer</Button>;
-        // }},
+        { 
+            title: 'Action', 
+            dataIndex: 'action', 
+            key: 'action',
+            render: (_:any,record: IStudent) => (
+                <Button 
+                    type="default" 
+                    className="bg-red-600 text-white cursor-pointer"
+                    onClick={() => onDeleteStudent(record._id)}
+                >
+                    Supprimer
+                </Button>
+            )
+        }
     ];
+    
 
     const menuItems = [
         { key: 'dashboard', icon: <AppstoreOutlined />, label: 'Dashboard' },
         { key: 'dailyAttendance', icon: <CalendarOutlined />, label: 'Émargement quotidien' },
         { key: 'totalHoursPerWeek', icon: <TableOutlined />, label: 'Émargement hebdomadaire' },
-        // { key: 'dateRange', icon: <FieldTimeOutlined />, label: 'Émargement par intervale' },
     ];
 
 
@@ -72,11 +84,13 @@ export const ResponsiblePage: React.FC = () => {
     
     
     const onMenuClick = (e: any) => {
-        setSelectedKey(e.key);
+        setSelectedMenuKey(e.key);
     };
 
     const onDeleteStudent = (id: string) => {
-        console.log(id);
+        // mettre cette logique en place avec l'api
+        const delet = students.filter(student => student._id !== id);
+        setStudents(delet);
     };
 
     const handleTableChange = (pagination: any) => {
@@ -121,14 +135,14 @@ export const ResponsiblePage: React.FC = () => {
     }, []);
 
 
-
     return (
         <Layout className='min-h-screen'> {/* min-h-screen => min-height : 100vh */}
+            {/* Faire un composant SideBar */}
             <Sider width={250} className="bg-white text-black">
                 <div className="logo text-black mb-6 text-center p-5">
                     <Image width={200} src="/logo_cc_nemours.jpg" preview={false} />
                 </div>
-                <Menu mode="inline" selectedKeys={[selectedKey]} onClick={onMenuClick} items={menuItems} className="bg-white" />
+                <Menu mode="inline" selectedMenuKeys={[selectedMenuKey]} onClick={onMenuClick} items={menuItems} className="bg-white" />
             </Sider>
 
             <Layout>
@@ -145,7 +159,7 @@ export const ResponsiblePage: React.FC = () => {
                 </Header>
 
                 <Content style={{ padding: '20px 40px' }}>
-                    {selectedKey === 'dashboard' && (
+                    {selectedMenuKey === 'dashboard' && (
                         <>
                             <Title className="mb-8" level={3}>Dashboard</Title>
                             <Row gutter={[16, 16]}>
@@ -178,51 +192,37 @@ export const ResponsiblePage: React.FC = () => {
                         </>
                     )}
 
-                    {selectedKey === 'dailyAttendance' && (
+                    {selectedMenuKey === 'dailyAttendance' && (
                         <>
-                            <Title level={3}>Émargement de la journée</Title>
-                            <Table
-                                columns={columns}
+                            <Title level={2} className='mb-10'>Émargement de la journée</Title>
+                            <DataTable 
+                                columns={columns} 
                                 dataSource={dailyAttendance}
-                                rowKey="_id"
-                                pagination={false}
+                                rowKey='_id'
+                                onDownload={handleDownloadXLSX}
+                                handleTableChange={handleTableChange}
+                                currentPage={currentPage}
+                                pageSize={pageSize}
+                                downloadTitle={`Liste_emargement_journalier-${new Date().toISOString().split('T')[0]}`}
                             />
-                            <Button
-                                icon={<DownloadOutlined />}
-                                style={{ marginTop: '10px' }}
-                                onClick={() => handleDownloadXLSX(dailyAttendance, "emmargement_journalier")}
-                            >
-                                Télécharger en PDF
-                            </Button>
                         </>
                     )}
 
-                    {selectedKey === 'totalHoursPerWeek' && (
+                    {selectedMenuKey === 'totalHoursPerWeek' && (
                         <>
-                            <Title level={3}>Nombre d'heure total pour la semaine en cours
+                            <Title level={2}>Nombre d'heure total pour la semaine en cours
                             </Title>
-                            <Row>
-                                <Col span={24} style={{ marginBottom: '20px' }}>
-                                    {/* <RangePicker onChange={onDateRangeChange} /> */}
-                                    <Table
-                                        columns={attendancePerWeekColumns}
-                                        dataSource={attendancePerWeek}
-                                        rowKey="_id"
-                                        pagination={{
-                                            current: currentPage,
-                                            pageSize: pageSize,
-                                            total: attendancePerWeek.length,
-                                            onChange: (page, pageSize) => handleTableChange({ current: page, pageSize }),
-                                        }}
-                                    />
-                                </Col>
-                                <Col span={24}>
-                                    <Button onClick={() => handleDownloadXLSX(attendancePerWeek, "emmargement_hebdomadaire")}
- icon={<DownloadOutlined />} className='mt-2.5 text-green'>
-                                        Télécharger en PDF
-                                    </Button>
-                                </Col>
-                            </Row>
+                            <DataTable 
+                                columns={attendancePerWeekColumns}
+                                dataSource={attendancePerWeek}
+                                rowKey="_id"
+                                onDownload={handleDownloadXLSX}
+                                handleTableChange={handleTableChange} 
+                                currentPage={currentPage}
+                                pageSize={pageSize}
+                                downloadTitle={`Liste_emargement_semaine_en_course-${new Date().toISOString().split('T')[0]}`}
+
+                            />
                         </>
                     )}
                 </Content>

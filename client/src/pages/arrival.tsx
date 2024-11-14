@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Layout, Form, Typography, Button, Row, Col, Input, Select, message } from "antd";
+import { Layout, Form, Row, Col, message } from "antd";
 import Confetti from 'react-confetti';
 import { IArrival, IStudentType } from '../types';
 import { fetchAllStudent, registeredArrival } from '../api';
-import { Panel } from '../components';
+import { AttendanceForm, Panel } from '../components';
 const { Content } = Layout;
-const { Title } = Typography;
 
 export const ArrivalPage: React.FC = () => {
     const [form] = Form.useForm();
@@ -72,11 +71,7 @@ export const ArrivalPage: React.FC = () => {
                 {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
                 <Row  className='text-center max-w-md w-full'> {/* max-w-md : max-width : 448px */}
                     <Col span={24}>
-                        {/* <Title level={3}  className="mb-5 text-[clamp(20px,4vw,28px)]">
-                            Bienvenu sur le campus connecté
-                        </Title> */}
-
-                        <Form
+                        {/* <Form
                             form={form}
                             name="login-form"
                             initialValues={{ remember: true }}
@@ -120,7 +115,16 @@ export const ArrivalPage: React.FC = () => {
                                     Arrivé
                                 </Button>
                             </Form.Item>
-                        </Form>
+                        </Form> */}
+                        <AttendanceForm 
+                            onFinish={onFinish} 
+                            firstFieldName='student_id' 
+                            secondFieldName='arrival_time' 
+                            studentOptions={studentOptions} 
+                            buttonText='Arrivé' 
+                            buttonColor='#000091'
+                            form={form}
+                        />
                     </Col>
                 </Row>
             </Content>

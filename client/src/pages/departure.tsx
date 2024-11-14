@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Layout, Form, Typography, Button, Row, Col, Input, Select, message } from "antd";
+import { Layout, Form, Typography, Row, Col, message } from "antd";
 import Confetti from 'react-confetti';
 import { IDeparture, IStudentType } from '../types';
 import { fetchAllStudent, registeredDeparture } from '../api';
-import { Panel } from '../components';
+import { AttendanceForm, Panel } from '../components';
 
 const { Content } = Layout;
-const { Title } = Typography;
 
 export const DeparturePage: React.FC = () => {
     const [form] = Form.useForm();
@@ -73,11 +72,7 @@ export const DeparturePage: React.FC = () => {
 
                 <Row justify="center"  className='text-center max-w-md w-full'>
                     <Col span={24}>
-                        {/* <Title level={3}  className="mb-5 text-[clamp(20px,4vw,28px)] text-center">
-                            Vous êtes sur le départ ?
-                        </Title> */}
-
-                        <Form
+                        {/* <Form
                             form={form}
                             name="departure"
                             initialValues={{ remember: true }}
@@ -120,7 +115,16 @@ export const DeparturePage: React.FC = () => {
                                     Départ
                                 </Button>
                             </Form.Item>
-                        </Form>
+                        </Form> */}
+                        <AttendanceForm 
+                            firstFieldName='student_id'
+                            secondFieldName='departure_time'
+                            buttonColor='#E1000F' 
+                            buttonText='Départ' 
+                            onFinish={onFinish} 
+                            studentOptions={studentOptions}
+                            form={form}
+                        />
                     </Col>
                 </Row>
             </Content>

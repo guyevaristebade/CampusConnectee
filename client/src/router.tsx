@@ -1,9 +1,10 @@
 import React from 'react';
-import {Route, Routes} from "react-router-dom";
-import {ArrivalPage, Login, MaintenancePage, ResponsiblePage, Unknown} from "./pages";
-import {Main, PrivateRoute } from "./components";
+import { Route, Routes } from "react-router-dom";
+import { ArrivalPage, Login, MaintenancePage, ResponsiblePage, Unknown } from "./pages";
+import { Main } from "./components";
 import { DeparturePage } from './pages';
 import { AuthContextProvider } from './context';
+import GeolocationComponent from './pages/home';
 
 export const AppRouter : React.FC = () =>{
     return (
@@ -11,6 +12,7 @@ export const AppRouter : React.FC = () =>{
             <Route element={<Main/>}>
                 <Route path='arrival'  element={<ArrivalPage/>} />
                 <Route path="departure"  element={<DeparturePage/>} />
+                <Route path="/"  element={<GeolocationComponent />} />
                 <Route
                     path='login'
                     element={
