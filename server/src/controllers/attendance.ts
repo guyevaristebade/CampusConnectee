@@ -1,7 +1,8 @@
 import {FeeDocument, IArrival, IDate, IDeparture, IRangeDateType, ResponseType} from "../types";
-import { Attendance } from "../models";
+import { Attendance, Student } from "../models";
 import { getDate, timeDifferenceInDecimal, timeToDecimal } from "../utils";
 import moment from "moment";
+import { io } from "..";
 
 
 
@@ -35,9 +36,11 @@ export const registerStudentArrival = async (arrivalData: IArrival): Promise<Res
             is_registered: true
         });
 
+        
         await newArrivalRecord.save();
         responsePayload.msg = "Enregistré avec succès";
-        responsePayload.data = newArrivalRecord;
+        responsePayload.data = newArrivalRecord; 
+
     } catch (e: any) {
         responsePayload.status = 500;
         responsePayload.success = false;
@@ -99,6 +102,7 @@ export const registerStudentDeparture = async (departureData: IDeparture): Promi
 
         responsePayload.msg = "Enregistré avec succès";
         responsePayload.data = updatedDepartureRecord;
+        
         
     } catch (e: any) {
         responsePayload.status = 500;

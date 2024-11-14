@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Image, Layout, Menu, Button, Table, Typography, Row, Col, Tag, Statistic, message } from 'antd';
-import { DownloadOutlined, LogoutOutlined, CalendarOutlined, AppstoreOutlined, FieldTimeOutlined, TableOutlined } from '@ant-design/icons';
+import { LogoutOutlined, CalendarOutlined, AppstoreOutlined, TableOutlined } from '@ant-design/icons';
 import { fetchAllStudent, fetchDailyAttendance, fetchStatistics, fetchTotalSTudentHoursPerWeek } from '../api';
 import { IStatistics, IStudent } from '../types';
 import { useAuth } from '../hooks';
 import { exportToExcel } from '../utils';
 import { DataTable } from '../components';
+import { io } from 'socket.io-client';
 
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
+
+const socket = io(process.env.REACT_APP_SOCKET)
 
 export const ResponsiblePage: React.FC = () => {
     const { user, logout } = useAuth();
@@ -21,7 +24,6 @@ export const ResponsiblePage: React.FC = () => {
     const [pageSize, setPageSize] = useState<number>(5);
 
 
-    // Columns configuration for the tables
     const columns = [
         { title: 'Nom', dataIndex: 'last_name', key: 'last_name' },
         { title: 'Prénom', dataIndex: 'first_name', key: 'first_name_1' },
@@ -135,6 +137,28 @@ export const ResponsiblePage: React.FC = () => {
     }, []);
 
 
+
+    useEffect(() => {
+        socket.on('student_arrival', (data : any) => {
+            message.success(`${data.first_name} ${data.last_name} est arrivé vient d'arriver`, 10)
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
+
+    useEffect(()=>{
+        socket.on('student_departure', (data : any)=>{
+            message.success(`${data.first_name} ${data.last_name} vient de  partir du campus`, 10)
+        })
+
+        return () => {
+            socket.disconnect();
+        };
+    },[])
+
+
     return (
         <Layout className='min-h-screen'> {/* min-h-screen => min-height : 100vh */}
             {/* Faire un composant SideBar */}
@@ -158,7 +182,7 @@ export const ResponsiblePage: React.FC = () => {
                     </Button>
                 </Header>
 
-                <Content style={{ padding: '20px 40px' }}>
+                <Content className='px-10 py-5'>
                     {selectedMenuKey === 'dashboard' && (
                         <>
                             <Title className="mb-8" level={3}>Dashboard</Title>
