@@ -16,18 +16,6 @@ export const Login: React.FC = () => {
 
 
     return (
-<<<<<<< HEAD
-            <Content style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "20px" }}>
-                <Row justify="center" style={{ width: "100%", maxWidth: "400px" }}>
-                    <Col span={24}>
-                        <Title level={2} style={{ textAlign: "center", marginBottom: "30px" }}>Connexion</Title>
-                        <Form
-                            name="login"
-                            initialValues={{ remember: true }}
-                            onFinish={onFinish}
-                            onFinishFailed={onFinishFailed}
-                            style={{ maxWidth: "100%" }}
-=======
         <Content className='flex justify-center p-5 items-center bg-white'>
             <Row justify="center" className='max-w-md w-full'>
                 <Col span={24}>
@@ -41,7 +29,6 @@ export const Login: React.FC = () => {
                         <Form.Item
                             name="username"
                             rules={[{ required: true, message: 'Veuillez entrer votre nom d\'utilisateur!' }]}
->>>>>>> guy
                         >
                             <Input
                                 size="large"
