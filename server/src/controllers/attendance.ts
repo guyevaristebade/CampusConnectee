@@ -1,7 +1,10 @@
-import {FeeDocument, IArrival, IDate, IDeparture, ResponseType} from "../types";
-import { Attendance } from "../models";
+import {FeeDocument, IArrival, IDate, IDeparture, IRangeDateType, ResponseType} from "../types";
+import { Attendance, Student } from "../models";
 import { getDate, timeDifferenceInDecimal, timeToDecimal } from "../utils";
 import moment from "moment";
+import { io } from "..";
+
+
 
 /**
  * Enregistre l'arrivée d'un étudiant.
@@ -33,9 +36,11 @@ export const registerStudentArrival = async (arrivalData: IArrival): Promise<Res
             is_registered: true
         });
 
+        
         await newArrivalRecord.save();
         responsePayload.msg = "Enregistré avec succès";
-        responsePayload.data = newArrivalRecord;
+        responsePayload.data = newArrivalRecord; 
+
     } catch (e: any) {
         responsePayload.status = 500;
         responsePayload.success = false;
@@ -98,6 +103,7 @@ export const registerStudentDeparture = async (departureData: IDeparture): Promi
         responsePayload.msg = "Enregistré avec succès";
         responsePayload.data = updatedDepartureRecord;
         
+        
     } catch (e: any) {
         responsePayload.status = 500;
         responsePayload.success = false;
@@ -106,6 +112,7 @@ export const registerStudentDeparture = async (departureData: IDeparture): Promi
 
     return responsePayload;
 };
+
 
 /**
  * Récupère les enregistrements d'émargement sur une période donnée.
@@ -130,30 +137,6 @@ export const fetchAttendanceRecordsByDate = async (dateFilter: IDate): Promise<R
     return responsePayload;
 };
 
-/**
- * Récupère tous les enregistrements d'émargement.
- *
- * @returns {Promise<ResponseType>} Un objet contenant le statut de la requête et les données récupérées.
- * */
-export const fetchAllAttendanceRecords = async (): Promise<ResponseType> => {
-    let responsePayload: ResponseType = {
-        success: true,
-        status: 200
-    };
-
-    try {
-        //populate({ path : "student_id", select : "-password"})
-        // Permet de retourner les informations de l'utilisation en enlevant le champ password
-        const attendanceRecords = await Attendance.find().populate({ path : "student_id", select : "-password"}).sort({date : -1})
-        responsePayload.data = attendanceRecords;
-    } catch (e: any) {
-        responsePayload.success = false;
-        responsePayload.status = 500;
-        responsePayload.msg = e.message;
-    }
-
-    return responsePayload;
-};
 
 
 /**
@@ -193,16 +176,17 @@ export const fetchAttendanceRecordsByStudentId = async (student_id: string): Pro
  *
  * @returns {Promise<ResponseType>} Un objet contenant le statut de la requête et les données récupérées.
  */
-export const getTotalHoursPerWeek = async () => {
+export const getTotalStudentHoursPerWeek = async () => {
     let responsePayload: ResponseType = {
         success: true,
         status: 200
     };
 
     try {
-
+        
         const startOfWeek = moment().isoWeekday(1).startOf('isoWeek').toDate(); // Lundi
         const endOfWeek = moment().isoWeekday(7).endOf('isoWeek').toDate(); // Dimanche
+        
 
         const totalHoursPerWeek = await Attendance.aggregate([
             {
@@ -218,27 +202,37 @@ export const getTotalHoursPerWeek = async () => {
             },
             {
                 $lookup: {
-                    from: 'users', // Nom de la collection à peupler
+                    from: 'students', // Nom de la collection à peupler
                     localField: '_id', // Champ dans Post
                     foreignField: '_id', // Champ dans User
-                    as: 'userDetails' // Nom du champ de sortie
+                    as: 'studentDetails' // Nom du champ de sortie
                 }
             },
             {
-                $unwind: { path: '$userDetails', preserveNullAndEmptyArrays: true } // Déplie les détails de l'utilisateur
+                $unwind: { path: '$studentDetails', preserveNullAndEmptyArrays: true } // Déplie les détails de l'utilisateur
             },
             {
                 $project: {
-                    totalHours: 1, // Garde le champ totalHours
-                    userDetails: {
-                        _id: 1,
-                        username: 1,
-                        permissions: 1,
-                    }
+                    totalHours: 1, // Garder le total des heures
+                    'studentDetails._id': 1, // Garder l'ID de l'étudiant
+                    'studentDetails.first_name': 1, // Garder le prénom de l'étudiant
+                    'studentDetails.last_name': 1, // Garder le nom de l'étudiant
                 }
+            },
+            {
+                $sort: { totalHours: -1 } // Trier par totalHours dans l'ordre décroissant
             }
-        ]);
-        responsePayload.data = totalHoursPerWeek;
+        ])
+
+        const newRecord = totalHoursPerWeek.map(data =>{
+            return {
+                _id: data._id,
+                first_name: data.studentDetails.first_name,
+                last_name: data.studentDetails.last_name,
+                total_hours: data.totalHours
+            }
+        })
+        responsePayload.data = newRecord;
 
     } catch (e: any) {
         responsePayload.success = false;
@@ -248,7 +242,6 @@ export const getTotalHoursPerWeek = async () => {
 
     return responsePayload;
 }
-
 
 
 /**
@@ -264,6 +257,7 @@ export const getTotalHoursPerWeekByStudent = async (student_id : string) : Promi
 
         const startOfWeek = moment().startOf('week').toDate();
         const endOfWeek = moment().endOf('week').toDate();
+
 
         const emargement = await Attendance.find<{ student_id: string; createdAt: Date }>({
             student_id,
@@ -284,7 +278,10 @@ export const getTotalHoursPerWeekByStudent = async (student_id : string) : Promi
 }
 
 
-export const getCurrentDayAttendance = async () : Promise<ResponseType> =>{
+/**
+ * Récupère les émargements de la journée
+ */
+export const fetchDailyAttendance = async () : Promise<ResponseType> =>{
 
     let responsePayload: ResponseType = {
         success: true,
@@ -292,8 +289,19 @@ export const getCurrentDayAttendance = async () : Promise<ResponseType> =>{
     };
     
     try{
-        const attendances = await Attendance.find({today_date : getDate()})
-        responsePayload.data = attendances
+        const attendances = await Attendance.find({today_date : getDate()}).populate('student_id').sort({first_name: -1})
+        const newAttendancesTable = attendances.map((attendance : any) => {
+            return {
+                _id: attendance._id,
+                last_name : attendance.student_id.last_name,
+                first_name : attendance.student_id.first_name,
+                arrival_time: attendance.arrival_time,
+                departure_time: attendance.departure_time,
+                total_hours: attendance.total_hours,
+                status: attendance.status,
+            }
+        })
+        responsePayload.data = newAttendancesTable
     }catch (e : any) {
         responsePayload.success = false;
         responsePayload.status = 500;
@@ -302,3 +310,38 @@ export const getCurrentDayAttendance = async () : Promise<ResponseType> =>{
 
     return responsePayload
 }
+
+
+//renvoyer des vrai date pour calculer ce qu'il y à faire 
+export const getAttendanceByRangeDate = async (dates: IRangeDateType): Promise<ResponseType> => {
+    let responsePayload : ResponseType = {
+        success : true,
+        status : 200
+    }
+
+    try {
+        const startDate = dates.start_date
+        const endDate = dates.end_date
+
+        const attendances = await Attendance.find({
+            createdAt : { $gte : startDate, $lte : endDate }
+        })  
+
+        if(attendances.length == 0) {
+            responsePayload.status = 404;
+            responsePayload.data = [];
+            return responsePayload;
+        }
+
+        responsePayload.data = attendances;
+
+    }catch (e : any) {
+        responsePayload.success = false;
+        responsePayload.status = 500;
+        responsePayload.msg = e.message;
+    }
+
+
+    return responsePayload
+}
+

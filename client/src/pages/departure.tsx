@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Layout, Form, Typography, Button, Row, Col, Input, Select, message } from "antd";
+import { Layout, Form, Typography, Row, Col, message } from "antd";
 import Confetti from 'react-confetti';
 import { IDeparture, IStudentType } from '../types';
 import { fetchAllStudent, registeredDeparture } from '../api';
+import { AttendanceForm, Panel } from '../components';
 
 const { Content } = Layout;
-const { Title } = Typography;
 
 export const DeparturePage: React.FC = () => {
     const [form] = Form.useForm();
@@ -41,7 +41,6 @@ export const DeparturePage: React.FC = () => {
                     form.resetFields();
                 }else{
                     message.error("Oups ! Une erreur s'est glissée par ici... Nos développeurs sont en mode super-héros, mais ils ont besoin de votre signal pour intervenir !");
-                    //message.error(data.msg)
                 }
             })
         
@@ -65,6 +64,7 @@ export const DeparturePage: React.FC = () => {
     },[])
 
     return (
+<<<<<<< HEAD
         <Content style={{ padding: "20px",display: "flex", justifyContent: "center", alignItems: "center" }}>
             {/* Affiche les confettis si showConfetti est true */}
             {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
@@ -85,42 +85,72 @@ export const DeparturePage: React.FC = () => {
                         <Form.Item
                             name="student_id"
                             rules={[{ required: true, message: 'Veuillez remplir ce champ' }]}
-                        >
-                            <Select
-                                options={studentOptions}
-                                size='large'
-                                placeholder="Choisissez un utilisateur"
-                                showSearch
-                                style={{ textAlign: 'left' }}
-                                filterOption={(input,option) => option ? option.label.includes(input.toLowerCase()): false}
-                                filterSort={(a, b) => {
-                                    const nameA = `${a.label}`.toLowerCase(); 
-                                    const nameB = `${b.label}`.toLowerCase(); 
-                                    return nameA.localeCompare(nameB); 
-                                }}
-                            />
-                        </Form.Item>
+=======
+        <>
+            <Panel/>
+            <Content className='flex justify-center py-10 bg-white p-5'>
+                {/* Affiche les confettis si showConfetti est true */}
+                {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
 
-                        <Form.Item
-                            name="departure_time"
-                            rules={[{ required: true, message: 'Veuillez remplir ce champ' }]}
+                <Row justify="center"  className='text-center max-w-md w-full'>
+                    <Col span={24}>
+                        {/* <Form
+                            form={form}
+                            name="departure"
+                            initialValues={{ remember: true }}
+                            onFinish={onFinish}
+                            className='w-full'
+>>>>>>> guy
                         >
-                            <Input
-                                type='time'
-                                size="large"
-                                placeholder="08:24"
-                                style={{ fontSize: "18px", padding: "10px" }}
-                            />
-                        </Form.Item>
+                            <Form.Item
+                                name="student_id"
+                                rules={[{ required: true, message: 'Veuillez remplir ce champ' }]}
+                            >
+                                <Select
+                                    options={studentOptions}
+                                    size='large'
+                                    placeholder="Choisissez un utilisateur"
+                                    showSearch
+                                    className='text-left'
+                                    filterOption={(input,option) => option ? option.label.includes(input.toLowerCase()): false}
+                                    filterSort={(a, b) => {
+                                        const nameA = `${a.label}`.toLowerCase(); 
+                                        const nameB = `${b.label}`.toLowerCase(); 
+                                        return nameA.localeCompare(nameB); 
+                                    }}
+                                />
+                            </Form.Item>
 
-                        <Form.Item style={{ textAlign: "center", marginTop: "20px" }}>
-                            <Button type="primary" htmlType="submit" size="large" style={{ width: "100%", fontSize: "18px", backgroundColor: "red" }}>
-                                Arrivé
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </Col>
-            </Row>
-        </Content>
+                            <Form.Item
+                                name="departure_time"
+                                rules={[{ required: true, message: 'Veuillez remplir ce champ' }]}
+                            >
+                                <Input
+                                    type='time'
+                                    size="large"
+                                    placeholder="08:24"
+                                    className='p-2.5 text-lg'
+                                />
+                            </Form.Item>
+
+                            <Form.Item className='text-center mt-5'>
+                                <Button type="text" htmlType="submit" size="large"  className='text-lg text-white w-full bg-[#E1000F]'>
+                                    Départ
+                                </Button>
+                            </Form.Item>
+                        </Form> */}
+                        <AttendanceForm 
+                            firstFieldName='student_id'
+                            secondFieldName='departure_time'
+                            buttonColor='#E1000F' 
+                            buttonText='Départ' 
+                            onFinish={onFinish} 
+                            studentOptions={studentOptions}
+                            form={form}
+                        />
+                    </Col>
+                </Row>
+            </Content>
+        </>
     );
 };

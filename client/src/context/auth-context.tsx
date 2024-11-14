@@ -1,17 +1,15 @@
-import React, {createContext, useEffect, useState} from "react";
-import {useLocation, useNavigate} from "react-router-dom";
+import React, { createContext, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {useQuery} from "../hooks";
-import {isLoggedIn, login as loginApi,logout as logoutApi, register as registerApi} from '../api'
-import {IChildren, IUserData} from "../types";
-
-
-
+import { isLoggedIn, login as loginApi, logout as logoutApi, register as registerApi } from '../api';
+import { IChildren, IUserData, UserLogin } from "../types";
+import { message } from "antd";
 
 
 
 interface AuthProviderProps {
     user: IUserData | null;
-    login: (username: string, password: string) => void;
+    login: (userData : UserLogin) => void;
     register: (username: string, password: string, permissions : string) => void;
     logout: () => void;
 }
@@ -19,44 +17,47 @@ interface AuthProviderProps {
 
 export const AuthContext : React.Context<AuthProviderProps> = createContext<AuthProviderProps>({
     user: null,
-    login: (username: string, password: string) => {},
+    login: (userData : UserLogin) => {},
     register: (username: string, password: string) => {},
     logout : () => {}
 });
 
 
-export const AuthContextProvider =  ({children}: IChildren) => {
-    const [user, setUser] = useState<IUserData | null >({_id: '3', username: 'Guy', permissions: 'Responsible'})
+export const AuthContextProvider =  ({ children } : IChildren) => {
+    const [user, setUser] = useState<IUserData | null>(null);
     const navigate = useNavigate()
     const location = useLocation()
     const query = useQuery();
 
 
     const redirect = () => {
-        navigate(query.get('redirect_uri') || '/');
+        navigate(query.get('redirect_uri') || '/dashboard'); // redirect to dashboard
     }
 
 
-    const login = async (username: string, password: string) => {
-        const response = await loginApi(username, password);
-        if (response.success) {
-            const user = response.data.user; 
+    const login = async  (userData : UserLogin) => {
+
+        const data = await loginApi(userData)
+        if(data.success){
+            const user = data.data.user; 
             setUser(user);
             redirect();
-        } else {
+        }else{
+            message.error(data.msg)
             setUser(null);
         }
-        return response;
     };
+    
 
     const register = async (username: string, password: string, permissions : string) => {
         // TODO
-        // const response = await registerApi(username, password, permissions);
+        
     }
 
     const logout = async () => {
         await logoutApi()
         setUser(null);
+        navigate('/login');
     };
 
     // useEffect(() => {
@@ -74,6 +75,7 @@ export const AuthContextProvider =  ({children}: IChildren) => {
     //         })
     // }, []);
 
+    
     useEffect(() => {
         if (location.pathname === '/logout') {
             logout()

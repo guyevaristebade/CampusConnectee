@@ -1,29 +1,22 @@
 import React from 'react';
-import {Form, Input, Button, Typography, Row, Col, Layout, message} from 'antd';
-import {useAuth} from "../hooks";
+import { useAuth } from "../hooks";
+import { UserLogin } from '../types';
+import { Form, Input, Button, Typography, Row, Col, Layout } from 'antd';
 
 const { Title } = Typography;
 const { Content } = Layout;
 
-interface userData{
-    username: string;
-    password: string;
-}
-
 export const Login: React.FC = () => {
 
     const { login } = useAuth();
-    const onFinish = async (values: userData) => {
-        //if (!values.password || !values.username) return;
-        const response = await login(values.username, values.password);
-        console.log(response);
+
+    const onSubmit = async (values: UserLogin) => {
+        await login(values);  
     };
 
-    const onFinishFailed = (errorInfo: any) => {
-        console.log('Failed:', errorInfo);
-    };
 
     return (
+<<<<<<< HEAD
             <Content style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "20px" }}>
                 <Row justify="center" style={{ width: "100%", maxWidth: "400px" }}>
                     <Col span={24}>
@@ -34,38 +27,48 @@ export const Login: React.FC = () => {
                             onFinish={onFinish}
                             onFinishFailed={onFinishFailed}
                             style={{ maxWidth: "100%" }}
+=======
+        <Content className='flex justify-center p-5 items-center bg-white'>
+            <Row justify="center" className='max-w-md w-full'>
+                <Col span={24}>
+                    <Title level={2} className='text-center mb-10'>Connexion</Title>
+                    <Form
+                        name="login-form"
+                        initialValues={{ remember: true }}
+                        onFinish={onSubmit}
+                        className='w-full'
+                    >
+                        <Form.Item
+                            name="username"
+                            rules={[{ required: true, message: 'Veuillez entrer votre nom d\'utilisateur!' }]}
+>>>>>>> guy
                         >
-                            <Form.Item
-                                name="username"
-                                rules={[{ required: true, message: 'Veuillez entrer votre nom d\'utilisateur!' }]}
-                            >
-                                <Input
-                                    size="large"
-                                    placeholder="Guy"
-                                    style={{ fontSize: "18px", padding: "10px" }}
-                                />
-                            </Form.Item>
+                            <Input
+                                size="large"
+                                placeholder="Guy"
+                                className='p-2.5 text-lg'
+                            />
+                        </Form.Item>
 
-                            <Form.Item
-                                name="password"
-                                rules={[{ required: true, message: 'Veuillez entrer votre mot de passe!' }]}
-                            >
-                                <Input.Password
-                                    size="large"
-                                    placeholder="Mot de passe"
-                                    style={{ fontSize: "18px", padding: "10px" }}
-                                />
-                            </Form.Item>
+                        <Form.Item
+                            name="password"
+                            rules={[{ required: true, message: 'Veuillez entrer votre mot de passe!' }]}
+                        >
+                            <Input.Password
+                                size="large"
+                                placeholder="Mot de passe"
+                                className='p-2.5 text-lg'
+                            />
+                        </Form.Item>
 
-                            <Form.Item style={{ textAlign: "center", marginTop: "20px" }}>
-                                <Button type="primary" htmlType="submit" size="large" style={{ width: "100%", fontSize: "18px" }}>
-                                    Se connecter
-                                </Button>
-                            </Form.Item>
-                        </Form>
-                    </Col>
-                </Row>
-            </Content>
+                        <Form.Item className='text-center mt-5'>
+                            <Button type="primary" htmlType="submit" size="large" className='w-full text-lg'>
+                                Se connecter
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Col>
+            </Row>
+        </Content>
     );
 };
-

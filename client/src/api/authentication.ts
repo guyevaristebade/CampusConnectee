@@ -1,10 +1,10 @@
 import { instance } from "../utils";
-import { LoginResponseData, ResponseType } from "../types";
+import { ResponseType, UserLogin } from "../types";
 
 // login
-export const login = async (username: string, password: string) : Promise<ResponseType<any>> => {
+export const login = async (userData : UserLogin) : Promise<ResponseType<any>> => {
   try {
-    const response = await instance.post('/auth/login', { username , password});
+    const response = await instance.post('/auth/login', userData);
     return response.data;
   } catch (error : any) {
     return  error.response.data;
@@ -25,7 +25,7 @@ export const register = async (username: string, password: string, permissions :
 // logout
 export const logout = async () : Promise<ResponseType<any>> =>{
     try {
-      const response = await instance.post('/auth/logout');
+      const response = await instance.delete('/auth/logout');
       return response.data;
     } catch (error : any) {
       return  error.response.data;

@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+<<<<<<< HEAD
 import { Layout, Form, Typography, Button, Row, Col, Input, Select, message, TimePicker } from "antd";
+=======
+import { Layout, Form, Row, Col, message } from "antd";
+>>>>>>> guy
 import Confetti from 'react-confetti';
 import { IArrival, IStudentType } from '../types';
 import { fetchAllStudent, registeredArrival } from '../api';
-
+import { AttendanceForm, Panel } from '../components';
 const { Content } = Layout;
-const { Title } = Typography;
 
 export const ArrivalPage: React.FC = () => {
     const [form] = Form.useForm();
@@ -39,16 +42,13 @@ export const ArrivalPage: React.FC = () => {
                     message.success(" 🎉 Vous êtes officiellement arrivé ! Félicitations, vous avez réussi à vous lever ce matin 😉");
                     
                     setShowConfetti(true);
-                    setTimeout(() => setShowConfetti(false), 3000); // on montre les confétti pendant 3s
+                    setTimeout(() => setShowConfetti(false), 3000); 
                     form.resetFields();
                 }else{
                     message.error("Oups ! Une erreur s'est glissée par ici... Nos développeurs sont en mode super-héros, mais ils ont besoin de votre signal pour intervenir !");
-                    //message.error(data.msg)
-                    
                 }
             })
     };
-
 
     useEffect(() => {
         window.addEventListener("resize", handleResize);
@@ -56,7 +56,6 @@ export const ArrivalPage: React.FC = () => {
     }, [handleResize]);
 
     useEffect(() => {
-        // Récupère les étudiants
         fetchAllStudent()
             .then((data) => {
                 if(data.success){
@@ -69,6 +68,7 @@ export const ArrivalPage: React.FC = () => {
 
 
     return (
+<<<<<<< HEAD
         <Content style={{ padding: "20px",display: "flex", justifyContent: "center", alignItems: "center" }}>
             {/* Affiche les confettis si showConfetti est true */}
             {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
@@ -116,15 +116,73 @@ export const ArrivalPage: React.FC = () => {
                                 style={{ fontSize: "18px", padding: "10px" }}
                             />
                         </Form.Item>
+=======
+        <>
+            <Panel/>
+            <Content className='flex justify-center py-10 bg-white'>
+                
+                {/* Affiche les confettis si showConfetti est true */}
+                {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
+                <Row  className='text-center max-w-md w-full'> {/* max-w-md : max-width : 448px */}
+                    <Col span={24}>
+                        {/* <Form
+                            form={form}
+                            name="login-form"
+                            initialValues={{ remember: true }}
+                            onFinish={onFinish}
+                            className='w-full max-md:px-2' // width="100%"
+                        >
+                            <Form.Item
+                                name="student_id"
+                                rules={[{ required: true, message: 'Veuillez entrer votre nom d\'utilisateur!' }]}
+                            >
+                                <Select
+                                    size='large'
+                                    placeholder="Choisissez un utilisateur"
+                                    showSearch
+                                    options={studentOptions}
+                                    className='text-left'
+                                    filterOption={(input, option) => option ? option.label.includes(input.toLowerCase()) : false} // permet de ranger les nom des étudiants suivant un ordre alphabétique
+        
+                                    filterSort={(a, b) => {
+                                        const nameA = `${a.label}`.toLowerCase(); 
+                                        const nameB = `${b.label}`.toLowerCase(); 
+                                        return nameA.localeCompare(nameB); 
+                                    }}
+                                />
+                            </Form.Item>
 
-                        <Form.Item style={{ textAlign: "center", marginTop: "20px" }}>
-                            <Button type="primary" htmlType="submit" size="large" style={{ width: "100%", fontSize: "18px", backgroundColor: "green" }}>
-                                Arrivé
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </Col>
-            </Row>
-        </Content>
+                            <Form.Item
+                                name="arrival_time"
+                                rules={[{ required: true, message: 'Veuillez remplir ce champ' }]}
+                            >
+                                <Input
+                                    type='time'
+                                    size="large"
+                                    placeholder="08:24"
+                                    className='p-2.5 text-lg'
+                                />
+                            </Form.Item>
+>>>>>>> guy
+
+                            <Form.Item style={{ textAlign: "center", marginTop: "20px" }} className='text-center'>
+                                <Button type="text" htmlType="submit" size="large" className='w-full text-lg bg-[#000091] text-white'>
+                                    Arrivé
+                                </Button>
+                            </Form.Item>
+                        </Form> */}
+                        <AttendanceForm 
+                            onFinish={onFinish} 
+                            firstFieldName='student_id' 
+                            secondFieldName='arrival_time' 
+                            studentOptions={studentOptions} 
+                            buttonText='Arrivé' 
+                            buttonColor='#000091'
+                            form={form}
+                        />
+                    </Col>
+                </Row>
+            </Content>
+        </>
     );
 };

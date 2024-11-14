@@ -6,10 +6,7 @@ import {authenticated, verifyIp} from "../middlewares";
 import {User} from "../models";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import {generatePassword, getCookieOptions, hashPassword} from "../utils";
-import * as fs from "fs";
-import path from 'path'
-import { verify } from 'crypto';
+import {getCookieOptions} from "../utils";
 
 
 const useSecureAuth : boolean = process.env.NODE_ENV !== 'development';
@@ -22,7 +19,7 @@ UserRouter.post('/register',async (req : Request, res: Response) => {
     res.status(response.status as number).send(response);
 })
 
-UserRouter.post('/login', verifyIp , async (req: Request, res: Response) => {
+UserRouter.post('/login' , async (req: Request, res: Response) => {
     let response: ResponseType = {
         success: true,
     };

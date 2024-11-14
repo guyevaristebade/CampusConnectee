@@ -1,44 +1,22 @@
 import React from 'react'
-import { Switch, Layout } from 'antd'
+import { Switch, Layout, Image } from 'antd'
 import { Link } from 'react-router-dom'
 
-const {Header } = Layout
+const { Header } = Layout
+
 export const NavBar = () => {
     return (
-        <Header style={{
-            backgroundColor: "#000091",            padding: "0 20px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between"
-        }}>
-            {/* Logo et titre à gauche */}
-            <div style={{
-                color: "#ffffff",
-                fontWeight: "bold",
-                fontSize: "1.5rem",
-                display: "flex",
-                alignItems: "center",
-                gap: "10px"
-            }}>
-                <Link to="/" style={{ color: "#ffffff", textDecoration: "none" , fontSize: "clamp(14px, 2vw, 16px)"}}>
-                    Campus Connecté de Nemours
-                </Link>
+        <div className='bg-white shadow-lg flex items-center gap-4 w-full rounded-md transition-all p-2'>
+            <Image
+                src="logo_pays_nemours.jpg"
+                width={100}
+                preview={false}
+                // className="rounded-full sm:w-32 md:w-40 lg:w-48"
+                style={{ objectFit: 'contain' }}
+            />
+            <div className='text-lg md:text-2xl font-bold text-gray-800'>
+                Campus Connecté - Nemours
             </div>
-
-            {/* Boutons et switch à droite, avec flex wrap pour la responsivité */}
-            <div style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                flexWrap: "wrap" 
-            }}>
-                <Switch
-                    // checked={darkMode}
-                    // onChange={toggleDarkMode}
-                    checkedChildren="🌙"
-                    unCheckedChildren="☀️"
-                />
-            </div>
-        </Header>
+        </div>
     )
 }
