@@ -142,7 +142,7 @@ export const ResponsiblePage: React.FC = () => {
                 <div className="logo text-black mb-6 text-center p-5">
                     <Image width={200} src="/logo_cc_nemours.jpg" preview={false} />
                 </div>
-                <Menu mode="inline" selectedMenuKeys={[selectedMenuKey]} onClick={onMenuClick} items={menuItems} className="bg-white" />
+                <Menu mode="inline" selectedKeys={[selectedMenuKey]} onClick={onMenuClick} items={menuItems} className="bg-white" />
             </Sider>
 
             <Layout>
