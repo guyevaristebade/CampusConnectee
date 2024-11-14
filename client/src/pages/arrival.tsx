@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-<<<<<<< HEAD
-import { Layout, Form, Typography, Button, Row, Col, Input, Select, message, TimePicker } from "antd";
-=======
 import { Layout, Form, Row, Col, message } from "antd";
->>>>>>> guy
 import Confetti from 'react-confetti';
 import { IArrival, IStudentType } from '../types';
 import { fetchAllStudent, registeredArrival } from '../api';
@@ -68,55 +64,6 @@ export const ArrivalPage: React.FC = () => {
 
 
     return (
-<<<<<<< HEAD
-        <Content style={{ padding: "20px",display: "flex", justifyContent: "center", alignItems: "center" }}>
-            {/* Affiche les confettis si showConfetti est true */}
-            {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
-
-            <Row justify="center" style={{ textAlign: "center", maxWidth : "400px", width: "100%" }}>
-                <Col span={24}>
-                    <Title level={3} style={{ marginBottom: "20px", fontSize: "clamp(20px, 4vw, 28px)" }}>
-                        Bienvenu sur le campus connecté
-                    </Title>
-
-                    <Form
-                        form={form}
-                        name="login"
-                        initialValues={{ remember: true }}
-                        onFinish={onFinish}
-                        style={{ maxWidth: "100%" }}
-                    >
-                        <Form.Item
-                            name="student_id"
-                            rules={[{ required: true, message: 'Veuillez entrer     votre nom d\'utilisateur!' }]}
-                        >
-                            <Select
-                                size='large'
-                                placeholder="Choisissez un utilisateur"
-                                showSearch
-                                options={studentOptions}
-                                style={{ textAlign: 'left',  }}
-                                filterOption={(input, option) => option ? option.label.includes(input.toLowerCase()) : false}
-    
-                                filterSort={(a, b) => {
-                                    const nameA = `${a.label}`.toLowerCase(); 
-                                    const nameB = `${b.label}`.toLowerCase(); 
-                                    return nameA.localeCompare(nameB); // trier par ordre alphabétique
-                                }}
-                            />
-                        </Form.Item>
-
-                        <Form.Item
-                            name="arrival_time"
-                            rules={[{ required: true, message: 'Veuillez remplir ce champ' }]}
-                        >
-                            <Input
-                                type='time'
-                                placeholder="08:24"
-                                style={{ fontSize: "18px", padding: "10px" }}
-                            />
-                        </Form.Item>
-=======
         <>
             <Panel/>
             <Content className='flex justify-center py-10 bg-white'>
@@ -125,52 +72,6 @@ export const ArrivalPage: React.FC = () => {
                 {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
                 <Row  className='text-center max-w-md w-full'> {/* max-w-md : max-width : 448px */}
                     <Col span={24}>
-                        {/* <Form
-                            form={form}
-                            name="login-form"
-                            initialValues={{ remember: true }}
-                            onFinish={onFinish}
-                            className='w-full max-md:px-2' // width="100%"
-                        >
-                            <Form.Item
-                                name="student_id"
-                                rules={[{ required: true, message: 'Veuillez entrer votre nom d\'utilisateur!' }]}
-                            >
-                                <Select
-                                    size='large'
-                                    placeholder="Choisissez un utilisateur"
-                                    showSearch
-                                    options={studentOptions}
-                                    className='text-left'
-                                    filterOption={(input, option) => option ? option.label.includes(input.toLowerCase()) : false} // permet de ranger les nom des étudiants suivant un ordre alphabétique
-        
-                                    filterSort={(a, b) => {
-                                        const nameA = `${a.label}`.toLowerCase(); 
-                                        const nameB = `${b.label}`.toLowerCase(); 
-                                        return nameA.localeCompare(nameB); 
-                                    }}
-                                />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="arrival_time"
-                                rules={[{ required: true, message: 'Veuillez remplir ce champ' }]}
-                            >
-                                <Input
-                                    type='time'
-                                    size="large"
-                                    placeholder="08:24"
-                                    className='p-2.5 text-lg'
-                                />
-                            </Form.Item>
->>>>>>> guy
-
-                            <Form.Item style={{ textAlign: "center", marginTop: "20px" }} className='text-center'>
-                                <Button type="text" htmlType="submit" size="large" className='w-full text-lg bg-[#000091] text-white'>
-                                    Arrivé
-                                </Button>
-                            </Form.Item>
-                        </Form> */}
                         <AttendanceForm 
                             onFinish={onFinish} 
                             firstFieldName='student_id' 

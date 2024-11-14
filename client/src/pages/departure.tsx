@@ -64,28 +64,6 @@ export const DeparturePage: React.FC = () => {
     },[])
 
     return (
-<<<<<<< HEAD
-        <Content style={{ padding: "20px",display: "flex", justifyContent: "center", alignItems: "center" }}>
-            {/* Affiche les confettis si showConfetti est true */}
-            {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
-
-            <Row justify="center" style={{ textAlign: "center", maxWidth : "400px", width: "100%" }}>
-                <Col span={24}>
-                    <Title level={3} style={{ marginBottom: "20px", fontSize: "clamp(20px, 4vw, 28px)" }}>
-                        Vous êtes sur le départ ?
-                    </Title>
-
-                    <Form
-                        form={form}
-                        name="departure"
-                        initialValues={{ remember: true }}
-                        onFinish={onFinish}
-                        style={{ maxWidth: "100%" }}
-                    >
-                        <Form.Item
-                            name="student_id"
-                            rules={[{ required: true, message: 'Veuillez remplir ce champ' }]}
-=======
         <>
             <Panel/>
             <Content className='flex justify-center py-10 bg-white p-5'>
@@ -94,51 +72,6 @@ export const DeparturePage: React.FC = () => {
 
                 <Row justify="center"  className='text-center max-w-md w-full'>
                     <Col span={24}>
-                        {/* <Form
-                            form={form}
-                            name="departure"
-                            initialValues={{ remember: true }}
-                            onFinish={onFinish}
-                            className='w-full'
->>>>>>> guy
-                        >
-                            <Form.Item
-                                name="student_id"
-                                rules={[{ required: true, message: 'Veuillez remplir ce champ' }]}
-                            >
-                                <Select
-                                    options={studentOptions}
-                                    size='large'
-                                    placeholder="Choisissez un utilisateur"
-                                    showSearch
-                                    className='text-left'
-                                    filterOption={(input,option) => option ? option.label.includes(input.toLowerCase()): false}
-                                    filterSort={(a, b) => {
-                                        const nameA = `${a.label}`.toLowerCase(); 
-                                        const nameB = `${b.label}`.toLowerCase(); 
-                                        return nameA.localeCompare(nameB); 
-                                    }}
-                                />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="departure_time"
-                                rules={[{ required: true, message: 'Veuillez remplir ce champ' }]}
-                            >
-                                <Input
-                                    type='time'
-                                    size="large"
-                                    placeholder="08:24"
-                                    className='p-2.5 text-lg'
-                                />
-                            </Form.Item>
-
-                            <Form.Item className='text-center mt-5'>
-                                <Button type="text" htmlType="submit" size="large"  className='text-lg text-white w-full bg-[#E1000F]'>
-                                    Départ
-                                </Button>
-                            </Form.Item>
-                        </Form> */}
                         <AttendanceForm 
                             firstFieldName='student_id'
                             secondFieldName='departure_time'

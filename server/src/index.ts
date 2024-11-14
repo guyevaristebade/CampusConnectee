@@ -42,12 +42,8 @@ app.use(compression())
 app.use(bodyParser.json());
 app.use(cookieParser())
 app.use(cors({
-<<<<<<< HEAD
-    origin: "http://localhost:3000",
-=======
     origin: allowedOrigins,
     methods: ['GET', 'POST','DELETE', 'OPTIONS', 'PUT'],
->>>>>>> guy
     credentials: true
 }));
 
