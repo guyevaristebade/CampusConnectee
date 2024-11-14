@@ -214,6 +214,9 @@ export const getTotalStudentHoursPerWeek = async () => {
                     'studentDetails.first_name': 1, // Garder le prénom de l'étudiant
                     'studentDetails.last_name': 1, // Garder le nom de l'étudiant
                 }
+            },
+            {
+                $sort: { totalHours: -1 } // Trier par totalHours dans l'ordre décroissant
             }
         ])
 
@@ -282,7 +285,7 @@ export const fetchDailyAttendance = async () : Promise<ResponseType> =>{
     };
     
     try{
-        const attendances = await Attendance.find({today_date : getDate()}).populate('student_id')
+        const attendances = await Attendance.find({today_date : getDate()}).populate('student_id').sort({first_name: -1})
         const newAttendancesTable = attendances.map((attendance : any) => {
             return {
                 _id: attendance._id,
@@ -292,7 +295,6 @@ export const fetchDailyAttendance = async () : Promise<ResponseType> =>{
                 departure_time: attendance.departure_time,
                 total_hours: attendance.total_hours,
                 status: attendance.status,
-                is_registered: attendance.is_registered
             }
         })
         responsePayload.data = newAttendancesTable
