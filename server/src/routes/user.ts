@@ -13,7 +13,6 @@ const useSecureAuth : boolean = process.env.NODE_ENV !== 'development';
 
 export const UserRouter : Router = express.Router();
 
-
 UserRouter.post('/register',async (req : Request, res: Response) => {
     const response: ResponseType = await CreateUser(req.body)
     res.status(response.status as number).send(response);
