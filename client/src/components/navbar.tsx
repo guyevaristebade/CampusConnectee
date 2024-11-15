@@ -1,8 +1,6 @@
 import React from 'react'
-import { Switch, Layout, Image } from 'antd'
-import { Link } from 'react-router-dom'
+import { Image } from 'antd'
 
-const { Header } = Layout
 
 export const NavBar = () => {
     return (

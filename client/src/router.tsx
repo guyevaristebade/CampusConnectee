@@ -40,7 +40,6 @@ export const AppRouter : React.FC = () =>{
                     }
                 />            
             </Route>
-            <Route path="/not-authorized" element={<NotAuthorizedPage />} />
 
             <Route
                 path='dashboard'
@@ -50,6 +49,8 @@ export const AppRouter : React.FC = () =>{
                     </AuthContextProvider>
                 }
             />
+            
+            <Route path="/not-authorized" element={<NotAuthorizedPage />} />
             <Route path="maintenance"  element={<MaintenancePage/>} />
             <Route path="*"  element={<Unknown/>} />
         </Routes>
