@@ -1,7 +1,7 @@
 import express, { Express } from 'express';
-import { connectDB, createStudentWithCsvFile } from "./utils";
-import {FeeRouter, StudentRouter, UserRouter} from "./routes";
-import compression from 'compression'
+import { connectDB } from "./utils";
+import { FeeRouter, StudentRouter, UserRouter } from "./routes";
+import compression from 'compression';
 import cookieParser from "cookie-parser";
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
@@ -11,58 +11,51 @@ import { createServer } from 'http';
 
 dotenv.config();
 
-const PORT = process.env.PORT;
-const filePath  = process.env.FILE_PATH as string;
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || []
+const PORT = process.env.PORT || 5000;
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
 
-
-const app : Express = express();
+const app: Express = express();
 const server = createServer(app);
+
+// Configuration Socket.IO avec CORS
 export const io = new Server(server, {
     cors: {
-        origin: allowedOrigins, 
-        methods: ['GET', 'POST','DELETE','PUT'],
+        origin: allowedOrigins,
+        methods: ['GET', 'POST', 'DELETE', 'PUT', 'OPTIONS'],
         credentials: true,
         allowedHeaders: ['Content-Type', 'Authorization'],
     },
-    transports: ['websocket', 'polling'], // Active WebSocket et fallback sur polling
+    transports: ['websocket', 'polling'], // WebSocket avec fallback
 });
 
-io.on('connection',(socket) =>{
-    console.log('New client connected'); // 
-
+io.on('connection', (socket) => {
+    console.log('New client connected');
     socket.on('disconnect', () => {
-        console.log('Client déconnecté');
-    }); 
+        console.log('Client disconnected');
+    });
+});
 
-    io.emit("broadcast_message","Message received");
-} )
-
-
-
-app.use(compression())
+// Middlewares globaux
+app.use(compression());
 app.use(bodyParser.json());
-app.use(cookieParser())
+app.use(cookieParser());
 app.use(cors({
     origin: allowedOrigins,
-    methods: ['GET', 'POST','DELETE', 'OPTIONS', 'PUT'],
+    methods: ['GET', 'POST', 'DELETE', 'PUT', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+app.options('*', cors()); // Support des requêtes OPTIONS
 
-app.options('*', cors({
-    origin: allowedOrigins,
-    methods: ['GET', 'POST', 'DELETE', 'OPTIONS', 'PUT'],
-    credentials: true,
-}));
+// Routes
+app.use('/api/auth', UserRouter);
+app.use('/api/attendance', FeeRouter);
+app.use('/api/student', StudentRouter);
 
-app.use('/api/auth', UserRouter)
-app.use('/api/attendance', FeeRouter)
-app.use('/api/student', StudentRouter)
-
+// Connexion à la base de données
 connectDB();
 
-
+// Lancement du serveur
 server.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on port: ${PORT}`);
 });
