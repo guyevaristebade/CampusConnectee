@@ -62,7 +62,7 @@ export const AuthContextProvider =  ({ children } : IChildren) => {
 
     useEffect(() => {
         isLoggedIn()
-            .then((data ) => {
+            .then((data) => {
                 if (data.success && data.data?.user) {
                     const user = data.data.user
                     setUser(user);

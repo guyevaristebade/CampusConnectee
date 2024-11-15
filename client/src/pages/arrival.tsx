@@ -4,9 +4,14 @@ import Confetti from 'react-confetti';
 import { IArrival, IStudentType } from '../types';
 import { fetchAllStudent, registeredArrival } from '../api';
 import { AttendanceForm, Panel } from '../components';
+import { useLocation } from '../context';
+import { useNavigate } from 'react-router-dom';
 const { Content } = Layout;
 
 export const ArrivalPage: React.FC = () => {
+    const { isAtCampus } = useLocation();
+    const navigate = useNavigate();
+
     const [form] = Form.useForm();
     const [showConfetti, setShowConfetti] = useState(false);
     const [windowSize, setWindowSize] = useState<{ width: number; height: number }>({
@@ -62,6 +67,13 @@ export const ArrivalPage: React.FC = () => {
             })
     },[])
 
+
+    useEffect(() => {
+        if (!isAtCampus) {
+            navigate("/not-authorized");
+        }
+    }, [isAtCampus, navigate]);
+
     return (
         <>
             <Panel/>
@@ -71,51 +83,6 @@ export const ArrivalPage: React.FC = () => {
                 {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
                 <Row  className='text-center max-w-md w-full'> {/* max-w-md : max-width : 448px */}
                     <Col span={24}>
-                        {/* <Form
-                            form={form}
-                            name="login-form"
-                            initialValues={{ remember: true }}
-                            onFinish={onFinish}
-                            className='w-full max-md:px-2' // width="100%"
-                        >
-                            <Form.Item
-                                name="student_id"
-                                rules={[{ required: true, message: 'Veuillez entrer votre nom d\'utilisateur!' }]}
-                            >
-                                <Select
-                                    size='large'
-                                    placeholder="Choisissez un utilisateur"
-                                    showSearch
-                                    options={studentOptions}
-                                    className='text-left'
-                                    filterOption={(input, option) => option ? option.label.includes(input.toLowerCase()) : false} // permet de ranger les nom des étudiants suivant un ordre alphabétique
-        
-                                    filterSort={(a, b) => {
-                                        const nameA = `${a.label}`.toLowerCase(); 
-                                        const nameB = `${b.label}`.toLowerCase(); 
-                                        return nameA.localeCompare(nameB); 
-                                    }}
-                                />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="arrival_time"
-                                rules={[{ required: true, message: 'Veuillez remplir ce champ' }]}
-                            >
-                                <Input
-                                    type='time'
-                                    size="large"
-                                    placeholder="08:24"
-                                    className='p-2.5 text-lg'
-                                />
-                            </Form.Item>
-
-                            <Form.Item style={{ textAlign: "center", marginTop: "20px" }} className='text-center'>
-                                <Button type="text" htmlType="submit" size="large" className='w-full text-lg bg-[#000091] text-white'>
-                                    Arrivé
-                                </Button>
-                            </Form.Item>
-                        </Form> */}
                         <AttendanceForm 
                             onFinish={onFinish} 
                             firstFieldName='student_id' 

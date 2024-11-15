@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Layout, Form, Typography, Row, Col, message } from "antd";
+import { Layout, Form, Typography, Row, Col, message, Spin } from "antd";
 import Confetti from 'react-confetti';
 import { IDeparture, IStudentType } from '../types';
 import { fetchAllStudent, registeredDeparture } from '../api';
 import { AttendanceForm, Panel } from '../components';
+import { useLocation } from '../context';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const { Content } = Layout;
 
 export const DeparturePage: React.FC = () => {
+    const { isAtCampus } = useLocation();
+    const navigate = useNavigate();
+
     const [form] = Form.useForm();
     const [showConfetti, setShowConfetti] = useState(false);
     const [windowSize, setWindowSize] = useState<{ width: number; height: number }>({
@@ -63,6 +68,15 @@ export const DeparturePage: React.FC = () => {
             })
     },[])
 
+
+    useEffect(() => {
+
+        if (!isAtCampus) {
+            navigate("/not-authorized");
+        }
+    }, [isAtCampus, navigate]);
+
+
     return (
         <>
             <Panel/>
@@ -72,50 +86,7 @@ export const DeparturePage: React.FC = () => {
 
                 <Row justify="center"  className='text-center max-w-md w-full'>
                     <Col span={24}>
-                        {/* <Form
-                            form={form}
-                            name="departure"
-                            initialValues={{ remember: true }}
-                            onFinish={onFinish}
-                            className='w-full'
-                        >
-                            <Form.Item
-                                name="student_id"
-                                rules={[{ required: true, message: 'Veuillez remplir ce champ' }]}
-                            >
-                                <Select
-                                    options={studentOptions}
-                                    size='large'
-                                    placeholder="Choisissez un utilisateur"
-                                    showSearch
-                                    className='text-left'
-                                    filterOption={(input,option) => option ? option.label.includes(input.toLowerCase()): false}
-                                    filterSort={(a, b) => {
-                                        const nameA = `${a.label}`.toLowerCase(); 
-                                        const nameB = `${b.label}`.toLowerCase(); 
-                                        return nameA.localeCompare(nameB); 
-                                    }}
-                                />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="departure_time"
-                                rules={[{ required: true, message: 'Veuillez remplir ce champ' }]}
-                            >
-                                <Input
-                                    type='time'
-                                    size="large"
-                                    placeholder="08:24"
-                                    className='p-2.5 text-lg'
-                                />
-                            </Form.Item>
-
-                            <Form.Item className='text-center mt-5'>
-                                <Button type="text" htmlType="submit" size="large"  className='text-lg text-white w-full bg-[#E1000F]'>
-                                    Départ
-                                </Button>
-                            </Form.Item>
-                        </Form> */}
+                        
                         <AttendanceForm 
                             firstFieldName='student_id'
                             secondFieldName='departure_time'
