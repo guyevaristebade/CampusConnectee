@@ -5,7 +5,7 @@ export const getCookieOptions = (useSecureAuth : boolean) : CookieOptions => {
         maxAge: 31 * 24 * 3600 * 1000,
         httpOnly: true,
         secure: useSecureAuth,
-        domain: process.env.COOKIE_DOMAIN,
+        domain: process.env.ALLOWED_ORIGINS,
         sameSite: 'none',
     };
 }

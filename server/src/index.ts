@@ -22,7 +22,8 @@ export const io = new Server(server, {
     cors: {
         origin: allowedOrigins, 
         methods: ['GET', 'POST','DELETE','PUT'],
-        credentials: true
+        credentials: true,
+        allowedHeaders: ['Content-Type', 'Authorization'],
     }
 });
 
@@ -44,7 +45,8 @@ app.use(cookieParser())
 app.use(cors({
     origin: allowedOrigins,
     methods: ['GET', 'POST','DELETE', 'OPTIONS', 'PUT'],
-    credentials: true
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 app.use('/api/auth', UserRouter)
