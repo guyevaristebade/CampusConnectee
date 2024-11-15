@@ -11,7 +11,10 @@ import { io } from 'socket.io-client';
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
 
-const socket = io(process.env.REACT_APP_SERVER_URL)
+const socket = io(process.env.REACT_APP_SERVER_URL,{
+    transports: ['websocket'], // Priorise WebSocket
+    withCredentials: true, // Permet l’envoi des cookies
+})
 
 export const ResponsiblePage: React.FC = () => {
     const { user, logout } = useAuth();

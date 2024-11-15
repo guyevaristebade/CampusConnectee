@@ -24,7 +24,8 @@ export const io = new Server(server, {
         methods: ['GET', 'POST','DELETE','PUT'],
         credentials: true,
         allowedHeaders: ['Content-Type', 'Authorization'],
-    }
+    },
+    transports: ['websocket', 'polling'], // Active WebSocket et fallback sur polling
 });
 
 io.on('connection',(socket) =>{
@@ -47,6 +48,12 @@ app.use(cors({
     methods: ['GET', 'POST','DELETE', 'OPTIONS', 'PUT'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+app.options('*', cors({
+    origin: allowedOrigins,
+    methods: ['GET', 'POST', 'DELETE', 'OPTIONS', 'PUT'],
+    credentials: true,
 }));
 
 app.use('/api/auth', UserRouter)
