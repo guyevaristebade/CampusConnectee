@@ -7,18 +7,25 @@ import { AuthContextProvider, LocationProvider, useLocation } from './context';
 import GeolocationComponent from './pages/home';
 
 export const AppRouter : React.FC = () =>{
-    const { isAtCampus } = useLocation();
 
     return (
         <Routes>
             <Route element={<Main/>}>
                 <Route 
                     path='arrival'  
-                    element={isAtCampus ? <ArrivalPage/> : <Navigate to="/not-authorized" />} 
+                    element={
+                        <LocationProvider>
+                            <ArrivalPage/> 
+                        </LocationProvider>
+                    } 
                 />
                 <Route 
                     path="departure"  
-                    element={ isAtCampus ? <DeparturePage/> : <Navigate to="/not-authorized" />}
+                    element={ 
+                        <LocationProvider>
+                            <DeparturePage/> 
+                        </LocationProvider>
+                    }
                 />
                 <Route 
                     path="/"  
@@ -33,7 +40,6 @@ export const AppRouter : React.FC = () =>{
                     }
                 />            
             </Route>
-            <Route path="/not-authorized" element={<NotAuthorizedPage />} />
 
             <Route
                 path='dashboard'
@@ -45,6 +51,7 @@ export const AppRouter : React.FC = () =>{
             />
             <Route path="maintenance"  element={<MaintenancePage/>} />
             <Route path="*"  element={<Unknown/>} />
+            <Route path="/not-authorized" element={<NotAuthorizedPage />} />
         </Routes>
     )
 }

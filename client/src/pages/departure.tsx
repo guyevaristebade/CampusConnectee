@@ -4,11 +4,16 @@ import Confetti from 'react-confetti';
 import { IDeparture, IStudentType } from '../types';
 import { fetchAllStudent, registeredDeparture } from '../api';
 import { AttendanceForm, Panel } from '../components';
+import { useLocation } from '../context';
+import { useNavigate } from 'react-router-dom';
 
 const { Content } = Layout;
 
 export const DeparturePage: React.FC = () => {
     const [form] = Form.useForm();
+    const { isAtCampus } = useLocation();
+    const navigate = useNavigate();
+
     const [showConfetti, setShowConfetti] = useState(false);
     const [windowSize, setWindowSize] = useState<{ width: number; height: number }>({
         width: window.innerWidth,
@@ -62,6 +67,12 @@ export const DeparturePage: React.FC = () => {
                 }
             })
     },[])
+
+    useEffect(() => {
+        if(!isAtCampus){
+            navigate("/not-authorized")
+        }
+    }, [isAtCampus,navigate]);
 
     return (
         <>
