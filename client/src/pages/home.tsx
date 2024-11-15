@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { Layout }  from 'antd'
+
+const { Content } = Layout
+
 
 // Définition du type pour les coordonnées géographiques
 interface GeolocationData {
@@ -52,23 +56,9 @@ const GeolocationComponent: React.FC = () => {
   }, []);
 
   return (
-    <div className=''>
-      <h2>Géolocalisation de l'utilisateur</h2>
-      {location.error ? (
-        <p style={{ color: 'red' }}>Erreur: {location.error}</p>
-      ) : (
-        <div>
-          {location.latitude && location.longitude ? (
-            <p>
-              Latitude: {location.latitude} <br />
-              Longitude: {location.longitude}
-            </p>
-          ) : (
-            <p>Récupération de la géolocalisation en cours...</p>
-          )}
-        </div>
-      )}
-    </div>
+    <Content className='m-5'>
+      <h1 className='text-4xl font-bold'>Home Page</h1>
+    </Content>
   );
 };
 
