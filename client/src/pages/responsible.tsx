@@ -18,6 +18,7 @@ const socket = io(process.env.REACT_APP_SERVER_URL,{
 
 export const ResponsiblePage: React.FC = () => {
     const { user, logout } = useAuth();
+    console.log(user)
     const [dailyAttendance, setDailyAttendance] = useState<any[]>([]);
     const [statistics, setStatistics] = useState<IStatistics | null>(null);
     const [students, setStudents] = useState<IStudent[]>([]);
