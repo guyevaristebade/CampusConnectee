@@ -17,7 +17,7 @@ const socket = io(process.env.REACT_APP_SERVER_URL,{
 })
 export const ResponsiblePage: React.FC = () => {
     const { user, logout } = useAuth();
-    console.log(user)
+
     const [dailyAttendance, setDailyAttendance] = useState<any[]>([]);
     const [statistics, setStatistics] = useState<IStatistics | null>(null);
     const [students, setStudents] = useState<IStudent[]>([]);
@@ -87,15 +87,15 @@ export const ResponsiblePage: React.FC = () => {
         console.log(dates)
     };
     
-    
+        
     const onMenuClick = (e: any) => {
         setSelectedMenuKey(e.key);
     };
 
     const onDeleteStudent = (id: string) => {
         // mettre cette logique en place avec l'api
-        const delet = students.filter(student => student._id !== id);
-        setStudents(delet);
+        const deleteStudent : IStudent[] = students.filter(student => student._id !== id);
+        setStudents(deleteStudent);
     };
 
     const handleTableChange = (pagination: any) => {

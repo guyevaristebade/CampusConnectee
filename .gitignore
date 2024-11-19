@@ -1,9 +1,5 @@
 node_modules
 .DS_Store
-<<<<<<< HEAD
 .env
 .hintrc
 .idea
-=======
-bloc-note.md
->>>>>>> guy
