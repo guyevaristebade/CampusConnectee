@@ -23,7 +23,8 @@ export const io = new Server(server, {
         origin: allowedOrigins, 
         methods: ['GET', 'POST','DELETE','PUT'],
         credentials: true
-    }
+    },
+    transports: ['websocket', 'polling'], // WebSocket avec fallback
 });
 
 io.on('connection',(socket) =>{
