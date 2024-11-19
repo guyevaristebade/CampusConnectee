@@ -20,10 +20,9 @@ const server = createServer(app);
 // Configuration Socket.IO avec CORS
 export const io = new Server(server, {
     cors: {
-        origin: allowedOrigins,
-        methods: ['GET', 'POST', 'DELETE', 'PUT', 'OPTIONS'],
-        credentials: true,
-        allowedHeaders: ['Content-Type', 'Authorization'],
+        origin: allowedOrigins, 
+        methods: ['GET', 'POST','DELETE','PUT'],
+        credentials: true
     },
     transports: ['websocket', 'polling'], // WebSocket avec fallback
 });

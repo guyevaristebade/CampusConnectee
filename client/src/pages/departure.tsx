@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Layout, Form, Typography, Row, Col, message } from "antd";
+import { Layout, Form, Typography, Row, Col, message, Spin } from "antd";
 import Confetti from 'react-confetti';
 import { IDeparture, IStudentType } from '../types';
 import { fetchAllStudent, registeredDeparture } from '../api';
@@ -11,7 +11,7 @@ const { Content } = Layout;
 
 export const DeparturePage: React.FC = () => {
     const [form] = Form.useForm();
-    const { isAtCampus } = useLocation();
+    const { isAtCampus, loading } = useLocation();
     const navigate = useNavigate();
 
     const [showConfetti, setShowConfetti] = useState(false);
@@ -68,11 +68,12 @@ export const DeparturePage: React.FC = () => {
             })
     },[])
 
-    useEffect(() => {
-        if(!isAtCampus){
-            navigate("/not-authorized")
-        }
-    }, [isAtCampus,navigate]);
+
+    if (loading) {
+        return <Content className='flex justify-center items-center min-h-full'>
+            <Spin percent='auto' size='large'/> 
+        </Content>
+    }
 
     return (
         <>

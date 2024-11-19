@@ -1,9 +1,9 @@
 import React from 'react';
 import { Navigate, Route, Routes } from "react-router-dom";
 import { ArrivalPage, Login, MaintenancePage, NotAuthorizedPage, ResponsiblePage, Unknown } from "./pages";
-import { Main } from "./components";
+import { LocationGuard, Main } from "./components";
 import { DeparturePage } from './pages';
-import { AuthContextProvider, LocationProvider, useLocation } from './context';
+import { AuthContextProvider, LocationProvider } from './context';
 import GeolocationComponent from './pages/home';
 
 export const AppRouter : React.FC = () =>{
@@ -11,19 +11,23 @@ export const AppRouter : React.FC = () =>{
     return (
         <Routes>
             <Route element={<Main/>}>
-                <Route 
-                    path='arrival'  
+                <Route
+                    path="arrival"
                     element={
                         <LocationProvider>
-                            <ArrivalPage/> 
+                            <LocationGuard>
+                                <ArrivalPage />
+                            </LocationGuard>
                         </LocationProvider>
-                    } 
+                    }
                 />
-                <Route 
-                    path="departure"  
-                    element={ 
+                <Route
+                    path="departure"
+                    element={
                         <LocationProvider>
-                            <DeparturePage/> 
+                            <LocationGuard>
+                                <DeparturePage />
+                            </LocationGuard>
                         </LocationProvider>
                     }
                 />
@@ -49,9 +53,10 @@ export const AppRouter : React.FC = () =>{
                     </AuthContextProvider>
                 }
             />
+            
+            <Route path="/not-authorized" element={<NotAuthorizedPage />} />
             <Route path="maintenance"  element={<MaintenancePage/>} />
             <Route path="*"  element={<Unknown/>} />
-            <Route path="/not-authorized" element={<NotAuthorizedPage />} />
         </Routes>
     )
 }

@@ -60,20 +60,20 @@ export const AuthContextProvider =  ({ children } : IChildren) => {
         navigate('/login');
     };
 
-    // useEffect(() => {
-    //     isLoggedIn()
-    //         .then((data ) => {
-    //             if (data.success && data.data?.user) {
-    //                 const user = data.data.user
-    //                 setUser(user);
-    //                 if (location.pathname === '/login') {
-    //                     redirect()
-    //                 }
-    //             }   else if (!location.pathname.match(/^(\/|\/login)$/)) {
-    //                 navigate(`/login?redirect_uri=${encodeURI(location.pathname)}`)
-    //             }
-    //         })
-    // }, []);
+    useEffect(() => {
+        isLoggedIn()
+            .then((data) => {
+                if (data.success && data.data?.user) {
+                    const user = data.data.user
+                    setUser(user);
+                    if (location.pathname === '/login') {
+                        redirect()
+                    }
+                }   else if (!location.pathname.match(/^(\/|\/login)$/)) {
+                    navigate(`/login?redirect_uri=${encodeURI(location.pathname)}`)
+                }
+            })
+    }, []);
 
     
     useEffect(() => {
