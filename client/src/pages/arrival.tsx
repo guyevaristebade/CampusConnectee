@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Layout, Form, Row, Col, message } from "antd";
+import { Layout, Form, Row, Col, message, Spin } from "antd";
 import Confetti from 'react-confetti';
 import { IArrival, IStudentType } from '../types';
 import { fetchAllStudent, registeredArrival } from '../api';
@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 const { Content } = Layout;
 
 export const ArrivalPage: React.FC = () => {
-    const { isAtCampus } = useLocation();
+    const { isAtCampus, loading } = useLocation();
     const navigate = useNavigate();
 
     const [form] = Form.useForm();
@@ -50,29 +50,37 @@ export const ArrivalPage: React.FC = () => {
                 }
             })
     };
-
+    
+    
     useEffect(() => {
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, [handleResize]);
-
+    
     useEffect(() => {
         fetchAllStudent()
-            .then((data) => {
-                if(data.success){
-                    setStudentArray(data.data);
-                }else{
-                    setStudentArray([]);
-                }
-            })
+        .then((data) => {
+            if(data.success){
+                setStudentArray(data.data);
+            }else{
+                setStudentArray([]);
+            }
+        })
     },[])
-
-
+    
+    
     useEffect(() => {
         if (!isAtCampus) {
             navigate("/not-authorized");
         }
     }, [isAtCampus, navigate]);
+            
+    if (loading) {
+        return <Content className='flex justify-center items-center min-h-full'>
+            <Spin percent='auto' size='large'/> 
+        </Content>
+    }
+
 
     return (
         <>
