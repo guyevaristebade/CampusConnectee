@@ -6,15 +6,15 @@ import { IStatistics, IStudent } from '../types';
 import { useAuth } from '../hooks';
 import { exportToExcel } from '../utils';
 import { DataTable } from '../components';
-import { io } from 'socket.io-client';
+// import { io } from 'socket.io-client';
 
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
 
-const socket = io(process.env.REACT_APP_SERVER_URL,{
-    transports: ['websocket'], // Priorise WebSocket
-    withCredentials: true, // Permet l’envoi des cookies
-})
+// const socket = io(process.env.REACT_APP_SERVER_URL,{
+//     transports: ['websocket'], // Priorise WebSocket
+//     withCredentials: true, // Permet l’envoi des cookies
+// })
 export const ResponsiblePage: React.FC = () => {
     const { user, logout } = useAuth();
 
@@ -141,25 +141,25 @@ export const ResponsiblePage: React.FC = () => {
 
 
 
-    useEffect(() => {
-        socket.on('student_arrival', (data : any) => {
-            message.success(`${data.first_name} ${data.last_name} est arrivé vient d'arriver`, 10)
-        });
+    // useEffect(() => {
+    //     socket.on('student_arrival', (data : any) => {
+    //         message.success(`${data.first_name} ${data.last_name} est arrivé vient d'arriver`, 10)
+    //     });
 
-        return () => {
-            socket.disconnect();
-        };
-    }, []);
+    //     return () => {
+    //         socket.disconnect();
+    //     };
+    // }, []);
 
-    useEffect(()=>{
-        socket.on('student_departure', (data : any)=>{
-            message.success(`${data.first_name} ${data.last_name} vient de  partir du campus`, 10)
-        })
+    // useEffect(()=>{
+    //     socket.on('student_departure', (data : any)=>{
+    //         message.success(`${data.first_name} ${data.last_name} vient de  partir du campus`, 10)
+    //     })
 
-        return () => {
-            socket.disconnect();
-        };
-    },[])
+    //     return () => {
+    //         socket.disconnect();
+    //     };
+    // },[])
 
 
     return (

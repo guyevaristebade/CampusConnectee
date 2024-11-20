@@ -6,8 +6,8 @@ import cookieParser from "cookie-parser";
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { Server } from 'socket.io';
-import { createServer } from 'http';
+// import { Server } from 'socket.io';
+// import { createServer } from 'http';
 
 dotenv.config();
 
@@ -15,24 +15,24 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
 
 const app: Express = express();
-const server = createServer(app);
+// const server = createServer(app);
 
-// Configuration Socket.IO avec CORS
-export const io = new Server(server, {
-    cors: {
-        origin: allowedOrigins, 
-        methods: ['GET', 'POST','DELETE','PUT'],
-        credentials: true
-    },
-    transports: ['websocket', 'polling'], // WebSocket avec fallback
-});
+// // Configuration Socket.IO avec CORS
+// export const io = new Server(server, {
+//     cors: {
+//         origin: allowedOrigins, 
+//         methods: ['GET', 'POST','DELETE','PUT'],
+//         credentials: true
+//     },
+//     transports: ['websocket', 'polling'], // WebSocket avec fallback
+// });
 
-io.on('connection', (socket) => {
-    console.log('New client connected');
-    socket.on('disconnect', () => {
-        console.log('Client disconnected');
-    });
-});
+// io.on('connection', (socket) => {
+//     console.log('New client connected');
+//     socket.on('disconnect', () => {
+//         console.log('Client disconnected');
+//     });
+// });
 
 // Middlewares globaux
 app.use(compression());
@@ -44,7 +44,7 @@ app.use(cors({
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-app.options('*', cors()); // Support des requêtes OPTIONS
+// app.options('*', cors()); // Support des requêtes OPTIONS
 
 // Routes
 app.use('/api/auth', UserRouter);
@@ -55,6 +55,6 @@ app.use('/api/student', StudentRouter);
 connectDB();
 
 // Lancement du serveur
-server.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`Server is running on port: ${PORT}`);
 });
