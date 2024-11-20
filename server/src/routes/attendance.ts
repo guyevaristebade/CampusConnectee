@@ -5,13 +5,10 @@ import {
     fetchDailyAttendance,
     getAttendanceByRangeDate,
     getStatistics,
-    getTotalHoursPerWeekByStudent,
     getTotalStudentHoursPerWeek,
     registerStudentArrival,
     registerStudentDeparture
 } from "../controllers";
-import { Student } from '../models';
-import { io } from '..';
 
 
 export const FeeRouter: Router = express.Router();
@@ -20,11 +17,6 @@ export const FeeRouter: Router = express.Router();
 FeeRouter.post('/arrival', async (req: Request, res: Response) => {
     const response: ResponseType = await registerStudentArrival(req.body);
     res.status(response.status as number).send(response);
-    
-    if(response.success){
-        const student = await Student.findById({ _id : req.body.student_id})
-        io.emit('student_arrival', student);
-    }
 });
 
 
@@ -33,10 +25,6 @@ FeeRouter.put('/departure', async (req: Request, res: Response) => {
     const response: ResponseType = await registerStudentDeparture(req.body);
     res.status(response.status as number).send(response);
 
-    if(response.success){
-        const student = await Student.findById({ _id : req.body.student_id})
-        io.emit('student_departure', student);
-    }
 });
 
 
