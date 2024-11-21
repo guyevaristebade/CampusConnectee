@@ -74,7 +74,6 @@ export const AuthContextProvider =  ({ children } : IChildren) => {
                 }
             })
     }, []);
-
     
     useEffect(() => {
         if (location.pathname === '/logout') {

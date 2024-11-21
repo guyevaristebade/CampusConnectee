@@ -9,7 +9,6 @@ import bcrypt from "bcryptjs";
 import {getCookieOptions} from "../utils";
 
 
-const useSecureAuth : boolean = process.env.NODE_ENV !== 'development';
 
 export const UserRouter : Router = express.Router();
 
@@ -43,7 +42,7 @@ UserRouter.post('/login' , async (req: Request, res: Response) => {
         const { password : _ , ...tokenContent } = user.toObject();
         const token: string = jwt.sign({ user : tokenContent  }, process.env.JWT_SECRET_KEY || '', { expiresIn: '30d' });
 
-        res.cookie('fee_token', token, getCookieOptions(useSecureAuth));
+        res.cookie('ccpn_token', token, getCookieOptions());
 
         return res.status(200).send({success: true, status : 200, data :  { user : tokenContent , token }});
 
@@ -55,7 +54,7 @@ UserRouter.post('/login' , async (req: Request, res: Response) => {
 
 // Middleware qui renvoie toute les informations de l'utilisateur authentifié
 UserRouter.get('/', authenticated, async (req, res) => {
-    const token = req.cookies['fee_token'];
+    const token = req.cookies['ccpn_token'];
     const user = (req as any).user;
     return res.status(200).send({
         success: true,
@@ -72,15 +71,9 @@ UserRouter.get('/', authenticated, async (req, res) => {
 
 // Route pour la déconnexion de l'utilisateur
 UserRouter.delete('/logout', authenticated, (req: Request, res: Response) => {
-    res.cookie('fee_token', '', {
+    res.cookie('ccpn_token', '', {
         maxAge: -100,
     })
     return res.send({ success : true , msg : 'déconnecté' });
 })
 
-/*UserRouter.post('/created_users', (req: Request, res: Response) => {
-    const csvFilePath = path.join(__dirname, 'documents', 'noms_prenoms.csv').split(' ')[1];
-    const file = JSON.parse(fs.readFile(csvFilePath));
-    // Envoyer le chemin du fichier dans la réponse
-    res.send(csvFilePath);
-});*/

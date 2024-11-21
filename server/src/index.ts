@@ -1,60 +1,52 @@
-import express, { Express } from 'express';
+import express, { Express, Request, Response, NextFunction } from 'express';
 import { connectDB } from "./utils";
 import { FeeRouter, StudentRouter, UserRouter } from "./routes";
-import compression from 'compression';
 import cookieParser from "cookie-parser";
-import dotenv from 'dotenv';
+import compression from 'compression';
 import bodyParser from 'body-parser';
+import dotenv from 'dotenv';
+import morgan from 'morgan';
 import cors from 'cors';
-// import { Server } from 'socket.io';
-// import { createServer } from 'http';
 
 dotenv.config();
+connectDB();
 
-const PORT = process.env.PORT || 5000;
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
-
+const PORT = process.env.PORT;
 const app: Express = express();
-// const server = createServer(app);
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || []
+const corsOptions = {
+    origin: allowedOrigins,
+    credentials: true,
+    methods: ['GET', 'POST', 'DELETE', 'PUT', 'OPTIONS'],
+    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization']
+}
 
-// // Configuration Socket.IO avec CORS
-// export const io = new Server(server, {
-//     cors: {
-//         origin: allowedOrigins, 
-//         methods: ['GET', 'POST','DELETE','PUT'],
-//         credentials: true
-//     },
-//     transports: ['websocket', 'polling'], // WebSocket avec fallback
-// });
+if (process.env.NODE_ENV === 'production') {
+    app.use(compression());
+    app.use(morgan('combined'))
+}else{
+    app.use(morgan('dev'));
+}
 
-// io.on('connection', (socket) => {
-//     console.log('New client connected');
-//     socket.on('disconnect', () => {
-//         console.log('Client disconnected');
-//     });
-// });
-
-// Middlewares globaux
-app.use(compression());
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(cors({
-    origin: allowedOrigins,
-    methods: ['GET', 'POST', 'DELETE', 'PUT', 'OPTIONS'],
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
-}));
-// app.options('*', cors()); // Support des requêtes OPTIONS
+app.use(cors(corsOptions));
+
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    console.error(err.stack); 
+    res.status(500).send({ success: false, message: err?.stack });
+});
 
 // Routes
 app.use('/api/auth', UserRouter);
 app.use('/api/attendance', FeeRouter);
 app.use('/api/student', StudentRouter);
 
-// Connexion à la base de données
-connectDB();
 
-// Lancement du serveur
+
+
 app.listen(PORT, () => {
     console.log(`Server is running on port: ${PORT}`);
+    console.log(process.env.NODE_ENV !== 'development')
 });

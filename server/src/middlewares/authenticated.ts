@@ -2,7 +2,7 @@ import { NextFunction, Response, Request } from 'express'
 import jwt from 'jsonwebtoken'
 
 export const authenticated = async (req: Request, res: Response, next: NextFunction): Promise<unknown> => {
-    let token = (req as any).cookies['fee_token']
+    let token = (req as any).cookies['ccpn_token']
 
     if (!token) {
         token = (req as any).headers.bearer
