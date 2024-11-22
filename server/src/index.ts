@@ -14,6 +14,7 @@ connectDB();
 const PORT = process.env.PORT;
 const app: Express = express();
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || []
+
 const corsOptions = {
     origin: allowedOrigins,
     credentials: true,

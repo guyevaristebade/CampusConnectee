@@ -7,6 +7,6 @@ export const getCookieOptions = () : CookieOptions => {
         httpOnly: true,
         secure: useSecureAuth,
         domain: process.env.COOKIE_DOMAIN,
-        sameSite: 'none',
+        sameSite: useSecureAuth ? 'none' : 'lax',
     };
 }
