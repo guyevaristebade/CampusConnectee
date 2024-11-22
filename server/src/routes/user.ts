@@ -42,7 +42,8 @@ UserRouter.post('/login' , async (req: Request, res: Response) => {
         const { password : _ , ...tokenContent } = user.toObject();
         const token: string = jwt.sign({ user : tokenContent  }, process.env.JWT_SECRET_KEY || '', { expiresIn: '30d' });
 
-        res.cookie('ccpn_token', token, getCookieOptions());
+        console.log("Token généré:", token);  // Vérification du token
+        res.cookie('token-ccpn', token, getCookieOptions());
 
         return res.status(200).send({success: true, status : 200, data :  { user : tokenContent , token }});
 
@@ -52,9 +53,9 @@ UserRouter.post('/login' , async (req: Request, res: Response) => {
 });
 
 
-// Middleware qui renvoie toute les informations de l'utilisateur authentifié
+// Middleware qui permet de vérifier si l'utilisateur est authentifié 
 UserRouter.get('/', authenticated, async (req, res) => {
-    const token = req.cookies['ccpn_token'];
+    const token = req.cookies['token-ccpn'];
     const user = (req as any).user;
     return res.status(200).send({
         success: true,
@@ -71,7 +72,7 @@ UserRouter.get('/', authenticated, async (req, res) => {
 
 // Route pour la déconnexion de l'utilisateur
 UserRouter.delete('/logout', authenticated, (req: Request, res: Response) => {
-    res.cookie('ccpn_token', '', {
+    res.cookie('token-ccpn', '', {
         maxAge: -100,
     })
     return res.send({ success : true , msg : 'déconnecté' });
