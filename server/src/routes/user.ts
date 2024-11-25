@@ -1,13 +1,12 @@
-import express, {Router, Request, Response} from 'express'
+import express, {Router, Request, Response} from 'express';
 import {CreateUser} from "../controllers";
 import {ResponseType} from "../types";
-import { sanitizeFilter} from 'mongoose'
-import {authenticated, verifyIp} from "../middlewares";
+import { sanitizeFilter } from 'mongoose'
+import {authenticated} from "../middlewares";
 import {User} from "../models";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import {getCookieOptions} from "../utils";
-
 
 
 export const UserRouter : Router = express.Router();
@@ -42,8 +41,7 @@ UserRouter.post('/login' , async (req: Request, res: Response) => {
         const { password : _ , ...tokenContent } = user.toObject();
         const token: string = jwt.sign({ user : tokenContent  }, process.env.JWT_SECRET_KEY || '', { expiresIn: '30d' });
 
-        console.log("Token généré:", token);  // Vérification du token
-        res.cookie('token-ccpn', token, getCookieOptions());
+        res.cookie('token_ccpn', token, getCookieOptions());
 
         return res.status(200).send({success: true, status : 200, data :  { user : tokenContent , token }});
 
@@ -55,8 +53,9 @@ UserRouter.post('/login' , async (req: Request, res: Response) => {
 
 // Middleware qui permet de vérifier si l'utilisateur est authentifié 
 UserRouter.get('/', authenticated, async (req, res) => {
-    const token = req.cookies['token-ccpn'];
+    const token = req.cookies.token_ccpn;
     const user = (req as any).user;
+    
     return res.status(200).send({
         success: true,
         data: {
@@ -72,7 +71,7 @@ UserRouter.get('/', authenticated, async (req, res) => {
 
 // Route pour la déconnexion de l'utilisateur
 UserRouter.delete('/logout', authenticated, (req: Request, res: Response) => {
-    res.cookie('token-ccpn', '', {
+    res.cookie('token_ccpn', '', {
         maxAge: -100,
     })
     return res.send({ success : true , msg : 'déconnecté' });

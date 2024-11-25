@@ -1,19 +1,14 @@
-import { NextFunction, Response, Request } from 'express'
-import jwt from 'jsonwebtoken'
+import { NextFunction, Response, Request } from 'express';
+import jwt from 'jsonwebtoken';
 
 export const authenticated = async (req: Request, res: Response, next: NextFunction): Promise<unknown> => {
-    let token = (req as any).cookies['token-ccpn'];
-    console.log("Token récupéré depuis les cookies :", token);  // Log du token pour le débogage
+    let token = (req as any).cookies.token_ccpn;
+    console.log("Token récupéré depuis les tokens:", token);
 
     if (!token) {
-        token = (req as any).headers['authorization']?.split(' ')[1];
-        console.log("Token récupéré depuis les headers:", token);  // Log du token pour le débogage
-
-        if (!token) {
-            return res.status(401).send({ success: false, msg: 'Accès Non autorisé' });
-        }
+        return res.status(401).send({ success: false, msg: 'Accès Non autorisé' });
     }
-
+    
     try {
         (req as any).user = jwt.verify(token, process.env.JWT_SECRET_KEY || '');
         next();

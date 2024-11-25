@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { ArrivalPage, Login, MaintenancePage, NotAuthorizedPage, ResponsiblePage, Unknown } from "./pages";
 import { LocationGuard, Main } from "./components";
 import { DeparturePage } from './pages';
@@ -13,22 +13,16 @@ export const AppRouter : React.FC = () =>{
             <Route element={<Main/>}>
                 <Route
                     path="arrival"
-                    element={
-                        <LocationProvider>
-                            <LocationGuard>
-                                <ArrivalPage />
-                            </LocationGuard>
-                        </LocationProvider>
-                    }
+                    element={<ArrivalPage />}
                 />
                 <Route
                     path="departure"
                     element={
-                        <LocationProvider>
-                            <LocationGuard>
+                        // <LocationProvider>
+                        //     <LocationGuard>
                                 <DeparturePage />
-                            </LocationGuard>
-                        </LocationProvider>
+                        //     </LocationGuard>
+                        // </LocationProvider>
                     }
                 />
                 <Route 
