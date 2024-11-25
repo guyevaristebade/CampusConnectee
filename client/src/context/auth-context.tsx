@@ -26,14 +26,6 @@ export const AuthContext : React.Context<AuthProviderProps> = createContext<Auth
 export const AuthContextProvider =  ({ children } : IChildren) => {
     const [user, setUser] = useState<IUserData | null>(null);
     const navigate = useNavigate()
-    const location = useLocation()
-    const query = useQuery();
-
-
-    const redirect = () => {
-        navigate(query.get('redirect_uri') || '/dashboard'); // redirect to dashboard
-    }
-
 
     const login = async  (userData : UserLogin) => {
 
@@ -41,10 +33,9 @@ export const AuthContextProvider =  ({ children } : IChildren) => {
         if(data.success){
             const user = data.data.user; 
             setUser(user);
-            redirect();
+            navigate("/dashboard")
         }else{
             message.error(data.msg)
-            setUser(null);
         }
     };
     
@@ -66,20 +57,13 @@ export const AuthContextProvider =  ({ children } : IChildren) => {
                 if (data.success && data.data?.user) {
                     const user = data.data.user
                     setUser(user);
-                    if (location.pathname === '/login') {
-                        redirect()
-                    }
-                }   else if (!location.pathname.match(/^(\/|\/login)$/)) {
-                    navigate(`/login?redirect_uri=${encodeURI(location.pathname)}`)
+                    navigate('/dashboard');
+                }else{
+                    navigate('/login');
                 }
             })
-    }, []);
-    
-    useEffect(() => {
-        if (location.pathname === '/logout') {
-            logout()
-        }
-    }, [location])
+    }, [navigate]);
+
 
     return <AuthContext.Provider value={{ user, login, register, logout }}> { children } </AuthContext.Provider>;
 }

@@ -11,8 +11,8 @@ const { Content } = Layout;
 
 export const DeparturePage: React.FC = () => {
     const [form] = Form.useForm();
-    const { isAtCampus, loading } = useLocation();
-    const navigate = useNavigate();
+    // const { isAtCampus, loading } = useLocation();
+    // const navigate = useNavigate();
 
     const [showConfetti, setShowConfetti] = useState(false);
     const [windowSize, setWindowSize] = useState<{ width: number; height: number }>({
@@ -69,11 +69,11 @@ export const DeparturePage: React.FC = () => {
     },[])
 
 
-    if (loading) {
-        return <Content className='flex justify-center items-center min-h-full'>
-            <Spin percent='auto' size='large'/> 
-        </Content>
-    }
+        // if (loading) {
+        //     return <Content className='flex justify-center items-center min-h-full'>
+        //         <Spin percent='auto' size='large'/> 
+        //     </Content>
+        // }
 
     return (
         <>
