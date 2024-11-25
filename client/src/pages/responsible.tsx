@@ -6,7 +6,6 @@ import { IStatistics, IStudent } from '../types';
 import { useAuth } from '../hooks';
 import { exportToExcel } from '../utils';
 import { DataTable } from '../components';
-// import { io } from 'socket.io-client';
 
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
@@ -132,34 +131,12 @@ export const ResponsiblePage: React.FC = () => {
                 if (totalHours.success) setAttendancePerWeek(totalHours.data);
 
             } catch (error) {
-                console.error("Error fetching data:", error);
+                message.error('Erreur lors de la récupération des données');
             }
         };
 
         fetchData();
     }, []);
-
-
-
-    // useEffect(() => {
-    //     socket.on('student_arrival', (data : any) => {
-    //         message.success(`${data.first_name} ${data.last_name} est arrivé vient d'arriver`, 10)
-    //     });
-
-    //     return () => {
-    //         socket.disconnect();
-    //     };
-    // }, []);
-
-    // useEffect(()=>{
-    //     socket.on('student_departure', (data : any)=>{
-    //         message.success(`${data.first_name} ${data.last_name} vient de  partir du campus`, 10)
-    //     })
-
-    //     return () => {
-    //         socket.disconnect();
-    //     };
-    // },[])
 
 
     return (
