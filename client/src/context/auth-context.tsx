@@ -1,6 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import {useQuery} from "../hooks";
+import { useNavigate } from "react-router-dom";
 import { isLoggedIn, login as loginApi, logout as logoutApi, register as registerApi } from '../api';
 import { IChildren, IUserData, UserLogin } from "../types";
 import { message } from "antd";
