@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { isLoggedIn, login as loginApi, logout as logoutApi, register as registerApi } from '../api';
 import { IChildren, IUserData, UserLogin } from "../types";
 import { message } from "antd";
@@ -32,7 +32,7 @@ export const AuthContextProvider =  ({ children } : IChildren) => {
         if(data.success){
             const user = data.data.user; 
             setUser(user);
-            navigate("/dashboard")
+            <Navigate to="/dashboard" />
         }else{
             message.error(data.msg)
         }
@@ -56,9 +56,9 @@ export const AuthContextProvider =  ({ children } : IChildren) => {
                 if (data.success && data.data?.user) {
                     const user = data.data.user
                     setUser(user);
-                    navigate('/dashboard');
+                    <Navigate to="/dashboard" />
                 }else{
-                    navigate('/login');
+                    <Navigate to="/login" />
                 }
             })
     }, [navigate]);
