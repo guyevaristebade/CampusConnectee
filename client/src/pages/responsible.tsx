@@ -6,6 +6,7 @@ import { IStatistics, IStudent } from '../types';
 import { useAuth } from '../hooks';
 import { exportToExcel } from '../utils';
 import { DataTable } from '../components';
+import { Navigate } from 'react-router-dom';
 
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
@@ -138,6 +139,11 @@ export const ResponsiblePage: React.FC = () => {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        if(!user){
+            <Navigate to="/login" />
+        }
+    }, [user]);
 
     return (
         <Layout className='min-h-screen'> {/* min-h-screen => min-height : 100vh */}
