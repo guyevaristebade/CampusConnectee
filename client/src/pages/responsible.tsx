@@ -6,7 +6,7 @@ import { IStatistics, IStudent } from '../types';
 import { useAuth } from '../hooks';
 import { exportToExcel } from '../utils';
 import { DataTable } from '../components';
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
@@ -17,7 +17,8 @@ const { Title } = Typography;
 // })
 export const ResponsiblePage: React.FC = () => {
     const { user, logout } = useAuth();
-
+    const navigate = useNavigate();
+    
     const [dailyAttendance, setDailyAttendance] = useState<any[]>([]);
     const [statistics, setStatistics] = useState<IStatistics | null>(null);
     const [students, setStudents] = useState<IStudent[]>([]);
@@ -132,7 +133,7 @@ export const ResponsiblePage: React.FC = () => {
                 if (totalHours.success) setAttendancePerWeek(totalHours.data);
 
             } catch (error) {
-                message.error('Erreur lors de la récupération des données');
+                message.error('Erreur lors de la récupération des données', 10);
             }
         };
 
@@ -141,9 +142,10 @@ export const ResponsiblePage: React.FC = () => {
 
     useEffect(() => {
         if(!user){
-            <Navigate to="/login" />
+            navigate("/login")
         }
-    }, [user]);
+        console.log(user)
+    }, [user, navigate]);
 
     return (
         <Layout className='min-h-screen'> {/* min-h-screen => min-height : 100vh */}
