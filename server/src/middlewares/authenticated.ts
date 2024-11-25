@@ -3,10 +3,15 @@ import jwt from 'jsonwebtoken';
 
 export const authenticated = async (req: Request, res: Response, next: NextFunction): Promise<unknown> => {
     let token = (req as any).cookies.token_ccpn;
-    console.log("Token récupéré depuis les tokens:", token);
+    console.log("Token récupéré depuis les tokens: ", token);
 
     if (!token) {
-        return res.status(401).send({ success: false, msg: 'Accès Non autorisé' });
+        token = req.headers['authorization']?.split(' ')[1];
+        console.log("Token récupéré depuis les headers: ", token);
+
+        if (!token) {
+            return res.status(401).send('Unauthorized');
+        }
     }
     
     try {

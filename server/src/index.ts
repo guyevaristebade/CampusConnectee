@@ -11,38 +11,39 @@ import helmet from 'helmet';
 
 dotenv.config();
 
-
 const PORT = process.env.PORT;
 const app: Express = express();
+
+// Configurer CORS
 const allowedOrigins = process.env.FRONT_END_URL?.split(',') || []
 
 const corsOptions = {
     origin: allowedOrigins,
-    credentials: true
-}
+    credentials: true 
+};
+
+
+// Utiliser les middlewares dans l'ordre correct
+app.use(cookieParser());  // Doit être avant CORS
+app.use(cors(corsOptions));  // Doit être après cookieParser
+app.use(bodyParser.json());  // Analyse les corps de requêtes JSON
 
 if (process.env.NODE_ENV === 'production') {
-    app.use(compression());
-    app.use(morgan('combined'))
-    app.use(helmet())
-}else{
-    app.use(morgan('dev'));
+    app.use(compression());  // Compression des réponses en production
+    app.use(morgan('combined'));  // Logs de requêtes en production
+    app.use(helmet());  // Sécurisation des en-têtes HTTP en production
+} else {
+    app.use(morgan('dev'));  // Logs plus détaillés en développement
 }
 
-app.use(bodyParser.json());
-app.use(cookieParser());
-app.use(cors(corsOptions));
-
-
+// Définition des routes API
 app.use('/api/auth', UserRouter);
 app.use('/api/attendance', FeeRouter);
 app.use('/api/student', StudentRouter);
 
-
-
+// Connexion à la base de données et démarrage du serveur
 connectDB().then(() => {
     app.listen(PORT, () => {
         console.log(`Server is running on port: ${PORT}`);
     });
-})
-
+});
