@@ -32,7 +32,7 @@ export const AuthContextProvider =  ({ children } : IChildren) => {
         if(data.success){
             const user = data.data.user; 
             setUser(user);
-            <Navigate to="/dashboard" />
+            navigate("/dashboard")
         }else{
             message.error(data.msg)
         }
@@ -56,12 +56,17 @@ export const AuthContextProvider =  ({ children } : IChildren) => {
                 if (data.success && data.data?.user) {
                     const user = data.data.user
                     setUser(user);
-                    <Navigate to="/dashboard" />
+                    navigate('/dashboard');
                 }else{
-                    <Navigate to="/login" />
+                    navigate('/login');
                 }
             })
-    }, [navigate]);
+            .catch((error) => {
+                console.error(error);
+            });
+
+            console.log(user)
+    }, [navigate,user]);
 
 
     return <AuthContext.Provider value={{ user, login, register, logout }}> { children } </AuthContext.Provider>;
