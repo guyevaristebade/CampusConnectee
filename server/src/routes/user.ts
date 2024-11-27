@@ -26,9 +26,10 @@ UserRouter.post('/login' , async (req: Request, res: Response) => {
         res.cookie('token_ccpn', token, {
             maxAge: 31 * 24 * 3600 * 1000,
             httpOnly: true,
-            secure: useSecureAuth ? true : false,
-            sameSite: useSecureAuth ? 'none' : 'lax',
-            domain: process.env.COOKIE_DOMAIN,
+            secure: true,
+            sameSite: "none",
+            // domain: process.env.COOKIE_DOMAIN,
+            domain: "campus-connecte-nemours.vercel.app",
         });
     }
 
