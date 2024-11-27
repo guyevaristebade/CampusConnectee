@@ -140,12 +140,6 @@ export const ResponsiblePage: React.FC = () => {
         fetchData();
     }, []);
 
-    useEffect(() => {
-        if(!user){
-            navigate("/login")
-        }
-    }, []);
-
     return (
         <Layout className='min-h-screen'> {/* min-h-screen => min-height : 100vh */}
             {/* Faire un composant SideBar */}
