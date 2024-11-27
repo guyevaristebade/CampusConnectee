@@ -28,8 +28,7 @@ UserRouter.post('/login' , async (req: Request, res: Response) => {
             httpOnly: true,
             secure: true,
             sameSite: "none",
-            // domain: process.env.COOKIE_DOMAIN,
-            domain: ".vercel.app",
+            domain: process.env.COOKIE_DOMAIN,
         });
     }
 

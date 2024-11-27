@@ -18,7 +18,7 @@ const app: Express = express();
 const allowedOrigins = process.env.FRONT_END_URL?.split(',') || []
 
 const corsOptions = {
-    origin: ['https://campus-connecte-nemours.vercel.app'],
+    origin: allowedOrigins,
     credentials: true 
 };
 
