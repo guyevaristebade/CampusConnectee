@@ -29,7 +29,7 @@ UserRouter.post('/login' , async (req: Request, res: Response) => {
             secure: true,
             sameSite: "none",
             // domain: process.env.COOKIE_DOMAIN,
-            domain: "campus-connecte-nemours.vercel.app",
+            domain: ".vercel.app",
         });
     }
 
