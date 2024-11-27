@@ -6,6 +6,7 @@ import {authenticated} from "../middlewares";
 
 
 export const UserRouter : Router = express.Router();
+const useSecureAuth : boolean = process.env.NODE_ENV !== 'development';
 
 UserRouter.post('/register',async (req : Request, res: Response) => {
     const response: ResponseType = await CreateUser(req.body)
@@ -14,7 +15,6 @@ UserRouter.post('/register',async (req : Request, res: Response) => {
 
 UserRouter.post('/login' , async (req: Request, res: Response) => {
 
-    const useSecureAuth : boolean = process.env.NODE_ENV !== 'development';
 
     if (!req.body.username || !req.body.password) {
         return res.status(400).send({success: false, msg: "Veuillez remplir tous les champs avant la validation", status : 400});
@@ -26,8 +26,8 @@ UserRouter.post('/login' , async (req: Request, res: Response) => {
         res.cookie('token_ccpn', token, {
             maxAge: 31 * 24 * 3600 * 1000,
             httpOnly: true,
-            secure: true,
-            sameSite: "none",
+            secure: useSecureAuth ? true : false,
+            sameSite: useSecureAuth ? 'none' : 'lax',
             domain: process.env.COOKIE_DOMAIN,
         });
     }
@@ -58,6 +58,10 @@ UserRouter.get('/', authenticated, async (req, res) => {
 UserRouter.delete('/logout', authenticated, (req: Request, res: Response) => {
     res.cookie('token_ccpn', '', {
         maxAge: -100,
+        httpOnly: true,
+        secure: useSecureAuth ? true : false,
+        sameSite: useSecureAuth ? 'none' : 'lax',
+        domain: process.env.COOKIE_DOMAIN,
     })
     return res.send({ success : true , msg : 'déconnecté' });
 })

@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { isLoggedIn, login as loginApi, logout as logoutApi, register as registerApi } from '../api';
 import { IChildren, IUserData, UserLogin } from "../types";
 import { message } from "antd";
@@ -46,7 +46,7 @@ export const AuthContextProvider =  ({ children } : IChildren) => {
     const logout = async () => {
         await logoutApi()
         setUser(null);
-        navigate('/login');
+        navigate("/login");
     };
 
     useEffect(() => {
