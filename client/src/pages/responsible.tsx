@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Image, Layout, Menu, Button, Table, Typography, Row, Col, Tag, Statistic, message } from 'antd';
+import { Image, Layout, Menu, Button, Table, Typography, Row, Col, Tag, Statistic, message, Spin } from 'antd';
 import { LogoutOutlined, CalendarOutlined, AppstoreOutlined, TableOutlined } from '@ant-design/icons';
 import { fetchAllStudent, fetchDailyAttendance, fetchStatistics, fetchTotalSTudentHoursPerWeek } from '../api';
 import { IStatistics, IStudent } from '../types';
@@ -26,6 +26,7 @@ export const ResponsiblePage: React.FC = () => {
     const [selectedMenuKey, setSelectedMenuKey] = useState<string>('dashboard');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(5);
+
 
 
     const columns = [
@@ -78,8 +79,14 @@ export const ResponsiblePage: React.FC = () => {
 
     const menuItems = [
         { key: 'dashboard', icon: <AppstoreOutlined />, label: 'Dashboard' },
-        { key: 'dailyAttendance', icon: <CalendarOutlined />, label: 'Émargement quotidien' },
-        { key: 'totalHoursPerWeek', icon: <TableOutlined />, label: 'Émargement hebdomadaire' },
+        { key : 'attendance', 
+            icon: <TableOutlined />, 
+            label: 'Emargements', 
+            children : [
+                { key: 'dailyAttendance', icon: <CalendarOutlined />, label: 'Quotidien' },
+                { key: 'totalHoursPerWeek', icon: <CalendarOutlined  />, label: 'Hebdomadaire' },
+            ] 
+        }
     ];
 
 
@@ -90,7 +97,9 @@ export const ResponsiblePage: React.FC = () => {
     
         
     const onMenuClick = (e: any) => {
-        setSelectedMenuKey(e.key);
+        const newKey = e.key;
+        localStorage.setItem('selectedMenuKey', newKey);
+        setSelectedMenuKey(newKey);
     };
 
     const onDeleteStudent = (id: string) => {
@@ -139,6 +148,27 @@ export const ResponsiblePage: React.FC = () => {
 
         fetchData();
     }, []);
+
+    useEffect(() => {
+
+        const selectedMenuKey = localStorage.getItem('selectedMenuKey');
+        if (selectedMenuKey) {
+            setSelectedMenuKey(selectedMenuKey);
+        }
+    }, []);
+    
+
+    if(!dailyAttendance || !statistics || !students || !attendancePerWeek){
+        return (
+            <Content className='flex justify-center items-center min-h-screen'>
+                <Spin 
+                    fullscreen={true} 
+                    className='flex justify-center items-center' 
+                    size='large'
+                />
+            </Content>
+        )
+    }
 
     return (
         <Layout className='min-h-screen'> {/* min-h-screen => min-height : 100vh */}
