@@ -3,6 +3,8 @@ import {IUser, ResponseType} from "../types";
 import {User} from "../models";
 import {sanitizeFilter} from "mongoose";
 import {passwordValidators} from "../utils";
+import jwt from "jsonwebtoken";
+
 
 export const CreateUser = async (userData : IUser): Promise<ResponseType> => {
     let response: ResponseType = {
@@ -49,3 +51,43 @@ export const CreateUser = async (userData : IUser): Promise<ResponseType> => {
     return  response;
 };
 
+export const loginUser = async (userData : IUser): Promise<ResponseType> => {
+    let response: ResponseType = {
+        success : true,
+        status: 200
+    }
+
+    try {
+        // Find user by username
+        const user = await User.findOne(sanitizeFilter({ username: userData.username }));
+        if (!user) {
+            response.status = 400
+            response.success = false
+            response.msg = 'Identifiants invalides';
+            return response;
+        }
+
+        // Compare password
+        const passwordMatch = await bcrypt.compare(userData.password, user.password as string);
+        if (!passwordMatch) {
+            response.status = 400
+            response.success = false
+            response.msg = 'Mot de passe incorrect'
+            return response;
+        }
+
+        // Return user without password
+        const {password, ...userWithPasswd} = user.toObject();
+        
+        // Generate token
+        const token: string = jwt.sign({ user : userWithPasswd  }, process.env.JWT_SECRET_KEY || '', { expiresIn: '30d' });
+
+        response.data = { user : userWithPasswd , token };
+
+    } catch (e : any) {
+        response.status = 500
+        response.success = false;
+        response.msg = "Une erreur s'est produite, veuillez contactez les développeurs";
+    }
+    return  response;   
+}

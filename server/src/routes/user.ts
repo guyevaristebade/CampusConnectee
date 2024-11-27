@@ -1,12 +1,8 @@
 import express, {Router, Request, Response} from 'express';
-import {CreateUser} from "../controllers";
+import {CreateUser, loginUser} from "../controllers";
 import {ResponseType} from "../types";
-import { sanitizeFilter } from 'mongoose'
 import {authenticated} from "../middlewares";
-import {User} from "../models";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
-import {getCookieOptions} from "../utils";
+
 
 
 export const UserRouter : Router = express.Router();
@@ -17,37 +13,26 @@ UserRouter.post('/register',async (req : Request, res: Response) => {
 })
 
 UserRouter.post('/login' , async (req: Request, res: Response) => {
-    let response: ResponseType = {
-        success: true,
-    };
 
-    const { password, username } = req.body;
+    const useSecureAuth : boolean = process.env.NODE_ENV !== 'development';
 
-    try {
-        if (!username || !password) {
-            response.status = 400;
-            response.success = false;
-            response.msg = 'Veuillez remplir tous les champs avant la validation';
-            return res.send(response);
-        }
-
-        const user = await User.findOne(sanitizeFilter({ username })).select("-createdAt -updatedAt -__v -iat -exp");
-        if (!user) return res.status(401).send({success: false, msg: "Utilisateur introuvable", status : 401});
-
-
-        const validPass = await bcrypt.compare(password, (user as any).password);
-        if (!validPass) return res.status(401).send({success: false, msg: "Mot de passe invalide", status : 401});
-        
-        const { password : _ , ...tokenContent } = user.toObject();
-        const token: string = jwt.sign({ user : tokenContent  }, process.env.JWT_SECRET_KEY || '', { expiresIn: '30d' });
-
-        res.cookie('token_ccpn', token, getCookieOptions());
-
-        return res.status(200).send({success: true, status : 200, data :  { user : tokenContent , token }});
-
-    } catch (e : any) {
-        return res.status(500).send({success: false, status : 500, msg : e.message});
+    if (!req.body.username || !req.body.password) {
+        return res.status(400).send({success: false, msg: "Veuillez remplir tous les champs avant la validation", status : 400});
     }
+
+    const response : ResponseType  = await loginUser(req.body);
+    if (response.success) {
+        const token = response.data.token;
+        res.cookie('token_ccpn', token, {
+            maxAge: 31 * 24 * 3600 * 1000,
+            httpOnly: true,
+            secure: false,
+            sameSite: useSecureAuth ? 'none' : 'lax',
+            domain: process.env.COOKIE_DOMAIN,
+        });
+    }
+
+    res.status(response.status as number).send(response);
 });
 
 
