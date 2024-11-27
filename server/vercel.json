@@ -1,0 +1,22 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "src/index.ts",
+        "use": "@vercel/node",
+        "config": {
+          "maxLambdaSize": "50mb"
+        }
+      }
+    ],
+    "env": {
+      "MONGO_URI": "@mongodb-uri"
+    },
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "/src/index.ts"
+      }
+    ]
+  }
+  
