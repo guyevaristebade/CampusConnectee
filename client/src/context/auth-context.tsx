@@ -41,7 +41,6 @@ export const AuthContextProvider =  ({ children } : IChildren) => {
 
     const register = async (username: string, password: string, permissions : string) => {
         // TODO
-        
     }
 
     const logout = async () => {
@@ -65,8 +64,7 @@ export const AuthContextProvider =  ({ children } : IChildren) => {
                 console.error(error);
             });
 
-            console.log(user)
-    }, [navigate,user]);
+    }, []);
 
 
     return <AuthContext.Provider value={{ user, login, register, logout }}> { children } </AuthContext.Provider>;

@@ -144,8 +144,7 @@ export const ResponsiblePage: React.FC = () => {
         if(!user){
             navigate("/login")
         }
-        console.log(user)
-    }, [user, navigate]);
+    }, []);
 
     return (
         <Layout className='min-h-screen'> {/* min-h-screen => min-height : 100vh */}
