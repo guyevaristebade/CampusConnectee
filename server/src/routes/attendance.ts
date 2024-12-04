@@ -1,5 +1,6 @@
 import express, { Router, Request, Response } from 'express';
 import { ResponseType } from "../types";
+import { initializeSocketIO } from '../utils';
 // import {authenticated, verifyIp} from "../middlewares";
 import {
     fetchDailyAttendance,
@@ -9,6 +10,7 @@ import {
     registerStudentArrival,
     registerStudentDeparture
 } from "../controllers";
+import { io } from '..';
 
 
 export const FeeRouter: Router = express.Router();
@@ -17,6 +19,9 @@ export const FeeRouter: Router = express.Router();
 FeeRouter.post('/arrival', async (req: Request, res: Response) => {
     const response: ResponseType = await registerStudentArrival(req.body);
     res.status(response.status as number).send(response);
+    if(response.success){
+        io.emit('new-arrival', response.data);
+    }
 });
 
 
@@ -24,7 +29,9 @@ FeeRouter.post('/arrival', async (req: Request, res: Response) => {
 FeeRouter.put('/departure', async (req: Request, res: Response) => {
     const response: ResponseType = await registerStudentDeparture(req.body);
     res.status(response.status as number).send(response);
-
+    if(response.success){
+        io.emit('new-departure', response.data);
+    }
 });
 
 

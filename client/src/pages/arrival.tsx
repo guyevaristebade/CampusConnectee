@@ -40,22 +40,21 @@ export const ArrivalPage: React.FC = () => {
         registeredArrival(values)
             .then((data) => {
                 if(data.success){
-                    message.success(" 🎉 Vous êtes officiellement arrivé ! Félicitations, vous avez réussi à vous lever ce matin 😉");
-                    
+                    message.success(data.msg);
                     setShowConfetti(true);
                     setTimeout(() => setShowConfetti(false), 3000); 
                     form.resetFields();
                 }else{
-                    message.error("Oups ! Une erreur s'est glissée par ici... Nos développeurs sont en mode super-héros, mais ils ont besoin de votre signal pour intervenir !");
+                    message.error(data.msg);
                 }
             })
     };
     
     
-    useEffect(() => {
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, [handleResize]);
+    // useEffect(() => {
+    //     window.addEventListener("resize", handleResize);
+    //     return () => window.removeEventListener("resize", handleResize);
+    // }, [handleResize]);
     
     useEffect(() => {
         fetchAllStudent()
@@ -67,20 +66,7 @@ export const ArrivalPage: React.FC = () => {
             }
         })
     },[])
-    
-    
-    // useEffect(() => {
-    //     if (!isAtCampus) {
-    //         navigate("/not-authorized");
-    //     }
-    // }, [isAtCampus, navigate]);
-        
 
-    // if (loading) {
-    //     return <Content className='flex justify-center items-center min-h-full'>
-    //         <Spin percent='auto' size='large'/> 
-    //     </Content>
-    // }
 
 
     return (

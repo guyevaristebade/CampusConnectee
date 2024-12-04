@@ -8,43 +8,44 @@ import dotenv from 'dotenv';
 import morgan from 'morgan';
 import cors from 'cors';
 import helmet from 'helmet';
+import http from 'http';
+import { initializeSocketIO } from './utils';  
 
 dotenv.config();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 const app: Express = express();
+const server = http.createServer(app);
+
+// Initialiser Socket.IO avec le serveur HTTP
+export const io = initializeSocketIO(server);
 
 // Configurer CORS
-const allowedOrigins = process.env.FRONT_END_URL?.split(',') || []
-
+const allowedOrigins = process.env.FRONT_END_URL?.split(',') || [];
 const corsOptions = {
     origin: allowedOrigins,
-    credentials: true 
+    credentials: true
 };
 
-
 // Utiliser les middlewares dans l'ordre correct
-app.use(cookieParser());  
-app.use(cors(corsOptions)); 
-app.use(bodyParser.json()); 
+app.use(cookieParser());
+app.use(cors(corsOptions));
+app.use(bodyParser.json());
 
 if (process.env.NODE_ENV === 'production') {
-    app.use(compression()); 
-    app.use(morgan('combined'));  
-    app.use(helmet());  
-} else {
-    app.use(morgan('dev'));  
-}
+    app.use(compression());
+    app.use(morgan('combined'));
+    app.use(helmet());
+} 
 
-// Définition des routes API
+// Définir les routes API
 app.use('/api/auth', UserRouter);
 app.use('/api/attendance', FeeRouter);
 app.use('/api/student', StudentRouter);
 
-
 // Connexion à la base de données et démarrage du serveur
 connectDB().then(() => {
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
         console.log(`Server is running on port: ${PORT}`);
     });
 });

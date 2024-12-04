@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 
 export const authenticated = async (req: Request, res: Response, next: NextFunction): Promise<unknown> => {
     let token = (req as any).cookies.token_ccpn;
-    console.log("Token récupéré depuis les cookies: ", token);
     
     if (!token) {
         return res.status(401).send('Unauthorized');

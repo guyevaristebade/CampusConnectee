@@ -35,15 +35,16 @@ export const registerStudentArrival = async (arrivalData: IArrival): Promise<Res
             is_registered: true
         });
 
-        
+        const student = await Student.findById(arrivalData.student_id);
+
         await newArrivalRecord.save();
-        responsePayload.msg = "Enregistré avec succès";
-        responsePayload.data = newArrivalRecord; 
+        responsePayload.msg = "🎉 Vous êtes officiellement arrivé ! Félicitations, vous avez réussi à vous lever ce matin 😉";
+        responsePayload.data = student; 
 
     } catch (e: any) {
         responsePayload.status = 500;
         responsePayload.success = false;
-        responsePayload.msg = e.message;
+        responsePayload.msg = "Oups ! Une erreur s'est glissée par ici... Nos développeurs sont en mode super-héros, mais ils ont besoin de votre signal pour intervenir !Une erreur s'est produite, veuillez contacter les développeurs "+ e.message ;
     }
 
     return responsePayload;
@@ -99,8 +100,10 @@ export const registerStudentDeparture = async (departureData: IDeparture): Promi
             { new: true }
         );
 
+        const student = await Student.findById(departureData.student_id);
+
         responsePayload.msg = "Enregistré avec succès";
-        responsePayload.data = updatedDepartureRecord;
+        responsePayload.data = student;
         
         
     } catch (e: any) {

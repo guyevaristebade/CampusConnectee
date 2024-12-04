@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx'; // Importer la bibliothèque xlsx
+import * as XLSX from 'xlsx';
 import fs from 'fs';
 import csv from 'csv-parser';
 import { Student } from '../models';
@@ -37,35 +37,29 @@ export const createStudentWithCsvFile = async (filePath: string) => {
 
 
 export const createStudentWithXlsxFile = async (filePath: string) => {
-    // Lire le fichier Excel
-    const fileBuffer = fs.readFileSync(filePath);
+
+    const fileBuffer : Buffer = fs.readFileSync(filePath);
     
-    // Convertir le fichier buffer en un objet de données
     const workbook : XLSX.WorkBook = XLSX.read(fileBuffer, { type: 'buffer' });
 
-    // Sélectionner la première feuille de travail
     const worksheet : XLSX.WorkSheet = workbook.Sheets[workbook.SheetNames[0]];
     
-    // Convertir les données de la feuille en format JSON
     const studentsData :  any[] = XLSX.utils.sheet_to_json(worksheet);
 
-    // Parcourir les données des étudiants
     for (const row  of studentsData) {
         const last_name = row['nom'];
         const first_name = row['prenom'];
 
         try {
-            // Vérifier si l'étudiant existe déjà dans la base de données
             const existingStudent = await Student.findOne({ last_name, first_name });
 
             if (!existingStudent) {
-                // Si l'étudiant n'existe pas, créer un nouvel enregistrement
                 const student = new Student({
                     last_name,
                     first_name,
                 });
 
-                await student.save(); // Sauvegarder dans la base de données
+                await student.save();
                 console.log(`Étudiant ajouté : ${first_name} ${last_name}`);
             } else {
                 console.log(`Étudiant déjà existant : ${first_name} ${last_name}`);

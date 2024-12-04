@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Image, Layout, Menu, Button, Table, Typography, Row, Col, Tag, Statistic, message, Spin } from 'antd';
-import { LogoutOutlined, CalendarOutlined, AppstoreOutlined, TableOutlined } from '@ant-design/icons';
+import { LogoutOutlined, CalendarOutlined, AppstoreOutlined, TableOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { fetchAllStudent, fetchDailyAttendance, fetchStatistics, fetchTotalSTudentHoursPerWeek } from '../api';
 import { IStatistics, IStudent } from '../types';
 import { useAuth } from '../hooks';
 import { exportToExcel } from '../utils';
 import { DataTable } from '../components';
 import { useNavigate } from 'react-router-dom';
+import { socket } from '../utils';
+
 
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
 
-// const socket = io(process.env.REACT_APP_SERVER_URL,{
-//     transports: ['websocket'], // Priorise WebSocket
-//     withCredentials: true, // Permet l’envoi des cookies
-// })
 export const ResponsiblePage: React.FC = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
@@ -26,8 +24,8 @@ export const ResponsiblePage: React.FC = () => {
     const [selectedMenuKey, setSelectedMenuKey] = useState<string>('dashboard');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(5);
-
-
+    const [siderWidth, setSiderWidth] = useState<number>(250)
+    const [collapsed, setCollapsed] = useState<boolean>(true)
 
     const columns = [
         { title: 'Nom', dataIndex: 'last_name', key: 'last_name' },
@@ -150,13 +148,31 @@ export const ResponsiblePage: React.FC = () => {
     }, []);
 
     useEffect(() => {
-
         const selectedMenuKey = localStorage.getItem('selectedMenuKey');
         if (selectedMenuKey) {
             setSelectedMenuKey(selectedMenuKey);
         }
     }, []);
     
+
+    useEffect(() => {
+        const handleArrival = (data: any) => {
+            message.success(`${data.first_name} ${data.last_name} Vient d'arriver au campus`, 10);
+        };
+        const handleDeparture = (data: any) => {
+            message.success(`${data.first_name} ${data.last_name} Vient de partir au campus`, 10);
+        };
+    
+        socket.on('new-arrival', handleArrival);
+        socket.on('new-departure', handleDeparture);
+    
+        return () => {
+            socket.off('new-arrival', handleArrival);
+            socket.off('new-departure', handleDeparture);
+        };
+    }, []);
+    
+
 
     if(!dailyAttendance || !statistics || !students || !attendancePerWeek){
         return (
@@ -173,11 +189,12 @@ export const ResponsiblePage: React.FC = () => {
     return (
         <Layout className='min-h-screen'> {/* min-h-screen => min-height : 100vh */}
             {/* Faire un composant SideBar */}
-            <Sider width={250} className="bg-white text-black">
-                <div className="logo text-black mb-6 text-center p-5">
+            <Sider width={collapsed ? siderWidth : 0} className="bg-white text-black">
+                <div className="logo text-black mb-6 text-center p-5 relative">
                     <Image width={200} src="/logo_cc_nemours.jpg" preview={false} />
                 </div>
                 <Menu mode="inline" selectedKeys={[selectedMenuKey]} onClick={onMenuClick} items={menuItems} className="bg-white" />
+                <Button type='primary' className='absolute top-0 right-[-0px]'><MenuUnfoldOutlined /></Button>
             </Sider>
 
             <Layout>
