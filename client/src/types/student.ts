@@ -3,3 +3,7 @@ export interface IStudentType{
     last_name: string,
     first_name: string
 }
+export interface IStudentData{
+    first_name: string,
+    last_name: string
+} 

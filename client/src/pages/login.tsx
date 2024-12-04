@@ -8,19 +8,12 @@ const { Content } = Layout;
 
 export const Login: React.FC = () => {
     const { login } = useAuth();
-    // const navigate = useNavigate();
 
+    
     const onSubmit = async (values: UserLogin) => {
         await login(values);  
     };
 
-    // useEffect(() => {
-    //     if (user) {
-    //         navigate('/dashboard');
-    //     }
-    // }, [user, navigate]);
-
-    
     return (
         <Content className='flex justify-center p-5 items-center bg-white'>
             <Row justify="center" className='max-w-md w-full'>

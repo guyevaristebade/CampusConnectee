@@ -1,33 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { Image, Layout, Menu, Button, Table, Typography, Row, Col, Tag, Statistic, message, Spin, Alert } from 'antd';
-import { LogoutOutlined, CalendarOutlined, AppstoreOutlined, TableOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
-import { fetchAllStudent, fetchDailyAttendance, fetchStatistics, fetchTotalSTudentHoursPerWeek } from '../api';
-import { IStatistics, IStudent } from '../types';
 import { useAuth } from '../hooks';
-import { exportToExcel } from '../utils';
-import { DataTable } from '../components';
-import { useNavigate } from 'react-router-dom';
 import { socket } from '../utils';
+import { EditStudentModal, Sidebar } from '../components';
+import { useNavigate } from 'react-router-dom';
+import { LogoutOutlined } from '@ant-design/icons';
+import { exportToExcel } from '../utils';
+import { IStatistics, IStudent } from '../types';
+import { DataTable, StudentList } from '../components';
+import { Layout, Button, Typography, Row, Col, Tag, Statistic, message, Spin } from 'antd';
+import { 
+    deleteStudentById, 
+    fetchAllStudent, 
+    fetchDailyAttendance, 
+    fetchStatistics, 
+    fetchTotalSTudentHoursPerWeek, 
+    updateStudent
+} from '../api';
 
 
-const { Header, Content, Sider } = Layout;
+const { Header, Content } = Layout;
 const { Title } = Typography;
 
 export const ResponsiblePage: React.FC = () => {
     const { user, logout } = useAuth();
-    const navigate = useNavigate();
-    
+    let navigate = useNavigate();
+
     const [dailyAttendance, setDailyAttendance] = useState<any[]>([]);
     const [statistics, setStatistics] = useState<IStatistics | null>(null);
     const [students, setStudents] = useState<IStudent[]>([]);
     const [attendancePerWeek, setAttendancePerWeek] = useState<any[]>([]);
     const [selectedMenuKey, setSelectedMenuKey] = useState<string>('dashboard');
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [pageSize, setPageSize] = useState<number>(5);
-    const [siderWidth, setSiderWidth] = useState<number>(250)
-    const [collapsed, setCollapsed] = useState<boolean>(true)
-
-    const columns = [
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedStudent, setSelectedStudent] = useState<IStudent | null>(null);
+    
+    
+    const dailyAttendanceColumns = [
         { title: 'Nom', dataIndex: 'last_name', key: 'last_name' },
         { title: 'Prénom', dataIndex: 'first_name', key: 'first_name_1' },
         { title: 'Heure d\'arrivée', dataIndex: 'arrival_time', key: 'arrival_time_1' },
@@ -41,7 +48,7 @@ export const ResponsiblePage: React.FC = () => {
         }
     ];
 
-    const attendancePerWeekColumns = [
+    const weeklyAttendanceColumns = [
         { title: 'Nom', dataIndex: 'last_name', key: 'last_name_2' },
         { title: 'Prénom', dataIndex: 'first_name', key: 'first_name_2' },
         { 
@@ -73,20 +80,6 @@ export const ResponsiblePage: React.FC = () => {
             )
         }
     ];
-    
-
-    const menuItems = [
-        { key: 'dashboard', icon: <AppstoreOutlined />, label: 'Dashboard' },
-        { key : 'attendance', 
-            icon: <TableOutlined />, 
-            label: 'Emargements', 
-            children : [
-                { key: 'dailyAttendance', icon: <CalendarOutlined />, label: 'Quotidien' },
-                { key: 'totalHoursPerWeek', icon: <CalendarOutlined  />, label: 'Hebdomadaire' },
-            ] 
-        }
-    ];
-
 
 
     const onDateRangeChange = (dates: any) => {
@@ -100,16 +93,38 @@ export const ResponsiblePage: React.FC = () => {
         setSelectedMenuKey(newKey);
     };
 
-    const onDeleteStudent = (id: string) => {
-        // mettre cette logique en place avec l'api
-        const deleteStudent : IStudent[] = students.filter(student => student._id !== id);
-        setStudents(deleteStudent);
+    const onDeleteStudent =  (id: string) => {
+        deleteStudentById(id)
+            .then((response) => {
+                if (response.success) {
+                    message.success(response.msg);
+                    const newStudents : IStudent[] = students.filter(student => student._id !== id);
+        setStudents(newStudents);
+                } else {
+                    message.error(response.msg);
+                }
+            })
+        
     };
 
-    const handleTableChange = (pagination: any) => {
-        setCurrentPage(pagination.current);
-        setPageSize(pagination.pageSize);
-    };
+    const onEditStudent = (id: string) => {
+        const newStudent : IStudent | null = students.find((s) => s._id === id) || null;
+        setSelectedStudent(newStudent);
+        setIsModalVisible(true);
+    }
+
+    const onUpdateStudent = (student: IStudent) => {
+        // updateStudent(student._id, student)
+        //     .then((response) => {
+        //         if (response.success) {
+        //             message.success(response.msg);
+        //             const newStudents = students.map((s) => s._id === student._id ? student : s);
+        //             setStudents(newStudents);
+        //         } else {
+        //             message.error(response.msg);
+        //         }
+        //     })
+    }
 
     const handleDownloadXLSX = (data : any[], title : string) => {
         const xlsx = exportToExcel(data,title)
@@ -189,14 +204,10 @@ export const ResponsiblePage: React.FC = () => {
 
     return (
         <Layout className='min-h-screen'> {/* min-h-screen => min-height : 100vh */}
-            {/* Faire un composant SideBar */}
-            <Sider width={collapsed ? siderWidth : 0} className="bg-white text-black">
-                <div className="logo text-black mb-6 text-center p-5 relative">
-                    <Image width={200} src="/logo_cc_nemours.jpg" preview={false} />
-                </div>
-                <Menu mode="inline" selectedKeys={[selectedMenuKey]} onClick={onMenuClick} items={menuItems} className="bg-white" />
-                <Button type='primary' className='absolute top-0 right-[-0px]'><MenuUnfoldOutlined /></Button>
-            </Sider>
+            <Sidebar
+                selectedMenuKey={selectedMenuKey}
+                onMenuClick={onMenuClick}
+            />
 
             <Layout>
                 <Header className="bg-white flex  items-center justify-end">
@@ -211,7 +222,7 @@ export const ResponsiblePage: React.FC = () => {
                     </Button>
                 </Header>
 
-                <Content className='px-10 py-5'>
+                <Content className='px-10 py-5 overflow-scroll'>
                     {selectedMenuKey === 'dashboard' && (
                         <>
                             <Title className="mb-8" level={3}>Dashboard</Title>
@@ -226,22 +237,6 @@ export const ResponsiblePage: React.FC = () => {
                                     <Statistic className="bg-white p-4 rounded" value={statistics?.presence_rate} suffix="%" title="Taux de présence journalier" />
                                 </Col>
                             </Row>
-                            <Row>
-                                <Col span={24}>
-                                    <Title className="my-12" level={3}>Liste des étudiants du campus</Title>
-                                    <Table
-                                        columns={studentColumns}
-                                        dataSource={students}
-                                        rowKey="_id"
-                                        pagination={{
-                                            current: currentPage,
-                                            pageSize: pageSize,
-                                            total: students.length,
-                                            onChange: (page, pageSize) => handleTableChange({ current: page, pageSize }),
-                                        }}
-                                    />
-                                </Col>
-                            </Row>
                         </>
                     )}
 
@@ -249,13 +244,10 @@ export const ResponsiblePage: React.FC = () => {
                         <>
                             <Title level={2} className='mb-10'>Émargement de la journée</Title>
                             <DataTable 
-                                columns={columns} 
+                                columns={dailyAttendanceColumns} 
                                 dataSource={dailyAttendance}
                                 rowKey='_id'
                                 onDownload={handleDownloadXLSX}
-                                handleTableChange={handleTableChange}
-                                currentPage={currentPage}
-                                pageSize={pageSize}
                                 downloadTitle={`Liste_emargement_journalier-${new Date().toISOString().split('T')[0]}`}
                             />
                         </>
@@ -266,18 +258,34 @@ export const ResponsiblePage: React.FC = () => {
                             <Title level={2}>Nombre d'heure total pour la semaine en cours
                             </Title>
                             <DataTable 
-                                columns={attendancePerWeekColumns}
+                                columns={weeklyAttendanceColumns}
                                 dataSource={attendancePerWeek}
                                 rowKey="_id"
                                 onDownload={handleDownloadXLSX}
-                                handleTableChange={handleTableChange} 
-                                currentPage={currentPage}
-                                pageSize={pageSize}
                                 downloadTitle={`Liste_emargement_semaine_en_course-${new Date().toISOString().split('T')[0]}`}
-
                             />
                         </>
                     )}
+
+                    {selectedMenuKey === 'studentList' && (
+                        <>
+                            <Title level={2}>Liste des étudiants</Title>
+                            <StudentList
+                                students={students}
+                                handleDelete={onDeleteStudent}
+                                handleEdit={onEditStudent}
+                            />
+                        </>
+                    )}
+                    <EditStudentModal
+                        student={selectedStudent}
+                        visible={isModalVisible}
+                        onCancel={() => setIsModalVisible(false)}
+                        // onSave={(student) => {
+                        //     const newStudents = students.map((s) => s._id === student._id ? student : s);
+                        //     setStudents(newStudents);
+                        // }}
+                    />
                 </Content>
             </Layout>
         </Layout>
