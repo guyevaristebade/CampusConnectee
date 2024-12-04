@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Image, Layout, Menu, Button, Table, Typography, Row, Col, Tag, Statistic, message, Spin } from 'antd';
+import { Image, Layout, Menu, Button, Table, Typography, Row, Col, Tag, Statistic, message, Spin, Alert } from 'antd';
 import { LogoutOutlined, CalendarOutlined, AppstoreOutlined, TableOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { fetchAllStudent, fetchDailyAttendance, fetchStatistics, fetchTotalSTudentHoursPerWeek } from '../api';
 import { IStatistics, IStudent } from '../types';
@@ -158,6 +158,7 @@ export const ResponsiblePage: React.FC = () => {
     useEffect(() => {
         const handleArrival = (data: any) => {
             message.success(`${data.first_name} ${data.last_name} Vient d'arriver au campus`, 10);
+        
         };
         const handleDeparture = (data: any) => {
             message.success(`${data.first_name} ${data.last_name} Vient de partir au campus`, 10);
