@@ -228,7 +228,7 @@ export const ResponsiblePage: React.FC = () => {
                 onMenuClick={onMenuClick}
             />
 
-            <Layout>
+            <Layout className='flex flex-col flex-1 min-h-screen'>
                 <Header className="bg-white flex  items-center justify-end">
                     Bonjour, {user?.username}
                     <Button
@@ -240,105 +240,106 @@ export const ResponsiblePage: React.FC = () => {
                         Déconnexion
                     </Button>
                 </Header>
+                <div className="flex-1 overflow-y-auto">
+                    <Content className='px-10 py-5'>
+                        {selectedMenuKey === 'dashboard' && (
+                            <>
+                                <Title className="mb-8" level={3}>Dashboard</Title>
+                                <Row gutter={[16, 16]}>
+                                    <Col span={8}>
+                                        <Statistic className="bg-white p-4 rounded" value={statistics?.total_student} title="Nombre total d'élève" />
+                                    </Col>
+                                    <Col span={8}>
+                                        <Statistic className="bg-white p-4 rounded" value={statistics?.daily_student} title="Nombre d'élève présent aujourd'hui" />
+                                    </Col>
+                                    <Col span={8}>
+                                        <Statistic className="bg-white p-4 rounded" value={statistics?.presence_rate} suffix="%" title="Taux de présence journalier" />
+                                    </Col>
+                                </Row>
+                            </>
+                        )}
 
-                <Content className='px-10 py-5 overflow-scroll'>
-                    {selectedMenuKey === 'dashboard' && (
-                        <>
-                            <Title className="mb-8" level={3}>Dashboard</Title>
-                            <Row gutter={[16, 16]}>
-                                <Col span={8}>
-                                    <Statistic className="bg-white p-4 rounded" value={statistics?.total_student} title="Nombre total d'élève" />
-                                </Col>
-                                <Col span={8}>
-                                    <Statistic className="bg-white p-4 rounded" value={statistics?.daily_student} title="Nombre d'élève présent aujourd'hui" />
-                                </Col>
-                                <Col span={8}>
-                                    <Statistic className="bg-white p-4 rounded" value={statistics?.presence_rate} suffix="%" title="Taux de présence journalier" />
-                                </Col>
-                            </Row>
-                        </>
-                    )}
+                        {selectedMenuKey === 'dailyAttendance' && (
+                            <>
+                                <Title level={2} className='mb-10'>Émargement de la journée</Title>
+                                <DataTable 
+                                    columns={dailyAttendanceColumns} 
+                                    dataSource={dailyAttendance}
+                                    rowKey='_id'
+                                    onDownload={handleDownloadXLSX}
+                                    downloadTitle={`Liste_emargement_journalier-${new Date().toISOString().split('T')[0]}`}
+                                />
+                            </>
+                        )}
 
-                    {selectedMenuKey === 'dailyAttendance' && (
-                        <>
-                            <Title level={2} className='mb-10'>Émargement de la journée</Title>
-                            <DataTable 
-                                columns={dailyAttendanceColumns} 
-                                dataSource={dailyAttendance}
-                                rowKey='_id'
-                                onDownload={handleDownloadXLSX}
-                                downloadTitle={`Liste_emargement_journalier-${new Date().toISOString().split('T')[0]}`}
-                            />
-                        </>
-                    )}
+                        {selectedMenuKey === 'totalHoursPerWeek' && (
+                            <>
+                                <Title level={2}>Nombre d'heure total pour la semaine en cours
+                                </Title>
+                                <DataTable 
+                                    columns={weeklyAttendanceColumns}
+                                    dataSource={attendancePerWeek}
+                                    rowKey="_id"
+                                    onDownload={handleDownloadXLSX}
+                                    downloadTitle={`Liste_emargement_semaine_en_course-${new Date().toISOString().split('T')[0]}`}
+                                />
+                            </>
+                        )}
 
-                    {selectedMenuKey === 'totalHoursPerWeek' && (
-                        <>
-                            <Title level={2}>Nombre d'heure total pour la semaine en cours
-                            </Title>
-                            <DataTable 
-                                columns={weeklyAttendanceColumns}
-                                dataSource={attendancePerWeek}
-                                rowKey="_id"
-                                onDownload={handleDownloadXLSX}
-                                downloadTitle={`Liste_emargement_semaine_en_course-${new Date().toISOString().split('T')[0]}`}
-                            />
-                        </>
-                    )}
+                        {selectedMenuKey === 'studentList' && (
+                            <>
+                                <Title level={2}>Liste des étudiants</Title>
+                                {/* <StudentList
+                                    students={students}
+                                    handleDelete={onDeleteStudent}
+                                    handleEdit={onEditStudent}
+                                /> */}
 
-                    {selectedMenuKey === 'studentList' && (
-                        <>
-                            <Title level={2}>Liste des étudiants</Title>
-                            {/* <StudentList
-                                students={students}
-                                handleDelete={onDeleteStudent}
-                                handleEdit={onEditStudent}
-                            /> */}
+                                <Tabs defaultActiveKey="1" items={items} />;
+                            </>
+                        )}
+                        {selectedMenuKey === 'addStudent' && (
+                            <>
+                                <Title className="mb-8" level={3}>Ajouter un étudiant</Title>
 
-                            <Tabs defaultActiveKey="1" items={items} />;
-                        </>
-                    )}
-                    {selectedMenuKey === 'addStudent' && (
-                        <>
-                            <Title className="mb-8" level={3}>Ajouter un étudiant</Title>
-
-                            <Form 
-                                form={form} 
-                                layout="vertical" 
-                                className='grid gap-4 grid-cols-1 md:grid-cols-2'
-                                onFinish={(values) => {
-                                    // Handle form submission
-                                    console.log(values);
-                                }}
-                            >
-                                <Form.Item
-                                    name="first_name"
-                                    label="Prénom"
-                                    rules={[{ required: true, message: 'Veuillez entrer le prénom' }]}
+                                <Form 
+                                    form={form} 
+                                    layout="vertical" 
+                                    className='grid gap-4 grid-cols-1 md:grid-cols-2'
+                                    onFinish={(values) => {
+                                        // Handle form submission
+                                        console.log(values);
+                                    }}
                                 >
-                                    <Input size='large' />
-                                </Form.Item>
-                                <Form.Item
-                                    name="last_name"
-                                    label="Nom de famille"
-                                    rules={[{ required: true, message: 'Veuillez entrer le nom de famille' }]}
-                                >
-                                    <Input size='large'  />
-                                </Form.Item>
-                                <Form.Item className='col-span-2 flex justify-end'>
-                                    <Button onClick={onAddStudent} className='bg-[#000091] p-6 text-white' htmlType="submit">
-                                        Enregistrer
-                                    </Button>
-                                </Form.Item>
-                            </Form>
-                        </>
-                    )}
-                    <EditStudentModal
-                        student={selectedStudent}
-                        visible={isModalVisible}
-                        onCancel={() => setIsModalVisible(false)}
-                    />
-                </Content>
+                                    <Form.Item
+                                        name="first_name"
+                                        label="Prénom"
+                                        rules={[{ required: true, message: 'Veuillez entrer le prénom' }]}
+                                    >
+                                        <Input size='large' />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name="last_name"
+                                        label="Nom de famille"
+                                        rules={[{ required: true, message: 'Veuillez entrer le nom de famille' }]}
+                                    >
+                                        <Input size='large'  />
+                                    </Form.Item>
+                                    <Form.Item className='col-span-2 flex justify-end'>
+                                        <Button onClick={onAddStudent} className='bg-[#000091] p-6 text-white' htmlType="submit">
+                                            Enregistrer
+                                        </Button>
+                                    </Form.Item>
+                                </Form>
+                            </>
+                        )}
+                        <EditStudentModal
+                            student={selectedStudent}
+                            visible={isModalVisible}
+                            onCancel={() => setIsModalVisible(false)}
+                        />
+                    </Content>
+                </div>
             </Layout>
         </Layout>
     );
