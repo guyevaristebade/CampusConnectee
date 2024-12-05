@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../hooks';
 import { socket } from '../utils';
 import { EditStudentModal, Sidebar } from '../components';
 import { useNavigate } from 'react-router-dom';
 import { LogoutOutlined } from '@ant-design/icons';
 import { exportToExcel } from '../utils';
-import { IStatistics, IStudent } from '../types';
+import { IStatistics, IStudent, IStudentData } from '../types';
 import { DataTable, StudentList } from '../components';
-import { Layout, Button, Typography, Row, Col, Tag, Statistic, message, Spin } from 'antd';
+import { Layout, Button, Typography, Row, Col, Tag, Statistic, message, Spin, Form, Input, TabsProps, Table, Tabs } from 'antd';
 import { 
+    createStudent,
     deleteStudentById, 
     fetchAllStudent, 
     fetchDailyAttendance, 
@@ -17,13 +18,12 @@ import {
     updateStudent
 } from '../api';
 
-
 const { Header, Content } = Layout;
 const { Title } = Typography;
 
 export const ResponsiblePage: React.FC = () => {
     const { user, logout } = useAuth();
-    let navigate = useNavigate();
+    const [form] = Form.useForm();
 
     const [dailyAttendance, setDailyAttendance] = useState<any[]>([]);
     const [statistics, setStatistics] = useState<IStatistics | null>(null);
@@ -33,6 +33,7 @@ export const ResponsiblePage: React.FC = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<IStudent | null>(null);
     
+   
     
     const dailyAttendanceColumns = [
         { title: 'Nom', dataIndex: 'last_name', key: 'last_name' },
@@ -104,7 +105,6 @@ export const ResponsiblePage: React.FC = () => {
                     message.error(response.msg);
                 }
             })
-        
     };
 
     const onEditStudent = (id: string) => {
@@ -113,18 +113,20 @@ export const ResponsiblePage: React.FC = () => {
         setIsModalVisible(true);
     }
 
-    const onUpdateStudent = (student: IStudent) => {
-        // updateStudent(student._id, student)
-        //     .then((response) => {
-        //         if (response.success) {
-        //             message.success(response.msg);
-        //             const newStudents = students.map((s) => s._id === student._id ? student : s);
-        //             setStudents(newStudents);
-        //         } else {
-        //             message.error(response.msg);
-        //         }
-        //     })
-    }
+    const onAddStudent = useCallback(() => {
+            const studentData : IStudentData = form.getFieldsValue();
+            createStudent(studentData)
+                .then((response) => {
+                    if (response.success) {
+                        message.success(response.msg);
+                        const newStudents : IStudent[] = [...students, response.data].sort((a, b) => a.last_name.localeCompare(b.last_name));
+                        setStudents(newStudents);
+                        form.resetFields();
+                    } else {
+                        message.error(response.msg);
+                    }
+                })
+    }, [students, form]);
 
     const handleDownloadXLSX = (data : any[], title : string) => {
         const xlsx = exportToExcel(data,title)
@@ -138,6 +140,23 @@ export const ResponsiblePage: React.FC = () => {
     const onLogout = async () => {
         await logout();
     }
+
+    const items: TabsProps['items'] = [
+        {
+            key: 'table',
+            label: 'Liste au format Card ',
+            children: <StudentList
+                students={students}
+                handleDelete={onDeleteStudent}
+                handleEdit={onEditStudent}
+                />,
+        },
+        {
+            key: 'card',
+            label: 'Liste au format tableau',
+            children: <Table columns={studentColumns} dataSource={students} rowKey={'_id'}/>,
+        }
+    ];
 
     useEffect(() => {
         const fetchData = async () => {
@@ -203,7 +222,7 @@ export const ResponsiblePage: React.FC = () => {
     }
 
     return (
-        <Layout className='min-h-screen'> {/* min-h-screen => min-height : 100vh */}
+        <Layout className='min-h-screen flex'> {/* min-h-screen => min-height : 100vh */}
             <Sidebar
                 selectedMenuKey={selectedMenuKey}
                 onMenuClick={onMenuClick}
@@ -270,21 +289,54 @@ export const ResponsiblePage: React.FC = () => {
                     {selectedMenuKey === 'studentList' && (
                         <>
                             <Title level={2}>Liste des étudiants</Title>
-                            <StudentList
+                            {/* <StudentList
                                 students={students}
                                 handleDelete={onDeleteStudent}
                                 handleEdit={onEditStudent}
-                            />
+                            /> */}
+
+                            <Tabs defaultActiveKey="1" items={items} />;
+                        </>
+                    )}
+                    {selectedMenuKey === 'addStudent' && (
+                        <>
+                            <Title className="mb-8" level={3}>Ajouter un étudiant</Title>
+
+                            <Form 
+                                form={form} 
+                                layout="vertical" 
+                                className='grid gap-4 grid-cols-1 md:grid-cols-2'
+                                onFinish={(values) => {
+                                    // Handle form submission
+                                    console.log(values);
+                                }}
+                            >
+                                <Form.Item
+                                    name="first_name"
+                                    label="Prénom"
+                                    rules={[{ required: true, message: 'Veuillez entrer le prénom' }]}
+                                >
+                                    <Input size='large' />
+                                </Form.Item>
+                                <Form.Item
+                                    name="last_name"
+                                    label="Nom de famille"
+                                    rules={[{ required: true, message: 'Veuillez entrer le nom de famille' }]}
+                                >
+                                    <Input size='large'  />
+                                </Form.Item>
+                                <Form.Item className='col-span-2 flex justify-end'>
+                                    <Button onClick={onAddStudent} className='bg-[#000091] p-6 text-white' htmlType="submit">
+                                        Enregistrer
+                                    </Button>
+                                </Form.Item>
+                            </Form>
                         </>
                     )}
                     <EditStudentModal
                         student={selectedStudent}
                         visible={isModalVisible}
                         onCancel={() => setIsModalVisible(false)}
-                        // onSave={(student) => {
-                        //     const newStudents = students.map((s) => s._id === student._id ? student : s);
-                        //     setStudents(newStudents);
-                        // }}
                     />
                 </Content>
             </Layout>
