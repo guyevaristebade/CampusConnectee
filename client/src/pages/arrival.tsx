@@ -1,17 +1,14 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Layout, Form, Row, Col, message, Spin } from "antd";
+import { Layout, Form, Row, Col, message } from "antd";
 import Confetti from 'react-confetti';
 import { IArrival, IStudentType } from '../types';
 import { fetchAllStudent, registeredArrival } from '../api';
 import { AttendanceForm, Panel } from '../components';
-import { useLocation } from '../context';
-import { useNavigate } from 'react-router-dom';
 const { Content } = Layout;
 
 export const ArrivalPage: React.FC = () => {
     const [form] = Form.useForm();
-    // const { isAtCampus, loading } = useLocation();
-    // const navigate = useNavigate();
+
         
     const [showConfetti, setShowConfetti] = useState(false);
     const [windowSize, setWindowSize] = useState<{ width: number; height: number }>({
@@ -20,11 +17,6 @@ export const ArrivalPage: React.FC = () => {
     });
     const [studentArray, setStudentArray] = useState<IStudentType[]>([]);
 
-    // Fonction pour mettre à jour la taille de la fenêtre
-    const handleResize = useCallback(() => {
-        setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-    }, []);
-    
 
     // Mémorise le tableau de nom d'étudiant pour éviter les rendu inutile 
     const studentOptions = useMemo(() => 
@@ -81,7 +73,6 @@ export const ArrivalPage: React.FC = () => {
                         <AttendanceForm 
                             onFinish={onFinish} 
                             firstFieldName='student_id' 
-                            secondFieldName='arrival_time' 
                             studentOptions={studentOptions} 
                             buttonText='Arrivé' 
                             buttonColor='#000091'

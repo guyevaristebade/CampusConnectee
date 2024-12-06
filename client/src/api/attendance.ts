@@ -1,8 +1,7 @@
 import { IArrival, IDateType, IDeparture, IRangeDateType, ResponseType } from "../types";
 import { instance } from "../utils";
 
-// Permet d'enregistrer l'arrivée d'un étudiant
-// Elle prend un objet `arrivalData` de type `IArrival`(inforations liées aux départs)
+
 export const registeredArrival = async (arrivalData: IArrival): Promise<ResponseType<any>> => {
     try {
         const response = await instance.post('/attendance/arrival', arrivalData);
@@ -13,8 +12,7 @@ export const registeredArrival = async (arrivalData: IArrival): Promise<Response
 }
 
 
-// Permet d'enregistrer le départ d'un étudiant
-// Elle prend un objet `arrivalData` de type `IDeparture` (inforations liées aux départs)
+
 export const registeredDeparture = async (arrivalData: IDeparture): Promise<ResponseType<any>> => {
     try {
         const response = await instance.put('/attendance/departure', arrivalData);
@@ -24,7 +22,7 @@ export const registeredDeparture = async (arrivalData: IDeparture): Promise<Resp
     }
 }
 
-// Permet de récupérer les données de présence pour la journée en cours
+
 export const fetchDailyAttendance = async (): Promise<ResponseType<any>> => {
     try {
         const response = await instance.get('/attendance/current_day');

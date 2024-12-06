@@ -1,26 +1,19 @@
 import {FeeDocument, IArrival, IDate, IDeparture, IRangeDateType, ResponseType} from "../types";
 import { Attendance, Student } from "../models";
-import { getDate, timeDifferenceInDecimal, timeToDecimal } from "../utils";
+import { getDate, timeDifferenceInDecimal } from "../utils";
 import moment from "moment";
-import { time } from "console";
 
 
 
-/**
- * Enregistre l'arrivée d'un étudiant.
- * Vérifie d'abord si l'étudiant est déjà enregistré pour la journée.
- * Si ce n'est pas le cas, un nouvel enregistrement est créé avec l'heure d'arrivée.
- * @param arrivalData - Données relatives à l'arrivée de l'étudiant.
- * @param studentId - ID de l'étudiant.
- * @returns {Promise<ResponseType>} Un objet contenant le statut de la requête et les données récupérées. */
-export const registerStudentArrival = async (arrivalData: IArrival): Promise<ResponseType> => {
+
+export const registerStudentArrival = async (arrivalData :  IArrival): Promise<ResponseType> => {
     let responsePayload: ResponseType = {
         success: true,
         status: 200
     };
 
     try {
-        const studentArrivalRecord = await Attendance.findOne({ student_id: arrivalData.student_id, today_date: getDate()});
+        const studentArrivalRecord = await Attendance.findOne({ student_id : arrivalData.student_id, today_date: getDate()});
 
         if (studentArrivalRecord) {
             responsePayload.success = false;
@@ -29,12 +22,15 @@ export const registerStudentArrival = async (arrivalData: IArrival): Promise<Res
             return responsePayload;
         }
 
+        const currentTime = moment().format('HH:mm');
+
         const newArrivalRecord = new Attendance({
-            student_id: arrivalData.student_id,
-            arrival_time: arrivalData.arrival_time,
+            student_id : arrivalData.student_id,
+            arrival_time: currentTime,
             departure_time: "N/A",
             total_hours: "N/A",
-            is_registered: true
+            is_registered: true,
+            today_date: getDate()
         });
 
         const student = await Student.findById(arrivalData.student_id);
@@ -46,7 +42,7 @@ export const registerStudentArrival = async (arrivalData: IArrival): Promise<Res
     } catch (e: any) {
         responsePayload.status = 500;
         responsePayload.success = false;
-        responsePayload.msg = "Oups ! Une erreur s'est glissée par ici... Nos développeurs sont en mode super-héros, mais ils ont besoin de votre signal pour intervenir !Une erreur s'est produite, veuillez contacter les développeurs " + e.message;
+        responsePayload.msg = "Oups ! Une erreur s'est glissée par ici... Nos développeurs sont en mode super-héros, mais ils ont besoin de votre signal pour intervenir ! Une erreur s'est produite, veuillez contacter les développeurs " + e.message;
     }
 
     return responsePayload;
@@ -59,7 +55,7 @@ export const registerStudentArrival = async (arrivalData: IArrival): Promise<Res
  * @param departureData - Données relatives au départ de l'étudiant.
  * @param studentId - ID de l'étudiant.
  * @returns {Promise<ResponseType>} Un objet contenant le statut de la requête et les données récupérées. */
-export const registerStudentDeparture = async (departureData: IDeparture): Promise<ResponseType> => {
+export const registerStudentDeparture = async (departureData : IDeparture): Promise<ResponseType> => {
     let responsePayload: ResponseType = {
         success: true,
         status: 200
@@ -85,16 +81,17 @@ export const registerStudentDeparture = async (departureData: IDeparture): Promi
             responsePayload.msg = "Vous ne pouvez plus modifier votre heure de départ";
             return responsePayload;
         }
-
-        const durationInDecimal: string | number = timeDifferenceInDecimal(attendanceRecord?.arrival_time as string, departureData.departure_time);
+        const currentTime = moment().format('HH:mm');
+        
+        const durationInDecimal: string | number = timeDifferenceInDecimal(attendanceRecord?.arrival_time as string, currentTime);
 
         const updatedDepartureRecord = await Attendance.findOneAndUpdate(
             {
-                student_id: departureData.student_id,
+                student_id : departureData.student_id,
                 today_date: getDate(),
             },
             {
-                departure_time: departureData.departure_time,
+                departure_time: currentTime,
                 total_hours: durationInDecimal,
                 status: "completed",
                 is_registered: false

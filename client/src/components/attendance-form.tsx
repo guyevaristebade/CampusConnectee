@@ -1,22 +1,18 @@
-import { Button, Form, Input, Select, FormInstance } from 'antd';
+import { Button, Form, Select, FormInstance } from 'antd';
 import React from 'react';
 
 interface AttendanceFormProps {
     onFinish: (values: any) => void;
     firstFieldName: string;
-    secondFieldName: string;
     studentOptions: any[];
     buttonText: string;
     buttonColor: string;
     form: FormInstance<any>;
-    studentErrorMessage?: string;  // Optionnel : pour personnaliser les messages d'erreur
-    timeErrorMessage?: string; // Optionnel : pour personnaliser les messages d'erreur pour l'heure
 }
 
 export const AttendanceForm: React.FC<AttendanceFormProps> = ({
     onFinish, 
     firstFieldName,
-    secondFieldName,
     studentOptions,
     buttonText,
     buttonColor,
@@ -48,18 +44,6 @@ export const AttendanceForm: React.FC<AttendanceFormProps> = ({
                         const nameB = b.label.toLowerCase();
                         return nameA.localeCompare(nameB);
                     }}
-                />
-            </Form.Item>
-
-            <Form.Item
-                name={secondFieldName}
-                rules={[{ required: true, message: "Veuillez remplir le champs des heures" }]}
-            >
-                <Input
-                    type="time"
-                    size="large"
-                    placeholder="08:24"
-                    className="p-2.5 text-lg"
                 />
             </Form.Item>
 

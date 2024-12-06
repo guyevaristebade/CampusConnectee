@@ -1,18 +1,13 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Layout, Form, Typography, Row, Col, message, Spin } from "antd";
+import { Layout, Form, Row, Col, message } from "antd";
 import Confetti from 'react-confetti';
 import { IDeparture, IStudentType } from '../types';
 import { fetchAllStudent, registeredDeparture } from '../api';
 import { AttendanceForm, Panel } from '../components';
-import { useLocation } from '../context';
-import { useNavigate } from 'react-router-dom';
-
 const { Content } = Layout;
 
 export const DeparturePage: React.FC = () => {
     const [form] = Form.useForm();
-    // const { isAtCampus, loading } = useLocation();
-    // const navigate = useNavigate();
 
     const [showConfetti, setShowConfetti] = useState(false);
     const [windowSize, setWindowSize] = useState<{ width: number; height: number }>({
@@ -69,12 +64,6 @@ export const DeparturePage: React.FC = () => {
     },[])
 
 
-        // if (loading) {
-        //     return <Content className='flex justify-center items-center min-h-full'>
-        //         <Spin percent='auto' size='large'/> 
-        //     </Content>
-        // }
-
     return (
         <>
             <Panel/>
@@ -86,7 +75,6 @@ export const DeparturePage: React.FC = () => {
                     <Col span={24}>
                         <AttendanceForm 
                             firstFieldName='student_id'
-                            secondFieldName='departure_time'
                             buttonColor='#E1000F' 
                             buttonText='Départ' 
                             onFinish={onFinish} 

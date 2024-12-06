@@ -1,3 +1,3 @@
 export * from './global'
 export * from './user'
-export * from './fee'
+export * from './attendance'
