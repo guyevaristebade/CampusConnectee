@@ -65,20 +65,9 @@ export const getChartData = async (): Promise<ResponseType> => {
             }]
         };
 
-        // Line Chart Data (example for weekly presence trend)
-        const lineChartData = {
-            labels: ["Semaine 1", "Semaine 2", "Semaine 3", "Semaine 4"],
-            datasets: [{
-                label: "Taux de présence",
-                data: [75, 80, 85, 90], // Example data, replace with actual data
-                borderColor: "#36A2EB",
-                fill: false
-            }]
-        };
-
         responsePayload.data = {
             pieChartData,
-            barChartData,
+            barChartData
         };
     } catch (e: any) {
         responsePayload.success = false;

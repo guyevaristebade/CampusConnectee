@@ -13,7 +13,7 @@ import {
     fetchAllStudent, 
     fetchDailyAttendance, 
     fetchStatistics, 
-    fetchTotalSTudentHoursPerWeek, 
+    fetchTotalSTudentHoursPerWeek,
 } from '../api';
 
 const { Header, Content } = Layout;
@@ -31,7 +31,6 @@ export const ResponsiblePage: React.FC = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<IStudent | null>(null);
     const [search,setSearch] = useState<string>('');
-   
     
     const dailyAttendanceColumns = [
         { title: 'Nom', dataIndex: 'last_name', key: 'last_name' },
@@ -191,6 +190,7 @@ export const ResponsiblePage: React.FC = () => {
         fetchData();
     }, []);
 
+
     useEffect(() => {
         const selectedMenuKey = localStorage.getItem('selectedMenuKey');
         if (selectedMenuKey) {
@@ -198,7 +198,6 @@ export const ResponsiblePage: React.FC = () => {
         }
     }, []);
     
-
     useEffect(() => {
         const handleArrival = (data: any) => {
             message.success(`${data.first_name} ${data.last_name} Vient d'arriver au campus`, 10);
@@ -230,6 +229,7 @@ export const ResponsiblePage: React.FC = () => {
             </Content>
         )
     }
+
 
     return (
         <Layout className='min-h-screen flex'> {/* min-h-screen => min-height : 100vh */}

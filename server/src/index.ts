@@ -10,6 +10,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import http from 'http';
 import { initializeSocketIO } from './utils';  
+import { StatisticsRouter } from './routes/statistics';
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ if (process.env.NODE_ENV === 'production') {
 app.use('/api/auth', UserRouter);
 app.use('/api/attendance', FeeRouter);
 app.use('/api/student', StudentRouter);
+app.use('/api/statistics', StatisticsRouter);
 
 // Connexion à la base de données et démarrage du serveur
 connectDB().then(() => {
