@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../hooks';
 import { socket } from '../utils';
 import { EditStudentModal, Sidebar } from '../components';
-import { useNavigate } from 'react-router-dom';
 import { LogoutOutlined } from '@ant-design/icons';
 import { exportToExcel } from '../utils';
 import { IStatistics, IStudent, IStudentData } from '../types';
@@ -15,7 +14,6 @@ import {
     fetchDailyAttendance, 
     fetchStatistics, 
     fetchTotalSTudentHoursPerWeek, 
-    updateStudent
 } from '../api';
 
 const { Header, Content } = Layout;
@@ -32,7 +30,7 @@ export const ResponsiblePage: React.FC = () => {
     const [selectedMenuKey, setSelectedMenuKey] = useState<string>('dashboard');
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<IStudent | null>(null);
-    
+    const [search,setSearch] = useState<string>('');
    
     
     const dailyAttendanceColumns = [
@@ -83,11 +81,18 @@ export const ResponsiblePage: React.FC = () => {
     ];
 
 
-    const onDateRangeChange = (dates: any) => {
-        console.log(dates)
+    const onSearchChange = (e: any) => {
+        setSearch(e.target.value);
     };
-    
-        
+
+    const filteredStudents = useMemo(() => {
+        return students.filter((student) => 
+            student.first_name.toLowerCase().includes(search.toLowerCase()) || 
+            student.last_name.toLowerCase().includes(search.toLowerCase())
+        );
+    }, [students, search]);
+
+
     const onMenuClick = (e: any) => {
         const newKey = e.key;
         localStorage.setItem('selectedMenuKey', newKey);
@@ -113,20 +118,20 @@ export const ResponsiblePage: React.FC = () => {
         setIsModalVisible(true);
     }
 
-    const onAddStudent = useCallback(() => {
-            const studentData : IStudentData = form.getFieldsValue();
+    const onAddStudent = () => {
+        const studentData : IStudentData = form.getFieldsValue();
             createStudent(studentData)
                 .then((response) => {
                     if (response.success) {
                         message.success(response.msg);
-                        const newStudents : IStudent[] = [...students, response.data].sort((a, b) => a.last_name.localeCompare(b.last_name));
+                        const newStudents : IStudent[] = [...students, response.data].sort((a, b) => a.first_name.localeCompare(b.first_name));
                         setStudents(newStudents);
                         form.resetFields();
                     } else {
                         message.error(response.msg);
                     }
                 })
-    }, [students, form]);
+    }
 
     const handleDownloadXLSX = (data : any[], title : string) => {
         const xlsx = exportToExcel(data,title)
@@ -146,15 +151,20 @@ export const ResponsiblePage: React.FC = () => {
             key: 'table',
             label: 'Liste au format Card ',
             children: <StudentList
-                students={students}
+                students={filteredStudents}
                 handleDelete={onDeleteStudent}
                 handleEdit={onEditStudent}
-                />,
+                />
         },
         {
             key: 'card',
             label: 'Liste au format tableau',
-            children: <Table columns={studentColumns} dataSource={students} rowKey={'_id'}/>,
+            children: <Table 
+                columns={studentColumns} 
+                dataSource={filteredStudents} 
+                rowKey={'_id'}
+                pagination = {(filteredStudents.length > 6) ? {pageSize: 6} : false}
+                />
         }
     ];
 
@@ -228,7 +238,7 @@ export const ResponsiblePage: React.FC = () => {
                 onMenuClick={onMenuClick}
             />
 
-            <Layout className='flex flex-col flex-1 min-h-screen'>
+            <Layout className='flex flex-col flex-1'>
                 <Header className="bg-white flex  items-center justify-end">
                     Bonjour, {user?.username}
                     <Button
@@ -289,11 +299,7 @@ export const ResponsiblePage: React.FC = () => {
                         {selectedMenuKey === 'studentList' && (
                             <>
                                 <Title level={2}>Liste des étudiants</Title>
-                                {/* <StudentList
-                                    students={students}
-                                    handleDelete={onDeleteStudent}
-                                    handleEdit={onEditStudent}
-                                /> */}
+                                <Input className='my-5' size='large' placeholder='Timothée' defaultValue={search} onChange={onSearchChange} />
 
                                 <Tabs defaultActiveKey="1" items={items} />;
                             </>
@@ -306,10 +312,7 @@ export const ResponsiblePage: React.FC = () => {
                                     form={form} 
                                     layout="vertical" 
                                     className='grid gap-4 grid-cols-1 md:grid-cols-2'
-                                    onFinish={(values) => {
-                                        // Handle form submission
-                                        console.log(values);
-                                    }}
+                                    onFinish={onAddStudent}
                                 >
                                     <Form.Item
                                         name="first_name"
@@ -326,7 +329,7 @@ export const ResponsiblePage: React.FC = () => {
                                         <Input size='large'  />
                                     </Form.Item>
                                     <Form.Item className='col-span-2 flex justify-end'>
-                                        <Button onClick={onAddStudent} className='bg-[#000091] p-6 text-white' htmlType="submit">
+                                        <Button className='bg-[#000091] p-6 text-white' htmlType="submit">
                                             Enregistrer
                                         </Button>
                                     </Form.Item>

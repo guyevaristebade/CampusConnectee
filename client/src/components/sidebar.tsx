@@ -1,4 +1,4 @@
-import { LogoutOutlined, CalendarOutlined, AppstoreOutlined, TableOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import { CalendarOutlined, AppstoreOutlined, TableOutlined } from '@ant-design/icons';
 import { PiStudentDuotone, PiListBulletsBold } from 'react-icons/pi';
 import { TfiPlus } from 'react-icons/tfi';
 import { Layout, Image, Menu } from 'antd';
@@ -44,7 +44,7 @@ interface SidebarProps {
 
 export const Sidebar : React.FC<SidebarProps> = ({ selectedMenuKey, onMenuClick}) => {
     return (
-        <Sider width={250} className="bg-white text-black flex flex-col">
+        <Sider width={250} className="bg-white text-black flex flex-col min-h-screen">
             <div className="logo text-black mb-6 text-center p-5">
                 <Image width={200} src="/logo_cc_nemours.jpg" preview={false} />
             </div>
