@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../hooks';
 import { socket } from '../utils';
 import { EditStudentModal, Sidebar } from '../components';
-import { useNavigate } from 'react-router-dom';
 import { LogoutOutlined } from '@ant-design/icons';
 import { exportToExcel } from '../utils';
 import { IStatistics, IStudent, IStudentData } from '../types';
@@ -15,7 +14,6 @@ import {
     fetchDailyAttendance, 
     fetchStatistics, 
     fetchTotalSTudentHoursPerWeek, 
-    updateStudent
 } from '../api';
 
 const { Header, Content } = Layout;
@@ -33,18 +31,17 @@ export const ResponsiblePage: React.FC = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<IStudent | null>(null);
     
-   
     
     const dailyAttendanceColumns = [
         { title: 'Nom', dataIndex: 'last_name', key: 'last_name' },
-        { title: 'Prénom', dataIndex: 'first_name', key: 'first_name_1' },
-        { title: 'Heure d\'arrivée', dataIndex: 'arrival_time', key: 'arrival_time_1' },
-        { title: 'Heure de départ', dataIndex: 'departure_time', key: 'departure_time_1' },
-        { title: 'Total d\'heures', dataIndex: 'total_hours', key: 'total_hours_1' },
+        { title: 'Prénom', dataIndex: 'first_name', key: 'first_name' },
+        { title: 'Heure d\'arrivée', dataIndex: 'arrival_time', key: 'arrival_time' },
+        { title: 'Heure de départ', dataIndex: 'departure_time', key: 'departure_time' },
+        { title: 'Total d\'heures', dataIndex: 'total_hours', key: 'total_hours' },
         { 
             title: 'Statut', 
             dataIndex: 'status', 
-            key: 'status_1',
+            key: 'status',
             render: (text: string) => text === 'completed' ? <Tag color="green">Terminé</Tag> : <Tag color="orange">En cours</Tag>
         }
     ];
@@ -82,11 +79,6 @@ export const ResponsiblePage: React.FC = () => {
         }
     ];
 
-
-    const onDateRangeChange = (dates: any) => {
-        console.log(dates)
-    };
-    
         
     const onMenuClick = (e: any) => {
         const newKey = e.key;
@@ -206,6 +198,19 @@ export const ResponsiblePage: React.FC = () => {
             socket.off('new-departure', handleDeparture);
         };
     }, []);
+
+    useEffect(() => {
+
+        if ('geolocation' in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    console.log('Latitude is :', latitude);
+                    console.log('Longitude is :', longitude);
+                }
+            );
+        }
+    },[])
     
 
 

@@ -1,4 +1,4 @@
-import { LogoutOutlined, CalendarOutlined, AppstoreOutlined, TableOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import { CalendarOutlined, AppstoreOutlined, TableOutlined } from '@ant-design/icons';
 import { PiStudentDuotone, PiListBulletsBold } from 'react-icons/pi';
 import { TfiPlus } from 'react-icons/tfi';
 import { Layout, Image, Menu } from 'antd';
