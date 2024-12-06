@@ -2,6 +2,7 @@ import {FeeDocument, IArrival, IDate, IDeparture, IRangeDateType, ResponseType} 
 import { Attendance, Student } from "../models";
 import { getDate, timeDifferenceInDecimal, timeToDecimal } from "../utils";
 import moment from "moment";
+import { time } from "console";
 
 
 
@@ -19,7 +20,7 @@ export const registerStudentArrival = async (arrivalData: IArrival): Promise<Res
     };
 
     try {
-        const studentArrivalRecord = await Attendance.findOne({ student_id: arrivalData.student_id, today_date: getDate() });
+        const studentArrivalRecord = await Attendance.findOne({ student_id: arrivalData.student_id, today_date: getDate()});
 
         if (studentArrivalRecord) {
             responsePayload.success = false;
@@ -31,7 +32,8 @@ export const registerStudentArrival = async (arrivalData: IArrival): Promise<Res
         const newArrivalRecord = new Attendance({
             student_id: arrivalData.student_id,
             arrival_time: arrivalData.arrival_time,
-            total_hours: timeToDecimal(arrivalData.arrival_time),
+            departure_time: "N/A",
+            total_hours: "N/A",
             is_registered: true
         });
 
@@ -44,7 +46,7 @@ export const registerStudentArrival = async (arrivalData: IArrival): Promise<Res
     } catch (e: any) {
         responsePayload.status = 500;
         responsePayload.success = false;
-        responsePayload.msg = "Oups ! Une erreur s'est glissée par ici... Nos développeurs sont en mode super-héros, mais ils ont besoin de votre signal pour intervenir !Une erreur s'est produite, veuillez contacter les développeurs "+ e.message ;
+        responsePayload.msg = "Oups ! Une erreur s'est glissée par ici... Nos développeurs sont en mode super-héros, mais ils ont besoin de votre signal pour intervenir !Une erreur s'est produite, veuillez contacter les développeurs " + e.message;
     }
 
     return responsePayload;
@@ -84,7 +86,7 @@ export const registerStudentDeparture = async (departureData: IDeparture): Promi
             return responsePayload;
         }
 
-        const durationInDecimal: string = timeDifferenceInDecimal(attendanceRecord?.arrival_time as string, departureData.departure_time);
+        const durationInDecimal: string | number = timeDifferenceInDecimal(attendanceRecord?.arrival_time as string, departureData.departure_time);
 
         const updatedDepartureRecord = await Attendance.findOneAndUpdate(
             {

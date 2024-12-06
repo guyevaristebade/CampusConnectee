@@ -2,7 +2,7 @@
  * Cette fonction permet de faire la différence entre heure de départ et heure d'arrivé d'un étudiant
  * et rend le total des heures en décimal
  * */
-export const  timeDifferenceInDecimal = (arrivalTime : string, departureTime : string) : string =>{
+export const  timeDifferenceInDecimal = (arrivalTime : string, departureTime : string) : string | number =>{
     // Convertir les heures au format "HH:MM" en minutes totales
     const [arrHour, arrMinute] = arrivalTime.split(':').map(Number);
     const [depHour, depMinute] = departureTime.split(':').map(Number);
@@ -15,5 +15,5 @@ export const  timeDifferenceInDecimal = (arrivalTime : string, departureTime : s
     const differenceInMinutes = departureInMinutes - arrivalInMinutes;
 
     // Convertir la différence en heures décimales
-    return (differenceInMinutes / 60).toFixed(2);
+    return Math.round(differenceInMinutes / 60);
 }
