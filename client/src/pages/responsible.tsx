@@ -4,7 +4,7 @@ import { socket } from '../utils';
 import { EditStudentModal, Sidebar } from '../components';
 import { LogoutOutlined } from '@ant-design/icons';
 import { exportToExcel } from '../utils';
-import { IStatistics, IStudent, IStudentData } from '../types';
+import { IStatistics, IStudent, IStudentData, IStudentType } from '../types';
 import { DataTable, StudentList } from '../components';
 import { Layout, Button, Typography, Row, Col, Tag, Statistic, message, Spin, Form, Input, TabsProps, Table, Tabs } from 'antd';
 import { 
@@ -199,11 +199,11 @@ export const ResponsiblePage: React.FC = () => {
     }, []);
     
     useEffect(() => {
-        const handleArrival = (data: any) => {
+        const handleArrival = (data: IStudentType) => {
             message.success(`${data.first_name} ${data.last_name} Vient d'arriver au campus`, 10);
         
         };
-        const handleDeparture = (data: any) => {
+        const handleDeparture = (data: IStudentType) => {
             message.success(`${data.first_name} ${data.last_name} Vient de partir au campus`, 10);
         };
     
@@ -240,7 +240,7 @@ export const ResponsiblePage: React.FC = () => {
 
             <Layout className='flex flex-col flex-1'>
                 <Header className="bg-white flex  items-center justify-end">
-                    Bonjour, {user?.username}
+                    <p className='text-xl'>Bonjour, {user?.username}</p>
                     <Button
                         type="text"
                         icon={<LogoutOutlined />}

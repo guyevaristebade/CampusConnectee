@@ -4,7 +4,6 @@ import { ArrivalPage, Login, MaintenancePage, NotAuthorizedPage, ResponsiblePage
 import { Main } from "./components";
 import { DeparturePage } from './pages';
 import { AuthContextProvider } from './context';
-import GeolocationComponent from './pages/home';
 
 export const AppRouter : React.FC = () =>{
 
@@ -19,10 +18,7 @@ export const AppRouter : React.FC = () =>{
                     path="departure"
                     element={<DeparturePage />}
                 />
-                <Route 
-                    path="/"  
-                    element={<GeolocationComponent />} 
-                />
+
                 <Route
                     path='login'
                     element={
@@ -34,7 +30,7 @@ export const AppRouter : React.FC = () =>{
             </Route>
 
             <Route
-                path='dashboard'
+                path='/'
                 element={
                     <AuthContextProvider>
                         <ResponsiblePage />

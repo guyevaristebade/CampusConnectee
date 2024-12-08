@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Layout, Form, Row, Col, message } from "antd";
 import Confetti from 'react-confetti';
 import { IArrival, IStudentType } from '../types';

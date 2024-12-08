@@ -1,4 +1,4 @@
-import { IArrival, IDateType, IDeparture, IRangeDateType, ResponseType } from "../types";
+import { IArrival, IDateType, IDeparture, ResponseType } from "../types";
 import { instance } from "../utils";
 
 

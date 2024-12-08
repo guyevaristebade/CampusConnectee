@@ -46,9 +46,10 @@ export const createStudentWithXlsxFile = async (filePath: string) => {
     
     const studentsData :  any[] = XLSX.utils.sheet_to_json(worksheet);
 
+    
     for (const row  of studentsData) {
-        const last_name = row['nom'];
-        const first_name = row['prenom'];
+        const last_name = row['NOM'];
+        const first_name = row['PRENOM'];
 
         try {
             const existingStudent = await Student.findOne({ last_name, first_name });

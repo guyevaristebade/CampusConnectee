@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { isLoggedIn, login as loginApi, logout as logoutApi, register as registerApi } from '../api';
+import { isLoggedIn, login as loginApi, logout as logoutApi } from '../api';
 import { IChildren, IUserData, UserLogin } from "../types";
 import { message } from "antd";
 
@@ -9,7 +9,6 @@ import { message } from "antd";
 interface AuthProviderProps {
     user: IUserData | null;
     login: (userData : UserLogin) => void;
-    register: (username: string, password: string, permissions : string) => void;
     logout: () => void;
 }
 
@@ -17,7 +16,6 @@ interface AuthProviderProps {
 export const AuthContext : React.Context<AuthProviderProps> = createContext<AuthProviderProps>({
     user: null,
     login: (userData : UserLogin) => {},
-    register: (username: string, password: string) => {},
     logout : () => {}
 });
 
@@ -32,16 +30,12 @@ export const AuthContextProvider =  ({ children } : IChildren) => {
         if(data.success){
             const user = data.data.user; 
             setUser(user);
-            navigate("/dashboard")
+            navigate("/")
         }else{
             message.error(data.msg)
         }
     };
     
-
-    const register = async (username: string, password: string, permissions : string) => {
-        // TODO
-    }
 
     const logout = async () => {
         await logoutApi()
@@ -55,7 +49,7 @@ export const AuthContextProvider =  ({ children } : IChildren) => {
                 if (data.success && data.data?.user) {
                     const user = data.data.user
                     setUser(user);
-                    navigate('/dashboard');
+                    navigate('/');
                 }else{
                     navigate('/login');
                 }
@@ -64,8 +58,8 @@ export const AuthContextProvider =  ({ children } : IChildren) => {
                 console.error(error);
             });
 
-    }, []);
+    }, [navigate]);
 
 
-    return <AuthContext.Provider value={{ user, login, register, logout }}> { children } </AuthContext.Provider>;
+    return <AuthContext.Provider value={{ user, login, logout }}> { children } </AuthContext.Provider>;
 }

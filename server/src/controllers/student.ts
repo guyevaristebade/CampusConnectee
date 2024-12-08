@@ -117,22 +117,7 @@ export const deleteStudentById = async (id : string) : Promise<ResponseType> =>{
     return responsePayload;
 }
 
-export const deleteAllStudent = async () : Promise<ResponseType> =>{
-    let responsePayload: ResponseType = {
-        success: true,
-        status: 200
-    };
 
-    try {
-        await Student.deleteMany();
-    } catch (error : any) {
-        responsePayload.status = 400;
-        responsePayload.success = false;
-        responsePayload.msg = "Une erreur s'est produite veuillez contactez nos développeurs"
-    }
-
-    return responsePayload;
-}
 
 export const updateStudentById = async (id : string, student : IStudentData) : Promise<ResponseType> =>{
     let responsePayload : ResponseType = {
