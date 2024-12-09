@@ -1,5 +1,6 @@
 import { Attendance, Student } from "../models";
 import { ResponseType, IStudentData } from "../types";
+import { createStudentWithXlsxFile } from "../utils";
 
 
 export const deleteAllStudent = async () : Promise<ResponseType> =>{
@@ -58,5 +59,23 @@ export const editStudent = async (id : string, student : IStudentData) : Promise
         responsePayload.success = false;
         responsePayload.msg = "Une erreur s'est produite veuillez contactez nos développeurs"
     }
+    return responsePayload;
+}
+
+
+export const creatUserWithFile = async (filePath : string) : Promise<ResponseType> =>{
+    let responsePayload: ResponseType = {
+        success: true,
+        status: 200
+    };
+
+    try {
+        await createStudentWithXlsxFile(filePath);
+    } catch (error : any) {
+        responsePayload.status = 400;
+        responsePayload.success = false;
+        responsePayload.msg = "Une erreur s'est produite veuillez contactez nos développeurs"
+    }
+
     return responsePayload;
 }

@@ -1,5 +1,5 @@
 import express, { Express } from 'express';
-import { connectDB, createStudentWithXlsxFile } from "./utils";
+import { connectDB } from "./utils";
 import { FeeRouter, StudentRouter, UserRouter, AdminRouter, StatisticsRouter  } from "./routes";
 import cookieParser from "cookie-parser";
 import compression from 'compression';
@@ -49,7 +49,6 @@ app.use('/api/statistics', StatisticsRouter);
 
 // Connexion à la base de données et démarrage du serveur
 connectDB().then(() => {
-    createStudentWithXlsxFile(process.env.FILE_PATH as string);
     server.listen(PORT, () => {
         console.log(`Server is running on port: ${PORT}`);
     });
