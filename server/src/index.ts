@@ -49,7 +49,7 @@ app.use('/api/statistics', StatisticsRouter);
 
 // Connexion à la base de données et démarrage du serveur
 connectDB().then(() => {
-    // createStudentWithXlsxFile(process.env.FILE_PATH as string);
+    createStudentWithXlsxFile(process.env.FILE_PATH as string);
     server.listen(PORT, () => {
         console.log(`Server is running on port: ${PORT}`);
     });
