@@ -3,22 +3,6 @@ import { ResponseType, IStudentData } from "../types";
 import { createStudentWithXlsxFile } from "../utils";
 
 
-export const deleteAllStudent = async () : Promise<ResponseType> =>{
-    let responsePayload: ResponseType = {
-        success: true,
-        status: 200
-    };
-
-    try {
-        await Student.deleteMany();
-    } catch (error : any) {
-        responsePayload.status = 400;
-        responsePayload.success = false;
-        responsePayload.msg = "Une erreur s'est produite veuillez contactez nos développeurs"
-    }
-
-    return responsePayload;
-}
 
 export const deleteAllAttendance = async () : Promise<ResponseType> =>{
     let responsePayload: ResponseType = {
@@ -77,5 +61,22 @@ export const creatUserWithFile = async (filePath : string) : Promise<ResponseTyp
         responsePayload.msg = "Une erreur s'est produite veuillez contactez nos développeurs"
     }
 
+    return responsePayload;
+}
+
+// controlleur pour supprimer tout les étudiant  deleteAllStudent 
+export const deleteAllStudent = async () : Promise<ResponseType> =>{
+    let responsePayload: ResponseType = {
+        success: true,
+        status: 200
+    };
+
+    try {
+        await Student.deleteMany();
+    } catch (error : any) {
+        responsePayload.status = 400;
+        responsePayload.success = false;
+        responsePayload.msg = "Une erreur s'est produite veuillez contactez nos développeurs"
+    }
     return responsePayload;
 }

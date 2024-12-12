@@ -2,11 +2,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../hooks';
 import { socket } from '../utils';
 import { EditStudentModal, Sidebar } from '../components';
-import { LogoutOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, CloseCircleOutlined, LogoutOutlined } from '@ant-design/icons';
 import { exportToExcel } from '../utils';
 import { IStatistics, IStudent, IStudentData, IStudentType } from '../types';
 import { DataTable, StudentList } from '../components';
-import { Layout, Button, Typography, Row, Col, Tag, Statistic, message, Spin, Form, Input, TabsProps, Table, Tabs } from 'antd';
+import { Layout, Button, Typography, Row, Col, Tag, Statistic, message, Spin, Form, Input, TabsProps, Table, Tabs, notification } from 'antd';
 import { 
     createStudent,
     deleteStudentById, 
@@ -22,6 +22,7 @@ const { Title } = Typography;
 export const ResponsiblePage: React.FC = () => {
     const { user, logout } = useAuth();
     const [form] = Form.useForm();
+    const [api, contextHolder] = notification.useNotification();
 
     const [dailyAttendance, setDailyAttendance] = useState<any[]>([]);
     const [statistics, setStatistics] = useState<IStatistics | null>(null);
@@ -200,11 +201,23 @@ export const ResponsiblePage: React.FC = () => {
     
     useEffect(() => {
         const handleArrival = (data: IStudentType) => {
-            message.success(`${data.first_name} ${data.last_name} Vient d'arriver au campus`, 10);
-        
+            // message.success(`${data.first_name} ${data.last_name} vient d'arriver au campus`, 10);
+            api.open({
+                message: "Nouvelle notification",
+                description:
+                    `${data.first_name} ${data.last_name} vient d'arriver au campus`,
+                showProgress: true,
+                icon: <CheckCircleOutlined style={{ color: 'green' }} />
+            });
         };
         const handleDeparture = (data: IStudentType) => {
-            message.success(`${data.first_name} ${data.last_name} Vient de partir au campus`, 10);
+            api.open({
+                message: "Nouvelle notification",
+                description:
+                    `${data.first_name} ${data.last_name} Vient de partir au campus`,
+                showProgress: true,
+                icon: <CloseCircleOutlined  style={{ color: 'green' }} />
+            });
         };
     
         socket.on('new-arrival', handleArrival);
@@ -215,7 +228,6 @@ export const ResponsiblePage: React.FC = () => {
             socket.off('new-departure', handleDeparture);
         };
     }, []);
-    
 
 
     if(!dailyAttendance || !statistics || !students || !attendancePerWeek){
@@ -230,9 +242,12 @@ export const ResponsiblePage: React.FC = () => {
         )
     }
 
+    
+
 
     return (
         <Layout className='min-h-screen flex'> {/* min-h-screen => min-height : 100vh */}
+            {contextHolder}
             <Sidebar
                 selectedMenuKey={selectedMenuKey}
                 onMenuClick={onMenuClick}

@@ -1,12 +1,12 @@
 import { ResponseType } from "../types";
 import { authenticated } from "../middlewares";
 import { Router, Request, Response } from "express";
-import { createStudent, deleteAllStudent, deleteStudentById, getAllStudents, getStudentById, updateStudentById } from "../controllers";
+import { createStudent, deleteStudentById, getAllStudents, getStudentById, updateStudentById } from "../controllers";
 import { IStudentData } from "../types/student";
 
 export const StudentRouter : Router = Router();
 
-StudentRouter.get('/', authenticated ,async (req: Request, res: Response) => {
+StudentRouter.get('/' ,async (req: Request, res: Response) => {
     const response: ResponseType = await getAllStudents();
     res.status(response.status as number).send(response);
 });
@@ -30,11 +30,7 @@ StudentRouter.delete('/:studentId',authenticated, async  (req: Request, res: Res
     res.status(response.status as number).send(response);
 })
 
-StudentRouter.delete('/',authenticated, async  (req: Request, res: Response) =>{
-    const id : string = req.params.studentId
-    const response : ResponseType = await deleteAllStudent();
-    res.status(response.status as number).send(response);
-})
+
 
 StudentRouter.put('/:studentId',authenticated, async  (req: Request, res: Response) =>{
     const id : string = req.params.studentId
