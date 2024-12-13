@@ -2,81 +2,76 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
-const LATITUDE_CAMPUS = parseFloat(process.env.REACT_APP_LATITUDE_CAMPUS || '48.8575475');
-const LONGITUDE_CAMPUS = parseFloat(process.env.REACT_APP_LONGITUDE_CAMPUS || '2.3513765');
-const TOLERANCE = 0.0001; // Tolérance de comparaison (en degrés)
+// je souhaite écrire un contexte qui vérifie si l'utilisateur est au campus ou non
+// pour cela, je vais utiliser la géolocalisation de l'utilisateur 
+// et comparer sa position avec celle du campus
+// si l'utilisateur est à proximité du campus, il peut accéder à l'application
+// sinon, il est redirigé vers une page d'erreur
 
-interface LocationContextProps {
-  isAtCampus: boolean;
-  loading: boolean;
-  checkUserLocation: () => void;
+// Latitude et longitude du campus
+const LATITUDE_CAMPUS = parseFloat(process.env.REACT_APP_LATITUTUDE_CAMPUS as string);
+const LONGITUDE_CAMPUS = parseFloat(process.env.REACT_APP_LONGITUDE_CAMPUS as string);
+
+interface ILocationContext {
+  children: React.ReactNode;
 }
 
-const LocationContext = createContext<LocationContextProps | undefined>(undefined);
-
-export const useLocation = () => {
-  const context = useContext(LocationContext);
-  if (!context) throw new Error('useLocation must be used within a LocationProvider');
-  return context;
+interface LocationContextType {
+  isAtCampus: boolean;
 };
 
-// Fonction pour vérifier si la latitude et la longitude de l'utilisateur sont similaires à celles du campus
-const isAtCampusLocation = (lat: number, lon: number, campusLat: number, campusLon: number) => {
-  const latitudeDifference = Math.abs(lat - campusLat);
-  const longitudeDifference = Math.abs(lon - campusLon);
+// Rayon de tolérance autour du campus
+const TOLERANCE_RADIUS = 0.01; // Rayon de tolérance en km
 
-  // Vérifie si la différence est inférieure à la tolérance définie
-  return latitudeDifference <= TOLERANCE && longitudeDifference <= TOLERANCE;
-};
+// Création du contexte
+const LocationContext = createContext<LocationContextType>({
+  isAtCampus: false,
+});
 
-export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAtCampus, setIsAtCampus] = useState(false);
-  const [loading, setLoading] = useState(true); 
+// Hook pour accéder au contexte
+export const useLocation = () => useContext(LocationContext);
+
+
+// Provider du contexte
+export const LocationProvider: React.FC<ILocationContext> = ({ children }) => {
+  const [isAtCampus, setIsAtCampus] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const checkUserLocation = () => {
-    if ('geolocation' in navigator) {
-      setLoading(true); // Démarre le chargement
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
+  const checkIfAtCampus = (latitude: number, longitude: number) => {
+    const toRad = (value: number) => (value * Math.PI) / 180;
+    const R = 6371; // Radius of the Earth in km
+    const dLat = toRad(LATITUDE_CAMPUS - latitude);
+    const dLon = toRad(LONGITUDE_CAMPUS - longitude);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(latitude)) * Math.cos(toRad(LATITUDE_CAMPUS)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c; // Distance in km
 
-          // Vérification de la position
-          if (isAtCampusLocation(latitude, longitude, LATITUDE_CAMPUS, LONGITUDE_CAMPUS)) {
-            setIsAtCampus(true);
-            message.success('Vous êtes à proximité du campus.');
-            // navigate('/arrival')
-          } else {
-            setIsAtCampus(false);
-            message.error('Vous n’êtes pas à proximité du campus. Accès bloqué.');
-            navigate('/not-authorized');
-          }
+    console.log(distance);
+    console.log("longitude : ", longitude);
+    console.log("latitude : ", latitude);
 
-          setLoading(false); // Fin du chargement
-        },
-        (error) => {
-          setLoading(false); // Fin du chargement même en cas d'erreur
-          message.error("Impossible d'obtenir votre localisation.");
-          navigate('/not-authorized');
-        },
-        {
-          timeout: 10000, // Timeout de 10 secondes
-        }
-      );
-    } else {
-      setLoading(false); // Fin du chargement
-      message.error("La géolocalisation n'est pas supportée par votre navigateur.");
+    setIsAtCampus(distance < TOLERANCE_RADIUS);
+  };
+  
+  navigator.geolocation.getCurrentPosition(
+    ({ coords }) => {
+      const { latitude, longitude } = coords;
+      checkIfAtCampus(latitude, longitude);
+    },
+    () => {
+      message.error('Impossible de récupérer votre position');
       navigate('/not-authorized');
     }
-  };
-
-  useEffect(() => {
-    checkUserLocation();
-  }, []); // Effectué au premier rendu
-
-  return (
-    <LocationContext.Provider value={{ isAtCampus, loading, checkUserLocation }}>
-      {children}
-    </LocationContext.Provider>
   );
+  useEffect(() => {
+    if(!isAtCampus){
+      navigate('/not-authorized');
+    }
+  }, [isAtCampus,navigate]);
+
+
+    return <LocationContext.Provider value={{ isAtCampus }}>{children}</LocationContext.Provider>;
 };
