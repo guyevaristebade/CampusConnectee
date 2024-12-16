@@ -10,12 +10,8 @@ export const registeredArrival = async (arrivalData: IArrival): Promise<Response
 
 
 export const registeredDeparture = async (arrivalData: IDeparture): Promise<ResponseType<any>> => {
-    try {
-        const response = await instance.put('/attendance/departure', arrivalData);
-        return response.data;
-    } catch (error: any) {
-        return error.response.data;
-    }
+    const response = await instance.put('/attendance/departure', arrivalData);
+    return response.data;
 }
 
 

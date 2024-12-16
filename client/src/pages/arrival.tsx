@@ -36,13 +36,13 @@ export const ArrivalPage: React.FC = () => {
     
     const { data: students, error: studentsError, isLoading: studentsLoading } = useQuery({queryKey : ['students'], queryFn : fetchAllStudents});
 
-    
+    console.log(students    )
     // Mémorise le tableau de nom d'étudiant pour éviter les rendu inutile 
     const studentOptions = useMemo(() => 
-        Array.isArray(students?.data) ? students?.data.map((student: IStudentType) => ({
+        Array.isArray(students) ? students.map((student: IStudentType) => ({
             value: student._id,
             label: `${student.last_name.toUpperCase()} ${student.first_name.toLowerCase()}`
-        })) : [], [students?.data]);
+        })) : [], [students]);
         
 
     // Formulaire d'entrée des informations d'arrivée

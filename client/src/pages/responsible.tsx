@@ -33,17 +33,16 @@ export const ResponsiblePage: React.FC = () => {
     const { data: attendancePerWeek, error: attendancePerWeekError, isLoading: attendancePerWeekLoading } = useQuery({queryKey : ['attendancePerWeek'], queryFn : fetchTotalSTudentHoursPerWeek});
     
 
-    console.log(dailyAttendance)
 
     const addStudentMutation = useMutation({
         mutationFn :  createStudent, 
         onSuccess: (response) => {
             if (response.success) {
-            message.success(response.msg);
-            queryClient.invalidateQueries({ queryKey: ['students']});
-            form.resetFields();
+                message.success(response.msg);
+                queryClient.invalidateQueries({ queryKey: ['students']});
+                form.resetFields();
             } else {
-            message.error(response.msg);
+                message.error(response.msg);
             }
         },
         onError: (error) => {
@@ -133,12 +132,14 @@ export const ResponsiblePage: React.FC = () => {
         setSearch(e.target.value);
     };
 
+    
     const filteredStudents = useMemo(() => {
-        return Array.isArray(students?.data) ? students?.data.filter((student) => 
+        return Array.isArray(students) ? students.filter((student) => 
             student.first_name.toLowerCase().includes(search.toLowerCase()) || 
-            student.last_name.toLowerCase().includes(search.toLowerCase())
-        ) : [];
-    }, [students, search]);
+        student.last_name.toLowerCase().includes(search.toLowerCase())
+    ) : [];
+}, [students, search]);
+console.log(filteredStudents);
 
     const onMenuClick = (e: any) => {
         const newKey = e.key;
@@ -305,7 +306,7 @@ export const ResponsiblePage: React.FC = () => {
                                 <Title level={2}>Liste des étudiants</Title>
                                 <Input className='my-5' size='large' placeholder='Timothée' defaultValue={search} onChange={onSearchChange} />
 
-                                <Tabs defaultActiveKey="1" items={items} />;
+                                <Tabs defaultActiveKey="1" items={items} />
                             </>
                         )}
                         {selectedMenuKey === 'addStudent' && (
