@@ -66,11 +66,11 @@ export const LocationProvider: React.FC<ILocationContext> = ({ children }) => {
       navigate('/not-authorized');
     }
   );
-  useEffect(() => {
-    if(!isAtCampus){
-      navigate('/not-authorized');
-    }
-  }, [isAtCampus,navigate]);
+  // useEffect(() => {
+  //   if(!isAtCampus){
+  //     navigate('/not-authorized');
+  //   }
+  // }, [isAtCampus,navigate]);
 
 
     return <LocationContext.Provider value={{ isAtCampus }}>{children}</LocationContext.Provider>;

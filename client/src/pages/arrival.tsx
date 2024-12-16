@@ -1,76 +1,61 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Layout, Form, Row, Col, message } from "antd";
+import React, { useState, useMemo } from 'react';
+import { Layout, Form, Row, Col, message, Spin } from "antd";
 import Confetti from 'react-confetti';
 import { IArrival, IStudentType } from '../types';
-import { fetchAllStudent, registeredArrival } from '../api';
+import { fetchAllStudents, registeredArrival } from '../api';
 import { AttendanceForm, Panel } from '../components';
-import { useLocation } from '../context';
-import { useNavigate } from 'react-router-dom';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 const { Content } = Layout;
 
 export const ArrivalPage: React.FC = () => {
     const [form] = Form.useForm();
-    const { isAtCampus } = useLocation();
-    const navigate = useNavigate();
 
-
+    const queryClient = useQueryClient();
+    const attendanceFormMutation = useMutation({
+        mutationFn: registeredArrival,
+        onSuccess: (response) => {
+            if (response.success) {
+                message.success(response.msg);
+                queryClient.invalidateQueries({ queryKey: ['attendance']});
+                setShowConfetti(true);
+                setTimeout(() => setShowConfetti(false), 3000);
+                form.resetFields();
+            } else {
+                message.error(response.msg);
+            }
+        },
+        onError: (error) => {
+            message.error('Erreur lors de l\'enregistrement de l\'arrivée');
+        },
+    })
     const [showConfetti, setShowConfetti] = useState(false);
     const [windowSize, setWindowSize] = useState<{ width: number; height: number }>({
         width: window.innerWidth,
         height: window.innerHeight,
     });
-    const [studentArray, setStudentArray] = useState<IStudentType[]>([]);
+    
+    const { data: students, error: studentsError, isLoading: studentsLoading } = useQuery({queryKey : ['students'], queryFn : fetchAllStudents});
 
-
+    
     // Mémorise le tableau de nom d'étudiant pour éviter les rendu inutile 
     const studentOptions = useMemo(() => 
-        studentArray.map(student => ({
+        Array.isArray(students?.data) ? students?.data.map((student: IStudentType) => ({
             value: student._id,
-            label: `${student.last_name.toLowerCase()} ${student.first_name.toLowerCase()}`
-    })), [studentArray]);
-
-    
+            label: `${student.last_name.toUpperCase()} ${student.first_name.toLowerCase()}`
+        })) : [], [students?.data]);
+        
 
     // Formulaire d'entrée des informations d'arrivée
-    const onFinish = (values: IArrival) => {
-        registeredArrival(values)
-            .then((data) => {
-                if(data.success){
-                    message.success(data.msg);
-                    setShowConfetti(true);
-                    setTimeout(() => setShowConfetti(false), 3000); 
-                    form.resetFields();
-                }else{
-                    message.error(data.msg);
-                }
-            })
+    const onFinish = (values: IArrival)  => {
+        attendanceFormMutation.mutate(values);
     };
-    
-    
-    // useEffect(() => {
-    //     window.addEventListener("resize", handleResize);
-    //     return () => window.removeEventListener("resize", handleResize);
-    // }, [handleResize]);
-    
-    useEffect(() => {
-        fetchAllStudent()
-        .then((data) => {
-            if(data.success){
-                setStudentArray(data.data);
-            }else{
-                setStudentArray([]);
-            }
-        })
-    },[])
 
-    useEffect(() => {
-        // if (isAtCampus === false) {
-        //     navigate('/not-authorized');
-        // }
-        console.log("isAtCampus", isAtCampus);
-    },[isAtCampus, navigate])
-
-
+    
+    if(studentsLoading){
+        return <Content className='flex justify-center py-10 bg-transparent'>
+            <Spin size='large'/>
+        </Content>
+    }
 
     return (
         <>
@@ -84,7 +69,7 @@ export const ArrivalPage: React.FC = () => {
                         <AttendanceForm 
                             onFinish={onFinish} 
                             firstFieldName='student_id' 
-                            studentOptions={studentOptions} 
+                            studentOptions={Array.isArray(studentOptions) ? studentOptions : []} 
                             buttonText='Arrivé' 
                             buttonColor='#000091'
                             form={form}

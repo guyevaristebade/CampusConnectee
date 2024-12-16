@@ -1,27 +1,47 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Layout, Form, Row, Col, message } from "antd";
+import { Layout, Form, Row, Col, message, Spin } from "antd";
 import Confetti from 'react-confetti';
 import { IDeparture, IStudentType } from '../types';
-import { fetchAllStudent, registeredDeparture } from '../api';
+import { fetchAllStudents, registeredDeparture } from '../api';
 import { AttendanceForm, Panel } from '../components';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 const { Content } = Layout;
 
 export const DeparturePage: React.FC = () => {
     const [form] = Form.useForm();
+    const { data: students, error: studentsError, isLoading: studentsLoading } = useQuery({queryKey : ['students'], queryFn : fetchAllStudents});
+    
+    const queryClient = useQueryClient();
+    const attendanceFormMutation = useMutation({
+        mutationFn: registeredDeparture,
+        onSuccess: (response) => {
+            if (response.success) {
+                message.success("Au revoir ! J'espère que vous avez survécu à cette journée avec le sourire... À la prochaine aventure !");
+                setShowConfetti(true);
+                setTimeout(() => setShowConfetti(false), 3000); 
+                form.resetFields();
+            } else {
+                message.error(response.msg);
+            }
+        },
+        onError: (error) => {
+            message.error("Oups ! Une erreur s'est glissée par ici... Nos développeurs sont en mode super-héros, mais ils ont besoin de votre signal pour intervenir !");
+        },
+    })
 
     const [showConfetti, setShowConfetti] = useState(false);
     const [windowSize, setWindowSize] = useState<{ width: number; height: number }>({
         width: window.innerWidth,
         height: window.innerHeight,
     });
-    const [studentArray, setStudentArray] = useState<IStudentType[]>([]);
-
 
     const studentOptions = useMemo(() => 
-        studentArray.map(student => ({
+        Array.isArray(students) ? students.map(student => ({
             value: student._id,
-            label: `${student.last_name.toLowerCase()} ${student.first_name.toLowerCase()}`
-    })), [studentArray]);
+            label: `${student.last_name.toUpperCase()} ${student.first_name.toLowerCase()}`
+    })) : [], [students]);
+
+    console.log(students);
 
     // Fonction pour mettre à jour la taille de la fenêtre
     const handleResize = useCallback(() => {
@@ -30,20 +50,7 @@ export const DeparturePage: React.FC = () => {
 
 
     const onFinish = async (values: IDeparture) => {
-        console.log(values)
-        registeredDeparture(values)
-            .then((data) =>{
-                if(data.success){
-                    message.success("Au revoir ! J'espère que vous avez survécu à cette journée avec le sourire... À la prochaine aventure !");
-                    
-                    setShowConfetti(true);
-                    setTimeout(() => setShowConfetti(false), 3000); 
-                    form.resetFields();
-                }else{
-                    message.error("Oups ! Une erreur s'est glissée par ici... Nos développeurs sont en mode super-héros, mais ils ont besoin de votre signal pour intervenir !");
-                }
-            })
-        
+        attendanceFormMutation.mutate(values);
     };
 
     useEffect(() => {
@@ -51,17 +58,12 @@ export const DeparturePage: React.FC = () => {
         return () => window.removeEventListener("resize", handleResize);
     }, [handleResize]);
 
-    useEffect(() => {
-        // Récupère les étudiants
-        fetchAllStudent()
-            .then((data) => {
-                if(data.success){
-                    setStudentArray(data.data);
-                }else{
-                    setStudentArray([]);
-                }
-            })
-    },[])
+        
+    if(studentsLoading){
+        return <Content className='flex justify-center py-10 bg-transparent'>
+            <Spin size='large'/>
+        </Content>
+    }
 
 
     return (

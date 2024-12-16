@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Modal, Form, Input, Button, message } from 'antd';
 import { IStudent, IStudentData } from '../types';
 import { updateStudent } from '../api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface EditStudentModalProps {
     visible: boolean;
@@ -10,6 +11,20 @@ interface EditStudentModalProps {
 }
 export const EditStudentModal: React.FC<EditStudentModalProps> = ({student, visible, onCancel}) => {
     const [form] = Form.useForm();
+    const queryClient = useQueryClient();
+
+    const updateStudentMutation = useMutation({
+        mutationFn : ({ id, data }: { id: string, data: IStudentData }) => updateStudent(id, data),
+        onSuccess : (response) => {
+            if(response.success){
+                message.success("L'étudiant a été modifié avec succès");
+                form.resetFields();
+                onCancel();
+            }else{
+                message.error(response.msg);
+            }
+        }
+    });
 
     useEffect(() => {
         if (student) {
@@ -24,19 +39,15 @@ export const EditStudentModal: React.FC<EditStudentModalProps> = ({student, visi
     const handleSave = () => {
         const studentInfos : IStudentData = form.getFieldsValue();
         if(student?._id){
-            updateStudent(student?._id,studentInfos)
-                .then((response) => {
-                    if(response.success){
-                        message.success("L'étudiant a été modifié avec succès");
-                        form.resetFields();
-                        onCancel();
-                    }else{
-                        message.error(response.msg);
-                    }
-                })
+            updateStudentMutation.mutate({id : student._id, data : studentInfos}, {
+                onSuccess: () => {
+                    queryClient.invalidateQueries({queryKey : ['students']}); 
+                }
+            });
         }
     };
 
+    
     return (
         <Modal
             className='relative'
@@ -53,15 +64,14 @@ export const EditStudentModal: React.FC<EditStudentModalProps> = ({student, visi
                     label="Prénom"
                     name="first_name"
                 >
-                    <Input />
+                    <Input size='large' type='text' />
                 </Form.Item>
                 <Form.Item
                     label="Nom"
                     name="last_name"
                 >
-                    <Input />
+                    <Input size='large'type='text' />
                 </Form.Item>
-                {/* Ajoutez d'autres champs ici selon vos besoins */}
             </Form>
         </Modal>
     );

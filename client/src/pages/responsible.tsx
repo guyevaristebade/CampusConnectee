@@ -4,17 +4,19 @@ import { socket } from '../utils';
 import { EditStudentModal, Sidebar } from '../components';
 import { CheckCircleOutlined, CloseCircleOutlined, LogoutOutlined } from '@ant-design/icons';
 import { exportToExcel } from '../utils';
-import { IStatistics, IStudent, IStudentData, IStudentType } from '../types';
+import { IStudent, IStudentData, IStudentType } from '../types';
 import { DataTable, StudentList } from '../components';
-import { Layout, Button, Typography, Row, Col, Tag, Statistic, message, Spin, Form, Input, TabsProps, Table, Tabs, notification } from 'antd';
+import { Layout, Button, Typography, Row, Col, Tag, Statistic, message, Form, Input, TabsProps, Table, Tabs, notification } from 'antd';
 import { 
     createStudent,
     deleteStudentById, 
-    fetchAllStudent, 
+    fetchAllStudents, 
     fetchDailyAttendance, 
     fetchStatistics, 
     fetchTotalSTudentHoursPerWeek,
 } from '../api';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
 
 const { Header, Content } = Layout;
 const { Title } = Typography;
@@ -22,12 +24,58 @@ const { Title } = Typography;
 export const ResponsiblePage: React.FC = () => {
     const { user, logout } = useAuth();
     const [form] = Form.useForm();
+    const queryClient = useQueryClient();
     const [api, contextHolder] = notification.useNotification();
 
-    const [dailyAttendance, setDailyAttendance] = useState<any[]>([]);
-    const [statistics, setStatistics] = useState<IStatistics | null>(null);
-    const [students, setStudents] = useState<IStudent[]>([]);
-    const [attendancePerWeek, setAttendancePerWeek] = useState<any[]>([]);
+    const { data: dailyAttendance, error: dailyAttendanceError, isLoading: dailyAttendanceLoading } = useQuery({queryKey :['dailyAttendance'], queryFn : fetchDailyAttendance});
+    const { data: students, error: studentsError, isLoading: studentsLoading } = useQuery({queryKey : ['students'], queryFn : fetchAllStudents});
+    const { data: statistics, error: statisticsError, isLoading: statisticsLoading } = useQuery({queryKey : ['statistics'], queryFn : fetchStatistics});
+    const { data: attendancePerWeek, error: attendancePerWeekError, isLoading: attendancePerWeekLoading } = useQuery({queryKey : ['attendancePerWeek'], queryFn : fetchTotalSTudentHoursPerWeek});
+    
+
+    console.log(dailyAttendance)
+
+    const addStudentMutation = useMutation({
+        mutationFn :  createStudent, 
+        onSuccess: (response) => {
+            if (response.success) {
+            message.success(response.msg);
+            queryClient.invalidateQueries({ queryKey: ['students']});
+            form.resetFields();
+            } else {
+            message.error(response.msg);
+            }
+        },
+        onError: (error) => {
+            message.error('Erreur lors de l\'ajout de l\'étudiant');
+        },
+    });
+
+    const deleteStudentMutation = useMutation({
+        mutationFn : deleteStudentById, 
+        onSuccess : (response) => {
+            if(response.success){
+                message.success(response.msg);
+                queryClient.invalidateQueries({ queryKey: ['students']});
+                setSearch('');
+            }else{
+                message.error(response.msg);
+            }
+        },
+        onError : () => {
+            message.error("Une erreur s'est produite lors de l'ajout de l'étudiant");
+        }
+    });
+    
+    const onAddStudent = () => {
+        const studentData: IStudentData = form.getFieldsValue();
+        addStudentMutation.mutate(studentData);
+    };  
+    
+    if (studentsError) {
+        message.error('Erreur lors de la récupération des étudiants', 10);
+    }
+
     const [selectedMenuKey, setSelectedMenuKey] = useState<string>('dashboard');
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<IStudent | null>(null);
@@ -86,12 +134,11 @@ export const ResponsiblePage: React.FC = () => {
     };
 
     const filteredStudents = useMemo(() => {
-        return students.filter((student) => 
+        return Array.isArray(students?.data) ? students?.data.filter((student) => 
             student.first_name.toLowerCase().includes(search.toLowerCase()) || 
             student.last_name.toLowerCase().includes(search.toLowerCase())
-        );
+        ) : [];
     }, [students, search]);
-
 
     const onMenuClick = (e: any) => {
         const newKey = e.key;
@@ -99,39 +146,17 @@ export const ResponsiblePage: React.FC = () => {
         setSelectedMenuKey(newKey);
     };
 
+
     const onDeleteStudent =  (id: string) => {
-        deleteStudentById(id)
-            .then((response) => {
-                if (response.success) {
-                    message.success(response.msg);
-                    const newStudents : IStudent[] = students.filter(student => student._id !== id);
-        setStudents(newStudents);
-                } else {
-                    message.error(response.msg);
-                }
-            })
+        deleteStudentMutation.mutate(id);
     };
 
     const onEditStudent = (id: string) => {
-        const newStudent : IStudent | null = students.find((s) => s._id === id) || null;
+        const newStudent : IStudent | null = Array.isArray(students?.data) ? students?.data.find((s) => s._id === id) : null;
         setSelectedStudent(newStudent);
         setIsModalVisible(true);
     }
 
-    const onAddStudent = () => {
-        const studentData : IStudentData = form.getFieldsValue();
-            createStudent(studentData)
-                .then((response) => {
-                    if (response.success) {
-                        message.success(response.msg);
-                        const newStudents : IStudent[] = [...students, response.data].sort((a, b) => a.first_name.localeCompare(b.first_name));
-                        setStudents(newStudents);
-                        form.resetFields();
-                    } else {
-                        message.error(response.msg);
-                    }
-                })
-    }
 
     const handleDownloadXLSX = (data : any[], title : string) => {
         const xlsx = exportToExcel(data,title)
@@ -151,7 +176,7 @@ export const ResponsiblePage: React.FC = () => {
             key: 'table',
             label: 'Liste au format Card ',
             children: <StudentList
-                students={filteredStudents}
+                students={Array.isArray(filteredStudents) ? filteredStudents : []}
                 handleDelete={onDeleteStudent}
                 handleEdit={onEditStudent}
                 />
@@ -163,33 +188,11 @@ export const ResponsiblePage: React.FC = () => {
                 columns={studentColumns} 
                 dataSource={filteredStudents} 
                 rowKey={'_id'}
-                pagination = {(filteredStudents.length > 6) ? {pageSize: 6} : false}
+                pagination={Array.isArray(filteredStudents) ? (filteredStudents.length > 6 ? { pageSize: 6 } : false) : false}
                 />
         }
     ];
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [attendance, allStudents, stat, totalHours] = await Promise.all([
-                    fetchDailyAttendance(),
-                    fetchAllStudent(),
-                    fetchStatistics(),
-                    fetchTotalSTudentHoursPerWeek(),
-                ]);
-
-                if (attendance.success) setDailyAttendance(attendance.data);
-                if (allStudents.success) setStudents(allStudents.data);
-                if (stat.success) setStatistics(stat.data);
-                if (totalHours.success) setAttendancePerWeek(totalHours.data);
-
-            } catch (error) {
-                message.error('Erreur lors de la récupération des données', 10);
-            }
-        };
-
-        fetchData();
-    }, []);
 
 
     useEffect(() => {
@@ -201,9 +204,8 @@ export const ResponsiblePage: React.FC = () => {
     
     useEffect(() => {
         const handleArrival = (data: IStudentType) => {
-            // message.success(`${data.first_name} ${data.last_name} vient d'arriver au campus`, 10);
             api.open({
-                message: "Nouvelle notification",
+                message: "Notification d'arrivée",
                 description:
                     `${data.first_name} ${data.last_name} vient d'arriver au campus`,
                 showProgress: true,
@@ -212,7 +214,7 @@ export const ResponsiblePage: React.FC = () => {
         };
         const handleDeparture = (data: IStudentType) => {
             api.open({
-                message: "Nouvelle notification",
+                message: "Notification de départ",
                 description:
                     `${data.first_name} ${data.last_name} Vient de partir au campus`,
                 showProgress: true,
@@ -228,19 +230,6 @@ export const ResponsiblePage: React.FC = () => {
             socket.off('new-departure', handleDeparture);
         };
     }, []);
-
-
-    if(!dailyAttendance || !statistics || !students || !attendancePerWeek){
-        return (
-            <Content className='flex justify-center items-center min-h-screen'>
-                <Spin 
-                    fullscreen={true} 
-                    className='flex justify-center items-center' 
-                    size='large'
-                />
-            </Content>
-        )
-    }
 
     
 
@@ -272,13 +261,13 @@ export const ResponsiblePage: React.FC = () => {
                                 <Title className="mb-8" level={3}>Dashboard</Title>
                                 <Row gutter={[16, 16]}>
                                     <Col span={8}>
-                                        <Statistic className="bg-white p-4 rounded" value={statistics?.total_student} title="Nombre total d'élève" />
+                                        <Statistic className="bg-white p-4 rounded" value={statistics?.data.total_student} title="Nombre total d'élève" />
                                     </Col>
                                     <Col span={8}>
-                                        <Statistic className="bg-white p-4 rounded" value={statistics?.daily_student} title="Nombre d'élève présent aujourd'hui" />
+                                        <Statistic className="bg-white p-4 rounded" value={statistics?.data.daily_student} title="Nombre d'élève présent aujourd'hui" />
                                     </Col>
                                     <Col span={8}>
-                                        <Statistic className="bg-white p-4 rounded" value={statistics?.presence_rate} suffix="%" title="Taux de présence journalier" />
+                                        <Statistic className="bg-white p-4 rounded" value={statistics?.data.presence_rate} suffix="%" title="Taux de présence journalier" />
                                     </Col>
                                 </Row>
                             </>
@@ -289,7 +278,7 @@ export const ResponsiblePage: React.FC = () => {
                                 <Title level={2} className='mb-10'>Émargement de la journée</Title>
                                 <DataTable 
                                     columns={dailyAttendanceColumns} 
-                                    dataSource={dailyAttendance}
+                                    dataSource={Array.isArray(dailyAttendance) ? dailyAttendance : []}
                                     rowKey='_id'
                                     onDownload={handleDownloadXLSX}
                                     downloadTitle={`Liste_emargement_journalier-${new Date().toISOString().split('T')[0]}`}
@@ -303,13 +292,13 @@ export const ResponsiblePage: React.FC = () => {
                                 </Title>
                                 <DataTable 
                                     columns={weeklyAttendanceColumns}
-                                    dataSource={attendancePerWeek}
+                                    dataSource={Array.isArray(attendancePerWeek) ? attendancePerWeek : []}
                                     rowKey="_id"
                                     onDownload={handleDownloadXLSX}
                                     downloadTitle={`Liste_emargement_semaine_en_course-${new Date().toISOString().split('T')[0]}`}
                                 />
                             </>
-                        )}
+                        )} 
 
                         {selectedMenuKey === 'studentList' && (
                             <>
