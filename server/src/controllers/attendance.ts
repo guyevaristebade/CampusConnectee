@@ -228,11 +228,12 @@ export const getTotalStudentHoursPerWeek = async () => {
         const newRecord = totalHoursPerWeek.map(data =>{
             return {
                 _id: data._id,
-                first_name: data.studentDetails.first_name,
-                last_name: data.studentDetails.last_name,
+                first_name: data.studentDetails?.first_name,
+                last_name: data.studentDetails?.last_name,
                 total_hours: data.totalHours
             }
         })
+
         responsePayload.data = newRecord;
 
     } catch (e: any) {
@@ -293,13 +294,13 @@ export const fetchDailyAttendance = async () : Promise<ResponseType> =>{
         const attendances = await Attendance.find({today_date : getDate()}).populate('student_id').sort({first_name: -1})
         const newAttendancesTable = attendances.map((attendance : any) => {
             return {
-                _id: attendance._id,
-                last_name : attendance.student_id.last_name,
-                first_name : attendance.student_id.first_name,
-                arrival_time: attendance.arrival_time,
-                departure_time: attendance.departure_time,
-                total_hours: attendance.total_hours,
-                status: attendance.status,
+                _id: attendance?._id,
+                last_name : attendance?.student_id?.last_name,
+                first_name : attendance?.student_id?.first_name,
+                arrival_time: attendance?.arrival_time,
+                departure_time: attendance?.departure_time,
+                total_hours: attendance?.total_hours,
+                status: attendance?.status,
             }
         })
         responsePayload.data = newAttendancesTable

@@ -24,7 +24,7 @@ UserRouter.post('/login' , async (req: Request, res: Response) => {
     if (response.success) {
         const token = response.data.token;
         res.cookie('token_ccpn', token, {
-            maxAge: 31 * 24 * 3600 * 1000,
+            maxAge: 30 * 1000, // 30 seconds in milliseconds
             httpOnly: true,
             secure: useSecureAuth ? true : false,
             sameSite: useSecureAuth ? 'none' : 'lax',
@@ -53,6 +53,8 @@ UserRouter.get('/', authenticated, async (req, res) => {
         }
     });
 });
+
+
 
 // Route pour la déconnexion de l'utilisateur
 UserRouter.delete('/logout', authenticated, (req: Request, res: Response) => {

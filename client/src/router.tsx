@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import { ArrivalPage, Login, MaintenancePage, NotAuthorizedPage, ResponsiblePage, Unknown } from "./pages";
 import { Main } from "./components";
 import { DeparturePage } from './pages';
-import { AuthContextProvider, LocationProvider } from './context';
+import { AuthContextProvider } from './context';
 
 export const AppRouter : React.FC = () =>{
 
@@ -12,11 +12,7 @@ export const AppRouter : React.FC = () =>{
             <Route element={<Main/>}>
                 <Route
                     path="arrival"
-                    element={
-                        <LocationProvider>
-                            <ArrivalPage />
-                        </LocationProvider>
-                    }
+                    element={<ArrivalPage />}
                 />
                 <Route
                     path="departure"

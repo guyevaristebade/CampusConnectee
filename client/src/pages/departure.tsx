@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Layout, Form, Row, Col, message, Spin } from "antd";
+import { Layout, Form, Row, Col, message, Spin, Result } from "antd";
 import Confetti from 'react-confetti';
-import { IDeparture, IStudentType } from '../types';
+import { IDeparture } from '../types';
 import { fetchAllStudents, registeredDeparture } from '../api';
 import { AttendanceForm, Panel } from '../components';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 const { Content } = Layout;
 
 export const DeparturePage: React.FC = () => {
     const [form] = Form.useForm();
     const { data: students, error: studentsError, isLoading: studentsLoading } = useQuery({queryKey : ['students'], queryFn : fetchAllStudents});
     
-    const queryClient = useQueryClient();
     const attendanceFormMutation = useMutation({
         mutationFn: registeredDeparture,
         onSuccess: (response) => {
@@ -41,7 +40,6 @@ export const DeparturePage: React.FC = () => {
             label: `${student.last_name.toUpperCase()} ${student.first_name.toLowerCase()}`
     })) : [], [students]);
 
-    console.log(students);
 
     // Fonction pour mettre à jour la taille de la fenêtre
     const handleResize = useCallback(() => {
@@ -59,6 +57,14 @@ export const DeparturePage: React.FC = () => {
     }, [handleResize]);
 
         
+    
+    if(studentsError){
+        return <Content className='flex justify-center py-10 bg-transparent'>
+            <Result 
+                title="Une erreur s'est produit au niveau de la page D'arrivé" 
+            />
+        </Content>
+    }
     if(studentsLoading){
         return <Content className='flex justify-center py-10 bg-transparent'>
             <Spin size='large'/>

@@ -33,6 +33,7 @@ export const ResponsiblePage: React.FC = () => {
     const { data: attendancePerWeek, error: attendancePerWeekError, isLoading: attendancePerWeekLoading } = useQuery({queryKey : ['attendancePerWeek'], queryFn : fetchTotalSTudentHoursPerWeek});
     
 
+    console.log(attendancePerWeek)
 
     const addStudentMutation = useMutation({
         mutationFn :  createStudent, 
@@ -139,7 +140,6 @@ export const ResponsiblePage: React.FC = () => {
         student.last_name.toLowerCase().includes(search.toLowerCase())
     ) : [];
 }, [students, search]);
-console.log(filteredStudents);
 
     const onMenuClick = (e: any) => {
         const newKey = e.key;
@@ -153,7 +153,7 @@ console.log(filteredStudents);
     };
 
     const onEditStudent = (id: string) => {
-        const newStudent : IStudent | null = Array.isArray(students?.data) ? students?.data.find((s) => s._id === id) : null;
+        const newStudent : IStudent | null = Array.isArray(students) ? students.find((s) => s._id === id) : null;
         setSelectedStudent(newStudent);
         setIsModalVisible(true);
     }

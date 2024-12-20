@@ -40,6 +40,7 @@ FeeRouter.put('/departure', async (req: Request, res: Response) => {
 // cette route sera utilisé pour restituer tous les étudiants et le total de leurs heures pour la semaine en cours
 FeeRouter.get('/student/total_hours_per_week', async (req: Request, res: Response) => {
     const response: ResponseType = await getTotalStudentHoursPerWeek();
+    console.log("c'est ici")
     res.status(response.status as number).send(response);
 })
 

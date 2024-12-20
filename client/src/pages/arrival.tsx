@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Layout, Form, Row, Col, message, Spin } from "antd";
+import { Layout, Form, Row, Col, message, Spin, Result, Button } from "antd";
 import Confetti from 'react-confetti';
 import { IArrival, IStudentType } from '../types';
 import { fetchAllStudents, registeredArrival } from '../api';
@@ -36,7 +36,6 @@ export const ArrivalPage: React.FC = () => {
     
     const { data: students, error: studentsError, isLoading: studentsLoading } = useQuery({queryKey : ['students'], queryFn : fetchAllStudents});
 
-    console.log(students    )
     // Mémorise le tableau de nom d'étudiant pour éviter les rendu inutile 
     const studentOptions = useMemo(() => 
         Array.isArray(students) ? students.map((student: IStudentType) => ({
@@ -50,9 +49,17 @@ export const ArrivalPage: React.FC = () => {
         attendanceFormMutation.mutate(values);
     };
 
+    if(studentsError){
+        return <Content className='flex justify-center py-10 bg-transparent'>
+            <Result 
+                title="Une erreur s'est produit au niveau de la page d'arrivé" 
+            />
+        </Content>
+    }
+
     
     if(studentsLoading){
-        return <Content className='flex justify-center py-10 bg-transparent'>
+        return <Content className='flex justify-center py-10 bg-[#2c2a2a]'>
             <Spin size='large'/>
         </Content>
     }
@@ -62,7 +69,7 @@ export const ArrivalPage: React.FC = () => {
             <Panel/>
             <Content className='flex justify-center py-10 bg-white'>
                 
-                {/* Affiche les confettis si showConfetti est true */}
+                {/* Affiche les confettis si showConfetti est true */} 
                 {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
                 <Row  className='text-center max-w-md w-full'> {/* max-w-md : max-width : 448px */}
                     <Col span={24}>

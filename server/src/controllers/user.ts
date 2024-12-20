@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import {IUser, ResponseType} from "../types";
+import {IUser, ResponseType } from "../types";
 import {User} from "../models";
 import {sanitizeFilter} from "mongoose";
 import {passwordValidators} from "../utils";
@@ -80,7 +80,7 @@ export const loginUser = async (userData : IUser): Promise<ResponseType> => {
         const {password, ...userWithPasswd} = user.toObject();
         
         // Generate token
-        const token: string = jwt.sign({ user : userWithPasswd  }, process.env.JWT_SECRET_KEY || '', { expiresIn: '30d' });
+        const token: string = jwt.sign({ user : userWithPasswd  }, process.env.JWT_SECRET_KEY || '', { expiresIn: '30s' });
 
         response.data = { user : userWithPasswd , token };
 
