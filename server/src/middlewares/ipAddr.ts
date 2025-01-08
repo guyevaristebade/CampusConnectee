@@ -14,22 +14,39 @@ import axios from "axios";
  * avec un message d'erreur approprié.
  * */
 
-export const verifyIp = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
-    try {
-        const response = await axios.get(process.env.URL_GET_STUDENT_IP as string);
-        const ip = response.data;
+export const verifyIp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  try {
+    const link = process.env.GEOLOCATION_API_LINK as string;
+    const response = await axios.get(link);
+    const ip = response.data.ip;
+    const lng = response.data.location.lng;
+    const lat = response.data.location.lat;
 
-        // Vérification de l'adresse IP
-        if (ip !== process.env.CAMPUS_IP_ADDRESS) {
-            console.log(ip)
-            return res.status(401).send({success: false, msg: 'Accès non autorisé'});
-        }
-
-        next();
-    } catch (error) {
-        return res.status(400).send({
-            success: false,
-            msg: 'Erreur lors de la vérification de l\'IP, vous devez être sur le campus'
-        });
+    // Vérification de l'adresse IP
+    if (
+      ip !== process.env.CAMPUS_IP &&
+      lng !== process.env.CAMPUS_LNG &&
+      lat !== process.env.CAMPUS_LAT
+    ) {
+      return res.status(401).send({
+        success: false,
+        msg: "Accès non autorisé, vous n'êtes pas sur le campus",
+        tes:
+          ip !== process.env.CAMPUS_IP &&
+          lng !== process.env.CAMPUS_LNG &&
+          lat !== process.env.CAMPUS_LAT,
+      });
     }
-}
+
+    next();
+  } catch (error) {
+    return res.status(400).send({
+      success: false,
+      msg: "Erreur lors de la vérification de l'IP, vous devez être sur le campus",
+    });
+  }
+};
