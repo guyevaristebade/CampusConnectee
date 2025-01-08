@@ -32,16 +32,29 @@ export const verifyIp = async (
       lng !== process.env.CAMPUS_LNG &&
       lat !== process.env.CAMPUS_LAT
     ) {
+      console.log(`${ip} === ${process.env.CAMPUS_IP}`);
+      console.log(`${lng} === ${process.env.CAMPUS_LNG}`);
+      console.log(`${lat} === ${process.env.CAMPUS_LAT}`);
+
+      console.log(
+        ip !== process.env.CAMPUS_IP &&
+          lng !== process.env.CAMPUS_LNG &&
+          lat !== process.env.CAMPUS_LAT
+      );
       return res.status(401).send({
         success: false,
         msg: "Accès non autorisé, vous n'êtes pas sur le campus",
-        tes:
-          ip !== process.env.CAMPUS_IP &&
-          lng !== process.env.CAMPUS_LNG &&
-          lat !== process.env.CAMPUS_LAT,
       });
     }
+    console.log(
+      ip !== process.env.CAMPUS_IP &&
+        lng !== process.env.CAMPUS_LNG &&
+        lat !== process.env.CAMPUS_LAT
+    );
 
+    console.log(`${ip} === ${process.env.CAMPUS_IP}`);
+    console.log(`${lng} === ${process.env.CAMPUS_LNG}`);
+    console.log(`${lat} === ${process.env.CAMPUS_LAT}`);
     next();
   } catch (error) {
     return res.status(400).send({
