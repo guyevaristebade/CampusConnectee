@@ -1,11 +1,11 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model } from 'mongoose'
 
-const FileSchema : Schema = new Schema({
-    url : {
-        type : String
-    }
+const FileSchema: Schema = new Schema({
+    url: {
+        type: String,
+    },
 })
 
 FileSchema.set('timestamps', true)
 
-export const File = model('File', FileSchema);
+export const File = model('File', FileSchema)

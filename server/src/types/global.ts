@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
-export interface ResponseType<Type = any>  {
+export interface ResponseType<Type = any> {
     success: boolean
     status?: number
     msg?: string

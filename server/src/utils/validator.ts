@@ -1,4 +1,4 @@
-export const passwordValidators = (password : string) => [
+export const passwordValidators = (password: string) => [
     {
         validator: password !== undefined,
         message: 'Mot de passe necéssaire',
@@ -21,6 +21,7 @@ export const passwordValidators = (password : string) => [
     },
     {
         validator: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/g.test(password),
-        message: 'Le mot de passe doit contenir au moins 1 caractère spécial : !@#$%^&*()_+-=[]{};/?',
+        message:
+            'Le mot de passe doit contenir au moins 1 caractère spécial : !@#$%^&*()_+-=[]{};/?',
     },
 ]

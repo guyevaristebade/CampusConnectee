@@ -1,38 +1,38 @@
-import { Schema, model } from 'mongoose';
-import {getDate} from "../utils";
+import { Schema, model } from 'mongoose'
+import { getDate } from '../utils'
 
-const AttendanceSchema : Schema = new Schema({
-    student_id:{
+const AttendanceSchema: Schema = new Schema({
+    student_id: {
         type: Schema.Types.ObjectId,
         ref: 'Student',
-        required: true
+        required: true,
     },
     today_date: {
         type: String,
-        default: getDate()
+        default: getDate(),
     },
-    arrival_time :{
+    arrival_time: {
         type: String,
-        default : "00:00"
+        default: '00:00',
     },
-    departure_time :{
+    departure_time: {
         type: String,
     },
     total_hours: {
         type: String,
-        default: 0
+        default: 0,
     },
     status: {
         type: String,
         enum: ['in_progress', 'completed'],
-        default: 'in_progress'
+        default: 'in_progress',
     },
     is_registered: {
         type: Boolean,
-        default: false
-    }
+        default: false,
+    },
 })
 
 AttendanceSchema.set('timestamps', true)
 
-export const Attendance = model('Attendance', AttendanceSchema);
+export const Attendance = model('Attendance', AttendanceSchema)

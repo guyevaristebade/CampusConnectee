@@ -1,27 +1,28 @@
-import bcrypt from "bcryptjs";
-import {IUser, ResponseType } from "../types";
-import {User} from "../models";
-import {sanitizeFilter} from "mongoose";
-import {passwordValidators} from "../utils";
-import jwt from "jsonwebtoken";
+import bcrypt from 'bcryptjs'
+import { IUser, ResponseType } from '../types'
+import { User } from '../models'
+import { sanitizeFilter } from 'mongoose'
+import { passwordValidators } from '../utils'
+import jwt from 'jsonwebtoken'
 
-
-export const CreateUser = async (userData : IUser): Promise<ResponseType> => {
+export const CreateUser = async (userData: IUser): Promise<ResponseType> => {
     let response: ResponseType = {
-        success : true,
-        status: 201
+        success: true,
+        status: 201,
     }
 
     try {
-        let user = await User.findOne(sanitizeFilter({ name: userData.username }));
+        let user = await User.findOne(
+            sanitizeFilter({ name: userData.username })
+        )
         if (user) {
             response.status = 400
             response.success = false
             response.msg = 'Un utilisateur existe déjà a ce nom'
-            return response;
+            return response
         }
 
-        let validation = passwordValidators(userData.password);
+        let validation = passwordValidators(userData.password)
         for (const el of validation) {
             if (!el.validator) {
                 response.status = 400
@@ -31,63 +32,73 @@ export const CreateUser = async (userData : IUser): Promise<ResponseType> => {
             }
         }
 
-        const hashedPassword = await bcrypt.hash(userData.password, 10);
-        const newUser = new User(sanitizeFilter({
-            username: userData.username,
-            password: hashedPassword,
-        }));
+        const hashedPassword = await bcrypt.hash(userData.password, 10)
+        const newUser = new User(
+            sanitizeFilter({
+                username: userData.username,
+                password: hashedPassword,
+            })
+        )
 
-        await newUser.save();
+        await newUser.save()
 
-        const {password, ...newUserWithPasswd} = newUser.toObject();
-        response.msg = "Inscription réussie avec succès";
+        const { password, ...newUserWithPasswd } = newUser.toObject()
+        response.msg = 'Inscription réussie avec succès'
         response.data = newUserWithPasswd
-
-    } catch (e : any) {
+    } catch (e: any) {
         response.status = 500
-        response.success = false;
+        response.success = false
         response.msg = e.message
     }
-    return  response;
-};
+    return response
+}
 
-export const loginUser = async (userData : IUser): Promise<ResponseType> => {
+export const loginUser = async (userData: IUser): Promise<ResponseType> => {
     let response: ResponseType = {
-        success : true,
-        status: 200
+        success: true,
+        status: 200,
     }
 
     try {
         // Find user by username
-        const user = await User.findOne(sanitizeFilter({ username: userData.username }));
+        const user = await User.findOne(
+            sanitizeFilter({ username: userData.username })
+        )
         if (!user) {
             response.status = 400
             response.success = false
-            response.msg = 'Identifiants invalides';
-            return response;
+            response.msg = 'Identifiants invalides'
+            return response
         }
 
         // Compare password
-        const passwordMatch = await bcrypt.compare(userData.password, user.password as string);
+        const passwordMatch = await bcrypt.compare(
+            userData.password,
+            user.password as string
+        )
         if (!passwordMatch) {
             response.status = 400
             response.success = false
             response.msg = 'Mot de passe incorrect'
-            return response;
+            return response
         }
 
         // Return user without password
-        const {password, ...userWithPasswd} = user.toObject();
-        
+        const { password, ...userWithPasswd } = user.toObject()
+
         // Generate token
-        const token: string = jwt.sign({ user : userWithPasswd  }, process.env.JWT_SECRET_KEY || '', { expiresIn: '30s' });
+        const token: string = jwt.sign(
+            { user: userWithPasswd },
+            process.env.JWT_SECRET_KEY || '',
+            { expiresIn: '30s' }
+        )
 
-        response.data = { user : userWithPasswd , token };
-
-    } catch (e : any) {
+        response.data = { user: userWithPasswd, token }
+    } catch (e: any) {
         response.status = 500
-        response.success = false;
-        response.msg = "Une erreur s'est produite, veuillez contactez les développeurs";
+        response.success = false
+        response.msg =
+            "Une erreur s'est produite, veuillez contactez les développeurs"
     }
-    return  response;   
+    return response
 }
