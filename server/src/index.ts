@@ -1,5 +1,5 @@
 import express, { Express } from 'express'
-import { connectDB } from './utils'
+import { connectDB, createStudentWithXlsxFile } from './utils'
 import {
     FeeRouter,
     StudentRouter,
@@ -51,7 +51,10 @@ app.use('/api/attendance', FeeRouter)
 app.use('/api/student', StudentRouter)
 app.use('/api/statistics', StatisticsRouter)
 
+createStudentWithXlsxFile('src/documents/DONNEES-ETUDIANTS-2024-2025.xlsx')
+
 // Connexion à la base de données et démarrage du serveur
+
 connectDB().then(() => {
     server.listen(PORT, () => {
         console.log(`Server is running on port: ${PORT}`)

@@ -24,7 +24,7 @@ UserRouter.post('/login', async (req: Request, res: Response) => {
     if (response.success) {
         const token = response.data.token
         res.cookie('token_ccpn', token, {
-            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds
+            maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: true,
             secure: useSecureAuth ? true : false,
             sameSite: useSecureAuth ? 'none' : 'lax',
