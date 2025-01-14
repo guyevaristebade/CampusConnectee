@@ -1,5 +1,5 @@
 import express, { Express } from 'express'
-import { connectDB, createStudentWithXlsxFile } from './utils'
+import { connectDB } from './utils'
 import {
     FeeRouter,
     StudentRouter,
@@ -40,7 +40,6 @@ app.use(bodyParser.json())
 
 if (process.env.NODE_ENV === 'production') {
     app.use(compression())
-    app.use(morgan('combined'))
     app.use(helmet())
 }
 
@@ -50,8 +49,6 @@ app.use('/api/admin', AdminRouter)
 app.use('/api/attendance', FeeRouter)
 app.use('/api/student', StudentRouter)
 app.use('/api/statistics', StatisticsRouter)
-
-createStudentWithXlsxFile('src/documents/DONNEES-ETUDIANTS-2024-2025.xlsx')
 
 // Connexion à la base de données et démarrage du serveur
 
