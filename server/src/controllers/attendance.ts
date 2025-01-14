@@ -209,7 +209,7 @@ export const getTotalStudentHoursPerWeek = async () => {
         const totalHoursPerWeek = await Attendance.aggregate([
             {
                 $match: {
-                    createdAt: { $gte: startOfWeek, $lte: endOfWeek },
+                    createdAt: { $gte: startOfWeek, $lte: endOfWeek }, // Filtrer les enregistrements de la semaine
                 },
             },
             {

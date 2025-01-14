@@ -13,7 +13,7 @@ export const CreateUser = async (userData: IUser): Promise<ResponseType> => {
 
     try {
         let user = await User.findOne(
-            sanitizeFilter({ name: userData.username })
+            sanitizeFilter({ username: userData.username })
         )
         if (user) {
             response.status = 400
@@ -46,9 +46,16 @@ export const CreateUser = async (userData: IUser): Promise<ResponseType> => {
         response.msg = 'Inscription réussie avec succès'
         response.data = newUserWithPasswd
     } catch (e: any) {
-        response.status = 500
-        response.success = false
-        response.msg = e.message
+        if (e.code === 11000) {
+            response.status = 400
+            response.success = false
+            response.msg = 'Un utilisateur avec ce nom existe déjà'
+        } else {
+            response.status = 500
+            response.success = false
+            response.msg =
+                "Une erreur s'est produite, veuillez contactez les développeurs"
+        }
     }
     return response
 }
@@ -90,7 +97,7 @@ export const loginUser = async (userData: IUser): Promise<ResponseType> => {
         const token: string = jwt.sign(
             { user: userWithPasswd },
             process.env.JWT_SECRET_KEY || '',
-            { expiresIn: '30s' }
+            { expiresIn: '30d' }
         )
 
         response.data = { user: userWithPasswd, token }
