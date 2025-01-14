@@ -48,7 +48,7 @@ export const ArrivalPage: React.FC = () => {
       Array.isArray(students)
         ? students.map((student: IStudentType) => ({
             value: student._id,
-            label: `${student.last_name.toUpperCase()} ${student.first_name.toLowerCase()}`,
+            label: `${student.last_name.toUpperCase()} ${student.first_name.charAt(0).toUpperCase()}${student.first_name.slice(1)}`,
           }))
         : [],
     [students]
