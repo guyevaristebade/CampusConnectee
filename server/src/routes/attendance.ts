@@ -9,26 +9,35 @@ import {
     registerStudentDeparture,
 } from '../controllers'
 import { io } from '..'
+import { timeRestriction } from '../middlewares'
 
 export const FeeRouter: Router = express.Router()
 
 // Route pour enregistrer une arrivée
-FeeRouter.post('/arrival', async (req: Request, res: Response) => {
-    const response: ResponseType = await registerStudentArrival(req.body)
-    res.status(response.status as number).send(response)
-    if (response.success) {
-        io.emit('new-arrival', response.data)
+FeeRouter.post(
+    '/arrival',
+    timeRestriction,
+    async (req: Request, res: Response) => {
+        const response: ResponseType = await registerStudentArrival(req.body)
+        res.status(response.status as number).send(response)
+        if (response.success) {
+            io.emit('new-arrival', response.data)
+        }
     }
-})
+)
 
 // Route pour enregistrer un départ
-FeeRouter.put('/departure', async (req: Request, res: Response) => {
-    const response: ResponseType = await registerStudentDeparture(req.body)
-    res.status(response.status as number).send(response)
-    if (response.success) {
-        io.emit('new-departure', response.data)
+FeeRouter.put(
+    '/departure',
+    timeRestriction,
+    async (req: Request, res: Response) => {
+        const response: ResponseType = await registerStudentDeparture(req.body)
+        res.status(response.status as number).send(response)
+        if (response.success) {
+            io.emit('new-departure', response.data)
+        }
     }
-})
+)
 
 // total d'heure par semaine par étudiant
 // cette route sera utilisé pour restituer tous les étudiants et le total de leurs heures pour la semaine en cours
