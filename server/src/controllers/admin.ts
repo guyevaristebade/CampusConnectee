@@ -1,6 +1,6 @@
 import { Attendance, Student } from '../models'
 import { ResponseType, IStudentData } from '../types'
-import { createStudentWithXlsxFile } from '../utils'
+import { createStudentWithXlsxFile } from '../services'
 
 export const deleteAllAttendance = async (): Promise<ResponseType> => {
     let responsePayload: ResponseType = {

@@ -1,6 +1,6 @@
 import { Attendance, Student } from '../models'
 import { ResponseType } from '../types'
-import { getDate } from '../utils'
+import { getDate } from '../services'
 
 export const getStatistics = async (): Promise<ResponseType> => {
     let responsePayload: ResponseType = {

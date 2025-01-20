@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose'
-import { getDate } from '../utils'
+import { getDate } from '../services'
 
 const AttendanceSchema: Schema = new Schema({
     student_id: {

@@ -1,4 +1,10 @@
-import { IArrival, IDateType, IDeparture, ResponseType } from '../types'
+import {
+  IArrival,
+  IDateType,
+  IDeparture,
+  IRangeDateType,
+  ResponseType,
+} from '../types'
 import { instance } from '../utils'
 
 export const registeredArrival = async (
@@ -37,15 +43,9 @@ export const fetchTotalSTudentHoursPerWeek = async (): Promise<
   return response.data.data
 }
 
-export const fetchAttendanceByRangeDate = async (
-  dates: any
-): Promise<ResponseType<any>> => {
-  const response = await instance.get('/attendance/range_date', dates)
-  return response.data.data
-}
 export const fetchAllAttendanceByRangeDate = async (
-  dates: IDateType
+  dates: IRangeDateType
 ): Promise<ResponseType<any>> => {
-  const response = await instance.get('/attendance/range_date')
+  const response = await instance.post('/attendance/range_date', dates)
   return response.data
 }

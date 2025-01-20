@@ -1,5 +1,5 @@
 import express, { Express } from 'express'
-import { connectDB } from './utils'
+import { connectDB } from './services'
 import {
     FeeRouter,
     StudentRouter,
@@ -7,15 +7,15 @@ import {
     AdminRouter,
     StatisticsRouter,
 } from './routes'
+import cron from 'node-cron'
 import cookieParser from 'cookie-parser'
 import compression from 'compression'
 import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
-import morgan from 'morgan'
 import cors from 'cors'
 import helmet from 'helmet'
 import http from 'http'
-import { initializeSocketIO } from './utils'
+import { initializeSocketIO } from './services'
 
 dotenv.config()
 
@@ -49,6 +49,15 @@ app.use('/api/admin', AdminRouter)
 app.use('/api/attendance', FeeRouter)
 app.use('/api/student', StudentRouter)
 app.use('/api/statistics', StatisticsRouter)
+
+if (process.env.NODE_ENV === 'production') {
+    //
+    cron.schedule('*/10 8-17 * * 1-5', () => {
+        console.log(
+            'Running a task every 30 minutes from 8:00 to 17:30 PM from Monday to Friday'
+        )
+    })
+}
 
 // Connexion à la base de données et démarrage du serveur
 

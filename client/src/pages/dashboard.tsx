@@ -8,9 +8,10 @@ import {
   LogoutOutlined,
 } from '@ant-design/icons'
 import { exportToExcel } from '../utils'
-import { IStudent, IStudentData, IStudentType } from '../types'
+import { IRangeDateType, IStudent, IStudentData, IStudentType } from '../types'
 import { DataTable, StudentList } from '../components'
 import {
+  DatePicker,
   Layout,
   Button,
   Typography,
@@ -27,27 +28,31 @@ import {
   notification,
   Spin,
   Result,
+  DatePickerProps,
 } from 'antd'
 import {
   createStudent,
   deleteStudentById,
+  fetchAllAttendanceByRangeDate,
   fetchAllStudents,
   fetchDailyAttendance,
   fetchStatistics,
   fetchTotalSTudentHoursPerWeek,
-  getChartData,
 } from '../api'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
+import dayjs from 'dayjs'
 
 const { Header, Content } = Layout
 const { Title } = Typography
+const { RangePicker } = DatePicker
 
-export const ResponsiblePage: React.FC = () => {
+export const DashBoard: React.FC = () => {
   const { user, logout } = useAuth()
   const [form] = Form.useForm()
   const queryClient = useQueryClient()
   const [api, contextHolder] = notification.useNotification()
+  const [totalHoursPerRange, setTotalHoursPerRange] = useState<[]>([])
   const navigate = useNavigate()
   const {
     data: dailyAttendance,
@@ -56,6 +61,11 @@ export const ResponsiblePage: React.FC = () => {
   } = useQuery({
     queryKey: ['dailyAttendance'],
     queryFn: fetchDailyAttendance,
+  })
+
+  const [dates, setDates] = useState<IRangeDateType | null>({
+    startDate: dayjs().startOf('week').toDate().toISOString(),
+    endDate: dayjs().endOf('week').toDate().toISOString(),
   })
 
   const {
@@ -108,6 +118,21 @@ export const ResponsiblePage: React.FC = () => {
     },
     onError: () => {
       message.error("Une erreur s'est produite lors de l'ajout de l'étudiant")
+    },
+  })
+
+  const attendancePerRangeMutation = useMutation({
+    mutationFn: fetchAllAttendanceByRangeDate,
+    onSuccess: (response) => {
+      if (response.success) {
+        setTotalHoursPerRange(response.data)
+        console.log(response.data)
+      } else {
+        message.error(response.msg)
+      }
+    },
+    onError: () => {
+      message.error('Erreur lors de la récupération des données')
     },
   })
 
@@ -211,6 +236,18 @@ export const ResponsiblePage: React.FC = () => {
     const newKey = e.key
     localStorage.setItem('selectedMenuKey', newKey)
     setSelectedMenuKey(newKey)
+  }
+
+  const onChange = (values: any) => {
+    setDates({
+      startDate: values[0].$d.toISOString(),
+      endDate: values[1].$d.toISOString(),
+    })
+
+    attendancePerRangeMutation.mutate({
+      startDate: values[0].$d.toISOString(),
+      endDate: values[1].$d.toISOString(),
+    })
   }
 
   const onDeleteStudent = (id: string) => {
@@ -426,6 +463,19 @@ export const ResponsiblePage: React.FC = () => {
               </>
             )}
 
+            {/* {selectedMenuKey === 'totalHoursPerRange' && (
+              <>
+                <Title level={2}>Nombre d'heure total sur intervalle</Title>
+                <RangePicker
+                  onChange={onChange}
+                  // defaultValue={[
+                  //   dayjs(dates && dates.startDate),
+                  //   dayjs(dates && dates.endDate),
+                  // ]}
+                />
+              </>
+            )} */}
+
             {selectedMenuKey === 'studentList' && (
               <>
                 <Title level={2}>Liste des étudiants</Title>
@@ -440,6 +490,7 @@ export const ResponsiblePage: React.FC = () => {
                 <Tabs defaultActiveKey="1" items={items} />
               </>
             )}
+
             {selectedMenuKey === 'addStudent' && (
               <>
                 <Title className="mb-8" level={3}>

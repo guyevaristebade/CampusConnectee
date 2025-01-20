@@ -1,43 +1,43 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import {
-    ArrivalPage,
-    Login,
-    MaintenancePage,
-    NotAuthorizedPage,
-    ResponsiblePage,
-    Unknown,
+  ArrivalPage,
+  Login,
+  MaintenancePage,
+  NotAuthorizedPage,
+  DashBoard,
+  Unknown,
 } from './pages'
 import { Main } from './components'
 import { DeparturePage } from './pages'
 import { AuthContextProvider } from './context'
 
 export const AppRouter: React.FC = () => {
-    return (
-        <Routes>
-            <Route element={<Main />}>
-                <Route path="arrival" element={<ArrivalPage />} />
-                <Route path="departure" element={<DeparturePage />} />
-                <Route
-                    path="login"
-                    element={
-                        <AuthContextProvider>
-                            <Login />
-                        </AuthContextProvider>
-                    }
-                />
-            </Route>
-            <Route
-                path="/"
-                element={
-                    <AuthContextProvider>
-                        <ResponsiblePage />
-                    </AuthContextProvider>
-                }
-            />
-            <Route path="/not-authorized" element={<NotAuthorizedPage />} />
-            <Route path="maintenance" element={<MaintenancePage />} />
-            <Route path="*" element={<Unknown />} />
-        </Routes>
-    )
+  return (
+    <Routes>
+      <Route element={<Main />}>
+        <Route path="arrival" element={<ArrivalPage />} />
+        <Route path="departure" element={<DeparturePage />} />
+        <Route
+          path="login"
+          element={
+            <AuthContextProvider>
+              <Login />
+            </AuthContextProvider>
+          }
+        />
+      </Route>
+      <Route
+        path="/"
+        element={
+          <AuthContextProvider>
+            <DashBoard />
+          </AuthContextProvider>
+        }
+      />
+      <Route path="/not-authorized" element={<NotAuthorizedPage />} />
+      <Route path="maintenance" element={<MaintenancePage />} />
+      <Route path="*" element={<Unknown />} />
+    </Routes>
+  )
 }

@@ -25,6 +25,6 @@ export interface FeeDocument {
 }
 
 export interface IRangeDateType {
-    start_date: Date
-    end_date: Date
+    startDate: string
+    endDate: string
 }

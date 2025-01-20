@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs'
 import { IUser, ResponseType } from '../types'
 import { User } from '../models'
 import { sanitizeFilter } from 'mongoose'
-import { passwordValidators } from '../utils'
+import { passwordValidators } from '../services'
 import jwt from 'jsonwebtoken'
 
 export const CreateUser = async (userData: IUser): Promise<ResponseType> => {

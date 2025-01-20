@@ -9,8 +9,8 @@ export interface IDeparture {
 }
 
 export interface IDateType {
-  start_date: string
-  end_date: string
+  start_date: Date
+  end_date: Date
 }
 
 export interface IStatistics {
@@ -26,6 +26,6 @@ export interface IStudent {
 }
 
 export interface IRangeDateType {
-  start_date: string
-  end_date: string
+  startDate: string
+  endDate: string
 }

@@ -7,7 +7,7 @@ import {
     ResponseType,
 } from '../types'
 import { Attendance, Student } from '../models'
-import { getDate, timeDifferenceInDecimal } from '../utils'
+import { getDate, timeDifferenceInDecimal } from '../services'
 import moment from 'moment'
 
 export const registerStudentArrival = async (
@@ -346,8 +346,8 @@ export const getAttendanceByRangeDate = async (
     }
 
     try {
-        const startDate = dates.start_date
-        const endDate = dates.end_date
+        const startDate = dates.startDate
+        const endDate = dates.endDate
 
         const attendances = await Attendance.find({
             createdAt: { $gte: startDate, $lte: endDate },
@@ -356,6 +356,42 @@ export const getAttendanceByRangeDate = async (
         if (attendances.length == 0) {
             responsePayload.status = 404
             responsePayload.data = []
+            return responsePayload
+        }
+
+        responsePayload.data = attendances
+    } catch (e: any) {
+        responsePayload.success = false
+        responsePayload.status = 500
+        responsePayload.msg = e.message
+    }
+
+    return responsePayload
+}
+
+export const fetchAllAttendanceByRangeDate = async (
+    rageDate: IRangeDateType
+): Promise<ResponseType> => {
+    let responsePayload: ResponseType = {
+        success: true,
+        status: 200,
+    }
+
+    try {
+        const start = new Date(rageDate.startDate)
+        const end = new Date(rageDate.endDate)
+
+        const attendances = await Attendance.find({
+            createdAt: {
+                $gte: start,
+                $lte: end,
+            },
+        })
+
+        if (attendances.length == 0) {
+            responsePayload.status = 404
+            responsePayload.data = []
+            responsePayload.msg = 'Aucun enregistrement trouvé'
             return responsePayload
         }
 

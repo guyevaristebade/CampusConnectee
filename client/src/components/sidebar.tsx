@@ -2,6 +2,9 @@ import {
   CalendarOutlined,
   AppstoreOutlined,
   TableOutlined,
+  BarChartOutlined,
+  ScheduleOutlined,
+  ClockCircleOutlined,
 } from '@ant-design/icons'
 import { PiStudentDuotone, PiListBulletsBold } from 'react-icons/pi'
 import { TfiPlus } from 'react-icons/tfi'
@@ -27,14 +30,19 @@ const menuItems: MenuItemsType[] = [
     children: [
       {
         key: 'dailyAttendance',
-        icon: <CalendarOutlined />,
+        icon: <ClockCircleOutlined />, // Pour représenter la ponctualité ou les activités quotidiennes
         label: 'Quotidien',
       },
       {
         key: 'totalHoursPerWeek',
-        icon: <CalendarOutlined />,
+        icon: <ScheduleOutlined />, // Pour indiquer un planning ou un résumé hebdomadaire
         label: 'Hebdomadaire',
       },
+      // {
+      //   key: 'totalHoursPerRange',
+      //   icon: <CalendarOutlined />, // Pour représenter une vue analytique par intervalle
+      //   label: 'Par date ',
+      // },
     ],
   },
   {

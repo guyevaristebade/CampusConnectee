@@ -5,7 +5,7 @@ import {
     editStudent,
 } from '../controllers'
 import { ResponseType } from '../types'
-import { createStudentWithXlsxFile } from '../utils'
+import { createStudentWithXlsxFile } from '../services'
 
 export const AdminRouter = Router()
 
