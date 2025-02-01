@@ -51,7 +51,6 @@ app.use('/api/student', StudentRouter)
 app.use('/api/statistics', StatisticsRouter)
 
 if (process.env.NODE_ENV === 'production') {
-    //
     cron.schedule('*/10 8-17 * * 1-5', () => {
         console.log(
             'Running a task every 30 minutes from 8:00 to 17:30 PM from Monday to Friday'

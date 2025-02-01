@@ -4,6 +4,7 @@ import { User } from '../models'
 import { sanitizeFilter } from 'mongoose'
 import { passwordValidators } from '../services'
 import jwt from 'jsonwebtoken'
+import { Request } from 'express'
 
 export const CreateUser = async (userData: IUser): Promise<ResponseType> => {
     let response: ResponseType = {
@@ -37,6 +38,7 @@ export const CreateUser = async (userData: IUser): Promise<ResponseType> => {
             sanitizeFilter({
                 username: userData.username,
                 password: hashedPassword,
+                permissions: userData.permissions,
             })
         )
 
@@ -101,6 +103,28 @@ export const loginUser = async (userData: IUser): Promise<ResponseType> => {
         )
 
         response.data = { user: userWithPasswd, token }
+    } catch (e: any) {
+        response.status = 500
+        response.success = false
+        response.msg =
+            "Une erreur s'est produite, veuillez contactez les développeurs"
+    }
+    return response
+}
+
+export const fetchAllUsers = async (req: Request): Promise<ResponseType> => {
+    let response: ResponseType = {
+        success: true,
+        status: 200,
+    }
+
+    try {
+        const users = await User.find().select('-password')
+        const usersWithOutCurrentUser = users.filter(
+            (user) => user.username !== (req as any).user.user.username
+        )
+
+        response.data = usersWithOutCurrentUser
     } catch (e: any) {
         response.status = 500
         response.success = false

@@ -7,10 +7,12 @@ import {
   NotAuthorizedPage,
   DashBoard,
   Unknown,
+  Adminstrator,
 } from './pages'
 import { Main } from './components'
 import { DeparturePage } from './pages'
-import { AuthContextProvider } from './context'
+import { PublicRoute } from './components/public-route'
+import { PrivateRoute } from './components/private-route'
 
 export const AppRouter: React.FC = () => {
   return (
@@ -18,21 +20,28 @@ export const AppRouter: React.FC = () => {
       <Route element={<Main />}>
         <Route path="arrival" element={<ArrivalPage />} />
         <Route path="departure" element={<DeparturePage />} />
-        <Route
-          path="login"
+        <Route path="login"
           element={
-            <AuthContextProvider>
+            <PublicRoute>
               <Login />
-            </AuthContextProvider>
+            </PublicRoute>
           }
         />
       </Route>
       <Route
         path="/"
         element={
-          <AuthContextProvider>
+          <PrivateRoute>
             <DashBoard />
-          </AuthContextProvider>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <PrivateRoute>
+            <Adminstrator />
+          </PrivateRoute>
         }
       />
       <Route path="/not-authorized" element={<NotAuthorizedPage />} />

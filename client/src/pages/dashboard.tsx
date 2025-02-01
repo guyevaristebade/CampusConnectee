@@ -1,17 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { useAuth } from '../hooks'
 import { socket } from '../utils'
-import { EditStudentModal, Sidebar } from '../components'
-import {
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  LogoutOutlined,
-} from '@ant-design/icons'
+import { EditStudentModal, HeadBanner, Sidebar } from '../components'
+import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import { exportToExcel } from '../utils'
-import { IRangeDateType, IStudent, IStudentData, IStudentType } from '../types'
+import { IStudent, IStudentData, IStudentType } from '../types'
 import { DataTable, StudentList } from '../components'
 import {
-  DatePicker,
   Layout,
   Button,
   Typography,
@@ -28,7 +22,6 @@ import {
   notification,
   Spin,
   Result,
-  DatePickerProps,
 } from 'antd'
 import {
   createStudent,
@@ -41,18 +34,14 @@ import {
 } from '../api'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import dayjs from 'dayjs'
 
-const { Header, Content } = Layout
+const { Content } = Layout
 const { Title } = Typography
-const { RangePicker } = DatePicker
 
 export const DashBoard: React.FC = () => {
-  const { user, logout } = useAuth()
   const [form] = Form.useForm()
   const queryClient = useQueryClient()
   const [api, contextHolder] = notification.useNotification()
-  const [totalHoursPerRange, setTotalHoursPerRange] = useState<[]>([])
   const navigate = useNavigate()
   const {
     data: dailyAttendance,
@@ -61,11 +50,6 @@ export const DashBoard: React.FC = () => {
   } = useQuery({
     queryKey: ['dailyAttendance'],
     queryFn: fetchDailyAttendance,
-  })
-
-  const [dates, setDates] = useState<IRangeDateType | null>({
-    startDate: dayjs().startOf('week').toDate().toISOString(),
-    endDate: dayjs().endOf('week').toDate().toISOString(),
   })
 
   const {
@@ -118,21 +102,6 @@ export const DashBoard: React.FC = () => {
     },
     onError: () => {
       message.error("Une erreur s'est produite lors de l'ajout de l'étudiant")
-    },
-  })
-
-  const attendancePerRangeMutation = useMutation({
-    mutationFn: fetchAllAttendanceByRangeDate,
-    onSuccess: (response) => {
-      if (response.success) {
-        setTotalHoursPerRange(response.data)
-        console.log(response.data)
-      } else {
-        message.error(response.msg)
-      }
-    },
-    onError: () => {
-      message.error('Erreur lors de la récupération des données')
     },
   })
 
@@ -238,18 +207,6 @@ export const DashBoard: React.FC = () => {
     setSelectedMenuKey(newKey)
   }
 
-  const onChange = (values: any) => {
-    setDates({
-      startDate: values[0].$d.toISOString(),
-      endDate: values[1].$d.toISOString(),
-    })
-
-    attendancePerRangeMutation.mutate({
-      startDate: values[0].$d.toISOString(),
-      endDate: values[1].$d.toISOString(),
-    })
-  }
-
   const onDeleteStudent = (id: string) => {
     deleteStudentMutation.mutate(id)
   }
@@ -269,10 +226,6 @@ export const DashBoard: React.FC = () => {
     } else {
       message.error('Erreur lors du téléchargement du fichier Excel')
     }
-  }
-
-  const onLogout = async () => {
-    await logout()
   }
 
   const handleRetry = () => {
@@ -316,7 +269,7 @@ export const DashBoard: React.FC = () => {
     if (selectedMenuKey) {
       setSelectedMenuKey(selectedMenuKey)
     }
-  }, [])
+  }, [selectedMenuKey])
 
   useEffect(() => {
     const handleArrival = (data: IStudentType) => {
@@ -384,17 +337,7 @@ export const DashBoard: React.FC = () => {
       {contextHolder}
       <Sidebar selectedMenuKey={selectedMenuKey} onMenuClick={onMenuClick} />
       <Layout className="flex flex-col flex-1">
-        <Header className="bg-white flex  items-center justify-end">
-          <p className="text-xl">Bonjour, {user?.username}</p>
-          <Button
-            type="text"
-            icon={<LogoutOutlined />}
-            onClick={onLogout}
-            className="text-white bg-red-600 cursor-pointer mx-2"
-          >
-            Déconnexion
-          </Button>
-        </Header>
+        <HeadBanner />
         <div className="flex-1 overflow-y-auto">
           <Content className="px-10 py-5">
             {selectedMenuKey === 'dashboard' && (
@@ -462,19 +405,6 @@ export const DashBoard: React.FC = () => {
                 />
               </>
             )}
-
-            {/* {selectedMenuKey === 'totalHoursPerRange' && (
-              <>
-                <Title level={2}>Nombre d'heure total sur intervalle</Title>
-                <RangePicker
-                  onChange={onChange}
-                  // defaultValue={[
-                  //   dayjs(dates && dates.startDate),
-                  //   dayjs(dates && dates.endDate),
-                  // ]}
-                />
-              </>
-            )} */}
 
             {selectedMenuKey === 'studentList' && (
               <>

@@ -2,7 +2,6 @@
 
 Lorsque tu code essaie au maximum de repérer ce qui est répétitif pour simplifier ton travail
 
-
 ### Configuration des cookies au niveau du back-end
 
 #### 1. **Environnement local (Développement)**
@@ -22,17 +21,18 @@ Lorsque tu code essaie au maximum de repérer ce qui est répétitif pour simpli
 import { CookieOptions } from "express";
 
 export const getCookieOptions = (): CookieOptions => {
-    return {
-        maxAge: 31 * 24 * 3600 * 1000, // 31 jours
-        httpOnly: true, // Protège contre XSS
-        secure: false, // Pas de HTTPS en local
-        sameSite: 'Lax', // Permet les cookies en local sans être trop restrictif
-        domain: 'localhost', // Domaine local
-    };
+  return {
+    maxAge: 31 * 24 * 3600 * 1000, // 31 jours
+    httpOnly: true, // Protège contre XSS
+    secure: false, // Pas de HTTPS en local
+    sameSite: "Lax", // Permet les cookies en local sans être trop restrictif
+    domain: "localhost", // Domaine local
+  };
 };
 ```
 
 #### Résumé pour **environnement local** :
+
 - `secure: false` (car pas de HTTPS)
 - `sameSite: 'Lax'` (pour permettre les requêtes locales)
 - `httpOnly: true` (pour empêcher l'accès JavaScript)
@@ -58,17 +58,18 @@ export const getCookieOptions = (): CookieOptions => {
 import { CookieOptions } from "express";
 
 export const getCookieOptions = (): CookieOptions => {
-    return {
-        maxAge: 31 * 24 * 3600 * 1000, // 31 jours
-        httpOnly: true, // Protège contre XSS
-        secure: true, // HTTPS obligatoire en production
-        sameSite: 'None', // Permet les cookies entre domaines (cross-origin)
-        domain: process.env.COOKIE_DOMAIN, // Utilise le domaine de production (ex: mywebsite.com)
-    };
+  return {
+    maxAge: 31 * 24 * 3600 * 1000, // 31 jours
+    httpOnly: true, // Protège contre XSS
+    secure: true, // HTTPS obligatoire en production
+    sameSite: "None", // Permet les cookies entre domaines (cross-origin)
+    domain: process.env.COOKIE_DOMAIN, // Utilise le domaine de production (ex: mywebsite.com)
+  };
 };
 ```
 
 #### Résumé pour **environnement de production** :
+
 - `secure: true` (car HTTPS)
 - `sameSite: 'None'` (si cookies cross-origin sont nécessaires)
 - `httpOnly: true` (pour empêcher l'accès JavaScript)
@@ -78,13 +79,173 @@ export const getCookieOptions = (): CookieOptions => {
 
 ### Résumé général :
 
-| Environnement   | `secure`  | `sameSite` | `httpOnly` | Domaine      |
-|-----------------|-----------|------------|------------|--------------|
-| **Développement** | `false`   | `Lax`      | `true`     | `localhost`  |
-| **Production**    | `true`    | `None`     | `true`     | `mywebsite.com` |
+| Environnement     | `secure` | `sameSite` | `httpOnly` | Domaine         |
+| ----------------- | -------- | ---------- | ---------- | --------------- |
+| **Développement** | `false`  | `Lax`      | `true`     | `localhost`     |
+| **Production**    | `true`   | `None`     | `true`     | `mywebsite.com` |
 
 ### Pourquoi ces configurations ?
 
 - **En développement** : Utilise **`secure: false`** et **`sameSite: Lax`** car tu travailles en HTTP et tu n'as pas besoin de gérer les cookies cross-origin.
 
 - **En production** : Utilise **`secure: true`** et **`sameSite: None`** pour garantir la sécurité des cookies sur une connexion HTTPS, et autoriser le partage entre différents domaines ou sous-domaines si nécessaire.
+
+---
+
+```js
+import React, { createContext, useEffect, useState } from 'react'
+import { IChildren, IUserData } from '../types'
+import { useIsLoggedIn } from '../hooks/use-isLoggedIn'
+
+interface AuthProviderProps {
+  user: IUserData | null
+  setUser: React.Dispatch<React.SetStateAction<IUserData | null>>
+}
+
+export const AuthContext: React.Context<AuthProviderProps> =
+  createContext<AuthProviderProps>({
+    user: null,
+    setUser: () => {},
+  })
+
+export const AuthContextProvider = ({ children }: IChildren) => {
+  const [user, setUser] = useState<IUserData | null>(null)
+  const { data } = useIsLoggedIn()
+
+  useEffect(() => {
+    if (data) {
+      if (data.success && data.data?.user) {
+        const user = data.data.user
+        setUser(user)
+      }
+    }
+      /*
+        Dans ce context il faut savoir bien distinguer la dépendance qui change
+        pour mieux remplir le tableau de dépendance
+      */
+  }, [data])
+
+
+
+  return (
+    <AuthContext.Provider value={{ user, setUser }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
+```
+
+### hooks get Resquest avec react-query
+
+```js
+import { useQuery } from "@tanstack/react-query";
+import { isLoggedIn } from "../api";
+
+export const useIsLoggedIn = () => {
+  return useQuery({
+    queryKey: ["isLoggedIn"], // la clé à surveiller
+    queryFn: isLoggedIn,
+  });
+};
+```
+
+### hooks post,put,delete Resquest avec react-query
+
+```js
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { login } from "../api";
+
+export const useLogin = (CallbackFn?: (data: any) => void) => {
+  // CallbackFn est une fonction qui sera appelée après la connexion pour modifier un state
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: login,
+    onSuccess: (data) => {
+      if (CallbackFn) {
+        CallbackFn(data); // ce
+        queryClient.invalidateQueries({ queryKey: ["isLoggedIn"] });
+        navigate("/"); // Rediriger vers la page d'accueil
+      }
+    },
+    onError: (error: any) => {
+      console.error(
+        "Erreur de connexion :",
+        error.response?.data?.message || "Une erreur est survenue"
+      );
+    },
+  });
+};
+```
+
+### route privée
+
+```js
+export const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
+  const { user } = useAuth();
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user.permissions === "Administrator") {
+    return <>{children}</>;
+  } else {
+    return <>{children}</>;
+  }
+};
+```
+
+### route publique
+
+```js
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../hooks";
+import { ReactNode } from "react";
+import { useIsLoggedIn } from "../hooks/use-isLoggedIn";
+import { Layout, Spin } from "antd";
+
+const { Content } = Layout;
+
+interface PublicRouteProps {
+  children: ReactNode;
+}
+
+export const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
+  const { user } = useAuth();
+  const { isLoading } = useIsLoggedIn();
+
+  if (isLoading) {
+    return (
+      <Content className="flex justify-center items-center h-screen">
+        <Spin size="large" fullscreen />
+      </Content>
+    );
+  }
+
+  if (user) {
+    return (
+      <Navigate to={user.permissions === "Administrator" ? "/admin" : "/"} />
+    );
+  }
+
+  return <>{children}</>;
+};
+```
+
+## A Faire
+
+## important
+
+- refaire toute les requêtes avec react-query
+
+### Pas super important
+
+- Controlleur pour supprimer un utilisateur
+- Controleur changer de permission à un utilisateur
+
+```
+
+```

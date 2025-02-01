@@ -5,8 +5,8 @@ import { IStudent } from '../types'
 
 interface StudentListProps {
   students: IStudent[]
-  handleDelete: (id: string) => void
-  handleEdit: (id: string) => void
+  handleDelete?: (id: string) => void
+  handleEdit?: (id: string) => void
 }
 
 export const StudentList: React.FC<StudentListProps> = ({
@@ -28,8 +28,8 @@ export const StudentList: React.FC<StudentListProps> = ({
           <StudentCard
             key={student._id}
             student={student}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
+            onEdit={handleEdit || (() => {})}
+            onDelete={handleDelete || (() => {})}
           />
         ))}
       </div>

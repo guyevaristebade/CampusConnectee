@@ -1,16 +1,45 @@
 import React from 'react'
-import { useAuth } from '../hooks'
+import { useAuth, useLogin } from '../hooks'
 import { UserLogin } from '../types'
-import { Form, Input, Button, Typography, Row, Col, Layout } from 'antd'
+import {
+  Form,
+  Input,
+  Button,
+  Typography,
+  Row,
+  Col,
+  Layout,
+  Spin,
+  message,
+} from 'antd'
 
 const { Title } = Typography
 const { Content } = Layout
 
 export const Login: React.FC = () => {
-  const { login } = useAuth()
+  const { setUser } = useAuth()
+
+  const { mutate, isPending, isError, error } = useLogin((data) => {
+    setUser(data.user)
+  })
 
   const onSubmit = async (values: UserLogin) => {
-    await login(values)
+    mutate(values)
+  }
+
+  if (isError) {
+    message.error(
+      error?.response?.data?.msg ||
+        'Une erreur est survenue lors de la connexion !'
+    )
+  }
+
+  if (isPending) {
+    return (
+      <Content className="flex justify-center items-center h-screen">
+        <Spin size="large" />
+      </Content>
+    )
   }
 
   return (

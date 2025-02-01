@@ -1,5 +1,5 @@
 import express, { Router, Request, Response } from 'express'
-import { CreateUser, loginUser } from '../controllers'
+import { CreateUser, fetchAllUsers, loginUser } from '../controllers'
 import { ResponseType } from '../types'
 import { authenticated } from '../middlewares'
 
@@ -51,6 +51,11 @@ UserRouter.get('/', authenticated, async (req, res) => {
             token,
         },
     })
+})
+
+UserRouter.get('/users', authenticated, async (req, res) => {
+    const response: ResponseType = await fetchAllUsers(req)
+    res.status(response.status as number).send(response)
 })
 
 // Route pour la déconnexion de l'utilisateur

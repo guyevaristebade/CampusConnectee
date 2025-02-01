@@ -1,14 +1,14 @@
 import {
-  CalendarOutlined,
   AppstoreOutlined,
   TableOutlined,
-  BarChartOutlined,
   ScheduleOutlined,
   ClockCircleOutlined,
+  PlusOutlined,
 } from '@ant-design/icons'
 import { PiStudentDuotone, PiListBulletsBold } from 'react-icons/pi'
 import { TfiPlus } from 'react-icons/tfi'
 import { Layout, Image, Menu } from 'antd'
+import { useAuth } from '../hooks'
 
 const { Sider } = Layout
 
@@ -64,6 +64,24 @@ const menuItems: MenuItemsType[] = [
   },
 ]
 
+const menuItemsAdmin: MenuItemsType[] = [
+  {
+    key: 'dashboard',
+    icon: <AppstoreOutlined />,
+    label: 'Dashboard',
+  },
+  {
+    key: 'createUser',
+    icon: <PlusOutlined />,
+    label: 'Créer un utilisateur',
+  },
+  {
+    key: 'userList',
+    icon: <PiListBulletsBold />,
+    label: 'Liste des utilisateurs',
+  },
+]
+
 interface SidebarProps {
   selectedMenuKey: string
   onMenuClick: (item: any) => void
@@ -73,6 +91,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   selectedMenuKey,
   onMenuClick,
 }) => {
+  const { user } = useAuth()
   return (
     <Sider
       width={250}
@@ -85,7 +104,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         mode="inline"
         selectedKeys={[selectedMenuKey]}
         onClick={onMenuClick}
-        items={menuItems}
+        items={
+          user?.permissions === 'Administrator' ? menuItemsAdmin : menuItems
+        }
         className="bg-white"
       />
     </Sider>
