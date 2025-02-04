@@ -23,40 +23,38 @@ import {
   Spin,
   Result,
 } from 'antd'
+import { fetchStatistics } from '../api'
+import { useQuery } from '@tanstack/react-query'
 import {
-  createStudent,
-  deleteStudentById,
-  fetchAllAttendanceByRangeDate,
-  fetchAllStudents,
-  fetchDailyAttendance,
-  fetchStatistics,
-  fetchTotalSTudentHoursPerWeek,
-} from '../api'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
+  useCreateStudent,
+  useDailyAttendance,
+  useDeleteStudent,
+  useStudent,
+  useTotalStudentHoursPerWeek,
+} from '../hooks'
 
 const { Content } = Layout
 const { Title } = Typography
 
 export const DashBoard: React.FC = () => {
   const [form] = Form.useForm()
-  const queryClient = useQueryClient()
+  const [selectedMenuKey, setSelectedMenuKey] = useState<string>('dashboard')
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [selectedStudent, setSelectedStudent] = useState<IStudent | null>(null)
+  const [search, setSearch] = useState<string>('')
   const [api, contextHolder] = notification.useNotification()
-  const navigate = useNavigate()
+
   const {
     data: dailyAttendance,
-    error: dailyAttendanceError,
     isLoading: dailyAttendanceLoading,
-  } = useQuery({
-    queryKey: ['dailyAttendance'],
-    queryFn: fetchDailyAttendance,
-  })
+    error: dailyAttendanceError,
+  } = useDailyAttendance()
 
   const {
     data: students,
     error: studentsError,
     isLoading: studentsLoading,
-  } = useQuery({ queryKey: ['students'], queryFn: fetchAllStudents })
+  } = useStudent()
 
   const {
     data: statistics,
@@ -68,56 +66,21 @@ export const DashBoard: React.FC = () => {
     data: attendancePerWeek,
     error: attendancePerWeekError,
     isLoading: attendancePerWeekLoading,
-  } = useQuery({
-    queryKey: ['attendancePerWeek'],
-    queryFn: fetchTotalSTudentHoursPerWeek,
-  })
+  } = useTotalStudentHoursPerWeek()
 
-  const addStudentMutation = useMutation({
-    mutationFn: createStudent,
-    onSuccess: (response) => {
-      if (response.success) {
-        message.success(response.msg)
-        queryClient.invalidateQueries({ queryKey: ['students'] })
-        form.resetFields()
-      } else {
-        message.error(response.msg)
-      }
-    },
-    onError: (error) => {
-      message.error("Erreur lors de l'ajout de l'étudiant")
-    },
-  })
+  const { mutate: addStudentMutation } = useCreateStudent()
 
-  const deleteStudentMutation = useMutation({
-    mutationFn: deleteStudentById,
-    onSuccess: (response) => {
-      if (response.success) {
-        message.success(response.msg)
-        queryClient.invalidateQueries({ queryKey: ['students'] })
-        setSearch('')
-      } else {
-        message.error(response.msg)
-      }
-    },
-    onError: () => {
-      message.error("Une erreur s'est produite lors de l'ajout de l'étudiant")
-    },
-  })
-
-  const onAddStudent = () => {
-    const studentData: IStudentData = form.getFieldsValue()
-    addStudentMutation.mutate(studentData)
-  }
+  const { mutate: deleteStudentMutation } = useDeleteStudent()
 
   if (studentsError) {
-    message.error('Erreur lors de la récupération des étudiants', 10)
+    api['error']({
+      message: "Notification d'erreur",
+      description: 'Fichier téléchargé avec succès',
+      showProgress: true,
+      duration: 5,
+      icon: <CheckCircleOutlined style={{ color: 'green' }} />,
+    })
   }
-
-  const [selectedMenuKey, setSelectedMenuKey] = useState<string>('dashboard')
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  const [selectedStudent, setSelectedStudent] = useState<IStudent | null>(null)
-  const [search, setSearch] = useState<string>('')
 
   const dailyAttendanceColumns = [
     { title: 'Nom', dataIndex: 'last_name', key: 'last_name' },
@@ -187,6 +150,15 @@ export const DashBoard: React.FC = () => {
     },
   ]
 
+  const onAddStudent = () => {
+    const studentData: IStudentData = form.getFieldsValue()
+    addStudentMutation(studentData, {
+      onSuccess: () => {
+        form.resetFields()
+      },
+    })
+  }
+
   const onSearchChange = (e: any) => {
     setSearch(e.target.value)
   }
@@ -208,7 +180,8 @@ export const DashBoard: React.FC = () => {
   }
 
   const onDeleteStudent = (id: string) => {
-    deleteStudentMutation.mutate(id)
+    deleteStudentMutation(id)
+    setSearch('')
   }
 
   const onEditStudent = (id: string) => {
@@ -222,14 +195,26 @@ export const DashBoard: React.FC = () => {
   const handleDownloadXLSX = (data: any[], title: string) => {
     const xlsx = exportToExcel(data, title)
     if (xlsx) {
-      message.success('Ficher téléchargé avec succès')
+      api['success']({
+        message: 'Notification de téléchargement',
+        description: 'Fichier téléchargé avec succès',
+        showProgress: true,
+        duration: 5,
+        icon: <CheckCircleOutlined style={{ color: 'green' }} />,
+      })
     } else {
-      message.error('Erreur lors du téléchargement du fichier Excel')
+      api['error']({
+        message: 'Notification de téléchargement',
+        description: 'Fichier téléchargé avec succès',
+        showProgress: true,
+        duration: 5,
+        icon: <CheckCircleOutlined style={{ color: 'green' }} />,
+      })
     }
   }
 
   const handleRetry = () => {
-    navigate('/arrival')
+    window.location.reload()
   }
 
   const items: TabsProps['items'] = [
@@ -273,7 +258,7 @@ export const DashBoard: React.FC = () => {
 
   useEffect(() => {
     const handleArrival = (data: IStudentType) => {
-      api.open({
+      api['success']({
         message: "Notification d'arrivée",
         description: `${data.first_name} ${data.last_name} vient d'arriver au campus`,
         showProgress: true,
@@ -281,7 +266,7 @@ export const DashBoard: React.FC = () => {
       })
     }
     const handleDeparture = (data: IStudentType) => {
-      api.open({
+      api['success']({
         message: 'Notification de départ',
         description: `${data.first_name} ${data.last_name} Vient de partir au campus`,
         showProgress: true,
@@ -413,7 +398,7 @@ export const DashBoard: React.FC = () => {
                   className="my-5"
                   size="large"
                   placeholder="Timothée"
-                  defaultValue={search}
+                  value={search}
                   onChange={onSearchChange}
                 />
 

@@ -1,40 +1,24 @@
-import {
-  Button,
-  Col,
-  Form,
-  Layout,
-  message,
-  Row,
-  Statistic,
-  Table,
-  Typography,
-} from 'antd'
+import { Col, Form, Layout, Row, Statistic, Table, Typography } from 'antd'
 import React, { useEffect, useState } from 'react'
-import {
-  CreateUserForm,
-  HeadBanner,
-  Sidebar,
-  UserList,
-  UserType,
-} from '../components'
-import { LogoutOutlined } from '@ant-design/icons'
-import { useAuth } from '../hooks'
+import { CreateUserForm, HeadBanner, Sidebar, UserList } from '../components'
 import {
   fetchAllStudents,
   fetchAllUsers,
   fetchStatistics,
   register,
 } from '../api'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-// import { useLogout } from '../hooks/use-logout'
+import { useQuery } from '@tanstack/react-query'
+import { useRegister } from '../hooks/use-register'
 
-const { Header, Content } = Layout
+const { Content } = Layout
 const { Title } = Typography
 
 export const Adminstrator: React.FC = () => {
-  const queryClient = useQueryClient()
-
   const [form] = Form.useForm()
+  const { mutate: registerMutation } = useRegister(
+    (data: any) => register(data),
+    form
+  )
   const [selectedMenuKey, setSelectedMenuKey] = useState<string>('dashboard')
 
   const {
@@ -65,27 +49,27 @@ export const Adminstrator: React.FC = () => {
     setSelectedMenuKey(newKey)
   }
 
-  const registerMutation = useMutation({
-    mutationFn: register,
-    onSuccess: (data: any) => {
-      if (data.success) {
-        message.success('Utilisateur créé avec succès')
-        queryClient.invalidateQueries({
-          queryKey: ['users'],
-        }) // Invalider la requête 'users' pour refetcher les données
+  // const registerMutation = useMutation({
+  //   mutationFn: register,
+  //   onSuccess: (data: any) => {
+  //     if (data.success) {
+  //       message.success('Utilisateur créé avec succès')
+  //       queryClient.invalidateQueries({
+  //         queryKey: ['users'],
+  //       }) // Invalider la requête 'users' pour refetcher les données
 
-        form.resetFields()
-      } else {
-        message.error(data.msg)
-      }
-    },
-    onError: (error: any) => {
-      message.error("Erreur lors de la création de l'utilisateur")
-    },
-  })
+  //       form.resetFields()
+  //     } else {
+  //       message.error(data.msg)
+  //     }
+  //   },
+  //   onError: (error: any) => {
+  //     message.error("Erreur lors de la création de l'utilisateur")
+  //   },
+  // })
 
   const onFinish = (values: any) => {
-    registerMutation.mutate(values)
+    registerMutation(values)
   }
 
   useEffect(() => {

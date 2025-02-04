@@ -18,5 +18,5 @@ export const timeDifferenceInDecimal = (
     const differenceInMinutes = departureInMinutes - arrivalInMinutes
 
     // Convertir la différence en heures décimales
-    return Math.round(differenceInMinutes / 60)
+    return (differenceInMinutes / 60).toFixed(2)
 }

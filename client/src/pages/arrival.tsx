@@ -17,7 +17,7 @@ export const ArrivalPage: React.FC = () => {
     mutationFn: registeredArrival,
     onSuccess: (response) => {
       if (response.success) {
-        message.success(response.msg)
+        message.success('Bienvenue !')
         queryClient.invalidateQueries({ queryKey: ['attendance'] })
         setShowConfetti(true)
         setTimeout(() => setShowConfetti(false), 3000)

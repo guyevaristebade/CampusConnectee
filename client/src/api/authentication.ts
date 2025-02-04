@@ -23,10 +23,6 @@ export const register = async (
 
 // logout
 export const logout = async (): Promise<ResponseType<any>> => {
-  // try {
   const response = await instance.delete('/auth/logout')
   return response.data
-  // } catch (error: any) {
-  //   return error.response.data
-  // }
 }

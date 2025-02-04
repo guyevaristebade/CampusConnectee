@@ -22,9 +22,7 @@ export const DeparturePage: React.FC = () => {
     mutationFn: registeredDeparture,
     onSuccess: (response) => {
       if (response.success) {
-        message.success(
-          "Au revoir ! J'espère que vous avez survécu à cette journée avec le sourire... À la prochaine aventure !"
-        )
+        message.success('Au revoir !')
         setShowConfetti(true)
         setTimeout(() => setShowConfetti(false), 3000)
         form.resetFields()
