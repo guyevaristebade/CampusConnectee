@@ -8,7 +8,7 @@ import {
 } from '../types'
 import { Attendance, Student } from '../models'
 import { getDate, timeDifferenceInDecimal } from '../services'
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 export const registerStudentArrival = async (
     arrivalData: IArrival
@@ -31,7 +31,7 @@ export const registerStudentArrival = async (
             return responsePayload
         }
 
-        const currentTime = moment().format('HH:mm')
+        const currentTime = moment().tz('Europe/Paris').format('HH:mm')
 
         const newArrivalRecord = new Attendance({
             student_id: arrivalData.student_id,
@@ -95,7 +95,7 @@ export const registerStudentDeparture = async (
                 'Vous ne pouvez plus modifier votre heure de départ'
             return responsePayload
         }
-        const currentTime = moment().format('HH:mm')
+        const currentTime = moment().tz('Europe/Paris').format('HH:mm')
 
         const durationInDecimal: string | number = timeDifferenceInDecimal(
             attendanceRecord?.arrival_time as string,
@@ -213,9 +213,14 @@ export const getTotalStudentHoursPerWeek = async () => {
                 },
             },
             {
+                $addFields: {
+                    total_hours_numeric: { $toDouble: '$total_hours' }, // Convertir en nombre
+                },
+            },
+            {
                 $group: {
                     _id: '$student_id',
-                    totalHours: { $sum: '$total_hours' },
+                    totalHours: { $sum: '$total_hours_numeric' }, // Additionner en tant que nombre
                 },
             },
             {
