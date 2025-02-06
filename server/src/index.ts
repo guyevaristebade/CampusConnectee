@@ -16,6 +16,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import http from 'http'
 import { initializeSocketIO } from './services'
+import { Attendance } from './models'
 
 dotenv.config()
 
@@ -59,7 +60,6 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Connexion à la base de données et démarrage du serveur
-
 connectDB().then(() => {
     server.listen(PORT, () => {
         console.log(`Server is running on port: ${PORT}`)

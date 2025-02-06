@@ -19,7 +19,7 @@ const AttendanceSchema: Schema = new Schema({
         type: String,
     },
     total_hours: {
-        type: String,
+        type: Number,
         default: 0,
     },
     status: {

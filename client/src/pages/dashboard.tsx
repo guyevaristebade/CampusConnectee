@@ -134,12 +134,26 @@ export const DashBoard: React.FC = () => {
   ]
 
   const weeklyAttendanceColumns = [
-    { title: 'Nom', dataIndex: 'last_name', key: 'last_name_2' },
-    { title: 'Prénom', dataIndex: 'first_name', key: 'first_name_2' },
+    {
+      title: 'Nom',
+      dataIndex: 'last_name',
+      key: 'last_name_2',
+      align: 'center',
+      className: 'text-center',
+    },
+    {
+      title: 'Prénom',
+      dataIndex: 'first_name',
+      key: 'first_name_2',
+      align: 'center',
+      className: 'text-center',
+    },
     {
       title: "Total d'heure",
       dataIndex: 'total_hours',
+      align: 'center',
       key: 'total_hours_2',
+      className: 'text-center',
       render: (value: number) => {
         const color = value < 12 ? 'red' : 'green'
         return (

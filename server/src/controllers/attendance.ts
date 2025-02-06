@@ -37,7 +37,7 @@ export const registerStudentArrival = async (
             student_id: arrivalData.student_id,
             arrival_time: currentTime,
             departure_time: 'N/A',
-            total_hours: 'N/A',
+            total_hours: 0,
             is_registered: true,
             today_date: getDate(),
         })
@@ -97,12 +97,12 @@ export const registerStudentDeparture = async (
         }
         const currentTime = moment().tz('Europe/Paris').format('HH:mm')
 
-        const durationInDecimal: string | number = timeDifferenceInDecimal(
+        const durationInDecimal: number = timeDifferenceInDecimal(
             attendanceRecord?.arrival_time as string,
             currentTime
         )
 
-        const updatedDepartureRecord = await Attendance.findOneAndUpdate(
+        await Attendance.findOneAndUpdate(
             {
                 student_id: departureData.student_id,
                 today_date: getDate(),
@@ -214,20 +214,20 @@ export const getTotalStudentHoursPerWeek = async () => {
             },
             {
                 $addFields: {
-                    total_hours_numeric: { $toDouble: '$total_hours' }, // Convertir en nombre
+                    total_hours: { $toDouble: '$total_hours' }, // Convertir en nombre
                 },
             },
             {
                 $group: {
                     _id: '$student_id',
-                    totalHours: { $sum: '$total_hours_numeric' }, // Additionner en tant que nombre
+                    totalHours: { $sum: '$total_hours' }, // Additionner en tant que nombre
                 },
             },
             {
                 $lookup: {
                     from: 'students', // Nom de la collection à peupler
-                    localField: '_id', // Champ dans Post
-                    foreignField: '_id', // Champ dans User
+                    localField: '_id', // Champ dans Attendance
+                    foreignField: '_id', // Champ dans Student
                     as: 'studentDetails', // Nom du champ de sortie
                 },
             },

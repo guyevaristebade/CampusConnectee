@@ -5,7 +5,7 @@
 export const timeDifferenceInDecimal = (
     arrivalTime: string,
     departureTime: string
-): string | number => {
+): number => {
     // Convertir les heures au format "HH:MM" en minutes totales
     const [arrHour, arrMinute] = arrivalTime.split(':').map(Number)
     const [depHour, depMinute] = departureTime.split(':').map(Number)
@@ -18,5 +18,5 @@ export const timeDifferenceInDecimal = (
     const differenceInMinutes = departureInMinutes - arrivalInMinutes
 
     // Convertir la différence en heures décimales
-    return (differenceInMinutes / 60).toFixed(2)
+    return parseFloat((differenceInMinutes / 60).toFixed(2))
 }
