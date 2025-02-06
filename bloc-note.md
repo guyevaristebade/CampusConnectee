@@ -249,3 +249,6 @@ export const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
 ```
 
 ```
+
+- L'heure d'arrivé et de départ ne fonctionne fonctionne pas bien ( si j'arrive à 9h il me met que je suis arrivé à 8h )
+- Le calcul des heures hebdomadaire ne se fait pas / Nombre d'heure pas semaine qui ne fonctionne pas bien

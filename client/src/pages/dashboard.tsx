@@ -83,27 +83,47 @@ export const DashBoard: React.FC = () => {
   }
 
   const dailyAttendanceColumns = [
-    { title: 'Nom', dataIndex: 'last_name', key: 'last_name' },
-    { title: 'Prénom', dataIndex: 'first_name', key: 'first_name_1' },
+    {
+      title: 'Nom',
+      dataIndex: 'last_name',
+      key: 'last_name',
+      align: 'center',
+      className: 'text-center',
+    },
+    {
+      title: 'Prénom',
+      dataIndex: 'first_name',
+      key: 'first_name_1',
+      align: 'center',
+      className: 'text-center',
+    },
     {
       title: "Heure d'arrivée",
       dataIndex: 'arrival_time',
       key: 'arrival_time_1',
+      align: 'center',
+      className: 'text-center',
     },
     {
       title: 'Heure de départ',
       dataIndex: 'departure_time',
       key: 'departure_time_1',
+      align: 'center',
+      className: 'text-center',
     },
     {
       title: "Total d'heures",
       dataIndex: 'total_hours',
       key: 'total_hours_1',
+      align: 'center',
+      className: 'text-center',
     },
     {
       title: 'Statut',
       dataIndex: 'status',
       key: 'status_1',
+      align: 'center',
+      className: 'text-center',
       render: (text: string) =>
         text === 'completed' ? (
           <Tag color="green">Terminé</Tag>
