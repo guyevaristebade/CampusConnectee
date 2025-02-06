@@ -212,11 +212,11 @@ export const getTotalStudentHoursPerWeek = async () => {
                     createdAt: { $gte: startOfWeek, $lte: endOfWeek }, // Filtrer les enregistrements de la semaine
                 },
             },
-            {
-                $addFields: {
-                    total_hours: { $toDouble: '$total_hours' }, // Convertir en nombre
-                },
-            },
+            // {
+            //     $addFields: {
+            //         total_hours: { $toDouble: '$total_hours' }, // Convertir en nombre
+            //     },
+            // },
             {
                 $group: {
                     _id: '$student_id',
