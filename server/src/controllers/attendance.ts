@@ -315,7 +315,8 @@ export const fetchDailyAttendance = async (): Promise<ResponseType> => {
     try {
         const attendances = await Attendance.find({ today_date: getDate() })
             .populate('student_id')
-            .sort({ last_name: 1 })
+            .sort({ 'student_id.last_name': 1 })
+
         const newAttendancesTable = attendances.map((attendance: any) => {
             return {
                 _id: attendance?._id,
@@ -327,6 +328,10 @@ export const fetchDailyAttendance = async (): Promise<ResponseType> => {
                 status: attendance?.status,
             }
         })
+        // .sort((a, b) => {
+        //     return a.last_name.localeCompare(b.last_name)
+        // })
+
         responsePayload.data = newAttendancesTable
     } catch (e: any) {
         responsePayload.success = false
