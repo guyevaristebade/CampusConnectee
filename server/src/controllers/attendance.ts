@@ -228,20 +228,21 @@ export const getTotalStudentHoursPerWeek = async () => {
             },
             {
                 $unwind: {
+                    // Déplie les détails de l'utilisateur
                     path: '$studentDetails',
                     preserveNullAndEmptyArrays: true,
-                }, // Déplie les détails de l'utilisateur
+                },
             },
             {
                 $project: {
-                    totalHours: { $round: ['$totalHours', 2] }, // Garder le total des heures avec deux ciffe après la virgule
+                    totalHours: { $round: ['$totalHours', 2] }, // Garder le total des heures avec deux chiffres après la virgule
                     'studentDetails._id': 1, // Garder l'ID de l'étudiant
                     'studentDetails.first_name': 1, // Garder le prénom de l'étudiant
                     'studentDetails.last_name': 1, // Garder le nom de l'étudiant
                 },
             },
             {
-                $sort: { totalHours: -1 }, // Trier par totalHours dans l'ordre décroissant
+                $sort: { 'studentDetails.last_name': 1 }, // Trier par last_name dans l'ordre croissant
             },
         ])
 
@@ -314,7 +315,7 @@ export const fetchDailyAttendance = async (): Promise<ResponseType> => {
     try {
         const attendances = await Attendance.find({ today_date: getDate() })
             .populate('student_id')
-            .sort({ first_name: -1 })
+            .sort({ last_name: 1 })
         const newAttendancesTable = attendances.map((attendance: any) => {
             return {
                 _id: attendance?._id,

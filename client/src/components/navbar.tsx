@@ -1,11 +1,11 @@
 import React from 'react'
 import { Image } from 'antd'
-
-export const NavBar = () => {
+import Logo from '../assets/campus_connecte.png'
+export const NavBar: React.FC = () => {
   return (
     <div className="bg-white shadow-lg flex items-center gap-4 w-full rounded-md transition-all p-2">
       <Image
-        src="logo_pays_nemours.jpg"
+        src={Logo}
         width={100}
         preview={false}
         // className="rounded-full sm:w-32 md:w-40 lg:w-48"
