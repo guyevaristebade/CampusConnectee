@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { socket } from '../utils'
-import { EditStudentModal, HeadBanner, Sidebar } from '../components'
+import { Barchart, EditStudentModal, HeadBanner, Sidebar } from '../components'
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import { exportToExcel } from '../utils'
 import { IStudent, IStudentData, IStudentType } from '../types'
@@ -13,7 +13,6 @@ import {
   Col,
   Tag,
   Statistic,
-  message,
   Form,
   Input,
   TabsProps,
@@ -23,7 +22,7 @@ import {
   Spin,
   Result,
 } from 'antd'
-import { fetchStatistics } from '../api'
+import { fetchStatistics, useChartData } from '../api'
 import { useQuery } from '@tanstack/react-query'
 import {
   useCreateStudent,
@@ -67,6 +66,8 @@ export const DashBoard: React.FC = () => {
     error: attendancePerWeekError,
     isLoading: attendancePerWeekLoading,
   } = useTotalStudentHoursPerWeek()
+
+  const { data: chartData } = useChartData()
 
   const { mutate: addStudentMutation } = useCreateStudent()
 
@@ -385,6 +386,13 @@ export const DashBoard: React.FC = () => {
                       value={statistics?.data.presence_rate}
                       suffix="%"
                       title="Taux de présence journalier"
+                    />
+                  </Col>
+
+                  <Col span={24}>
+                    <Barchart
+                      series={chartData.series}
+                      options={chartData.options}
                     />
                   </Col>
                 </Row>

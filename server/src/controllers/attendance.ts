@@ -328,9 +328,6 @@ export const fetchDailyAttendance = async (): Promise<ResponseType> => {
                 status: attendance?.status,
             }
         })
-        // .sort((a, b) => {
-        //     return a.last_name.localeCompare(b.last_name)
-        // })
 
         responsePayload.data = newAttendancesTable
     } catch (e: any) {
