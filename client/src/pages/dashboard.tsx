@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { socket } from '../utils'
-import { Barchart, EditStudentModal, HeadBanner, Sidebar } from '../components'
+import {
+  AttendanceChart,
+  EditStudentModal,
+  HeadBanner,
+  Sidebar,
+} from '../components'
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import { exportToExcel } from '../utils'
 import { IStudent, IStudentData, IStudentType } from '../types'
@@ -390,7 +395,7 @@ export const DashBoard: React.FC = () => {
                   </Col>
 
                   <Col span={24}>
-                    <Barchart
+                    <AttendanceChart
                       series={chartData.series}
                       options={chartData.options}
                     />

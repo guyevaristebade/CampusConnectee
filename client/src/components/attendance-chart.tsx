@@ -1,7 +1,6 @@
 import { Card } from 'antd'
 import React from 'react'
 import Chart from 'react-apexcharts'
-import { useChartData } from '../api'
 
 interface ChartOptions {
   xaxis: {
@@ -20,10 +19,7 @@ export interface ChartState {
   series: ChartSeries[]
 }
 
-export const Barchart: React.FC<ChartState> = ({ options, series }) => {
-  const { data: chartData } = useChartData()
-
-  console.log(chartData)
+export const AttendanceChart: React.FC<ChartState> = ({ options, series }) => {
   return (
     <Card title="Présences hebdomadaires" style={{ marginBottom: 20 }}>
       <Chart

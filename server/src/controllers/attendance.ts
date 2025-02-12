@@ -313,9 +313,27 @@ export const fetchDailyAttendance = async (): Promise<ResponseType> => {
     }
 
     try {
-        const attendances = await Attendance.find({ today_date: getDate() })
-            .populate('student_id')
-            .sort({ 'student_id.last_name': 1 })
+        const attendances = await Attendance.aggregate([
+            {
+                $match: {
+                    today_date: getDate(),
+                },
+            },
+            {
+                $lookup: {
+                    from: 'students',
+                    localField: 'student_id',
+                    foreignField: '_id',
+                    as: 'student_id',
+                },
+            },
+            {
+                $unwind: '$student_id',
+            },
+            {
+                $sort: { 'student_id.last_name': 1 },
+            },
+        ])
 
         const newAttendancesTable = attendances.map((attendance: any) => {
             return {
