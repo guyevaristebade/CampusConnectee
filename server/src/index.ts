@@ -1,5 +1,5 @@
 import express, { Express } from 'express'
-import { connectDB } from './services'
+import { connectDB, limiter } from './services'
 import {
     FeeRouter,
     StudentRouter,
@@ -16,7 +16,6 @@ import cors from 'cors'
 import helmet from 'helmet'
 import http from 'http'
 import { initializeSocketIO } from './services'
-import { Attendance } from './models'
 
 dotenv.config()
 
@@ -42,6 +41,7 @@ app.use(bodyParser.json())
 if (process.env.NODE_ENV === 'production') {
     app.use(compression())
     app.use(helmet())
+    app.use(limiter)
 }
 
 // Définir les routes API
