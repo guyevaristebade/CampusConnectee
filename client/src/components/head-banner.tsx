@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Layout } from 'antd'
+import { Button, Layout, Image } from 'antd'
 import { LogoutOutlined } from '@ant-design/icons'
 import { useAuth } from '../hooks'
 import { useLogout } from '../hooks/use-logout'
@@ -14,7 +14,7 @@ export const HeadBanner = () => {
   }
 
   return (
-    <Header className="bg-white flex  items-center justify-end">
+    <Header className="bg-white flex items-center justify-end fixed top-0 left-0 w-full h-16 shadow-md z-20">
       <p className="text-xl">Bonjour, {user?.username}</p>
       <Button
         type="text"

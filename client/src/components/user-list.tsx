@@ -1,4 +1,4 @@
-import { Button, Table, TableColumnsType, Tag } from 'antd'
+import { Button, Table, TableColumnsType } from 'antd'
 import React from 'react'
 
 export interface UserType {

@@ -4,6 +4,7 @@ import {
   ScheduleOutlined,
   ClockCircleOutlined,
   PlusOutlined,
+  CalendarOutlined,
 } from '@ant-design/icons'
 import { PiStudentDuotone, PiListBulletsBold } from 'react-icons/pi'
 import { TfiPlus } from 'react-icons/tfi'
@@ -38,11 +39,11 @@ const menuItems: MenuItemsType[] = [
         icon: <ScheduleOutlined />, // Pour indiquer un planning ou un résumé hebdomadaire
         label: 'Hebdomadaire',
       },
-      // {
-      //   key: 'totalHoursPerRange',
-      //   icon: <CalendarOutlined />, // Pour représenter une vue analytique par intervalle
-      //   label: 'Par date ',
-      // },
+      {
+        key: 'totalHoursPerRange',
+        icon: <CalendarOutlined />, // Pour représenter une vue analytique par intervalle
+        label: 'Par date ',
+      },
     ],
   },
   {
@@ -95,7 +96,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <Sider
       width={250}
-      className="bg-white text-black flex flex-col min-h-screen"
+      className="bg-white text-black flex flex-col h-screen fixed left-0 top-0 z-50"
     >
       <div className="logo text-black mb-6 text-center p-5">
         <Image width={200} src="/logo_cc_nemours.jpg" preview={false} />

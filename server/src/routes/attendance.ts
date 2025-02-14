@@ -1,9 +1,8 @@
 import express, { Router, Request, Response } from 'express'
 import { ResponseType } from '../types'
 import {
-    fetchAllAttendanceByRangeDate,
     fetchDailyAttendance,
-    getAttendanceByRangeDate,
+    getAttendancesByRangeDate,
     getStatistics,
     getTotalStudentHoursPerWeek,
     registerStudentArrival,
@@ -50,7 +49,7 @@ FeeRouter.get('/current_day', async (req: Request, res: Response) => {
 })
 
 FeeRouter.post('/range_date', async (req: Request, res: Response) => {
-    const response: ResponseType = await fetchAllAttendanceByRangeDate(req.body)
+    const response: ResponseType = await getAttendancesByRangeDate(req.body)
     res.status(response.status as number).send(response)
 })
 

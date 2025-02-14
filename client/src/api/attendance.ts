@@ -1,3 +1,4 @@
+import { message } from 'antd'
 import {
   IArrival,
   IDateType,
@@ -6,6 +7,7 @@ import {
   ResponseType,
 } from '../types'
 import { instance } from '../utils'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export const registeredArrival = async (
   arrivalData: IArrival
@@ -48,4 +50,21 @@ export const fetchAllAttendanceByRangeDate = async (
 ): Promise<ResponseType<any>> => {
   const response = await instance.post('/attendance/range_date', dates)
   return response.data
+}
+
+export const useFetchAllAttendanceByRangeDate = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: fetchAllAttendanceByRangeDate,
+    onSuccess() {
+      queryClient.invalidateQueries({ queryKey: ['AttendancesByRangeDate'] })
+    },
+    onError(error) {
+      message.error(
+        error?.message ||
+          'Une erreur est survenue lors de la récupération des données !'
+      )
+    },
+  })
 }

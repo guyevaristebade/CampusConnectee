@@ -26,6 +26,6 @@ export interface IStudent {
 }
 
 export interface IRangeDateType {
-  startDate: string
-  endDate: string
+  startDate: string | null
+  endDate: string | null
 }

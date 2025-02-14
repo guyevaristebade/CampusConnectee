@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { socket } from '../utils'
 import {
   AttendanceChart,
+  AttendanceHours,
   EditStudentModal,
   HeadBanner,
   Sidebar,
@@ -72,7 +73,7 @@ export const DashBoard: React.FC = () => {
     isLoading: attendancePerWeekLoading,
   } = useTotalStudentHoursPerWeek()
 
-  const { data: chartData } = useChartData()
+  const { data: chartData, isLoading: chartDataLoading } = useChartData()
 
   const { mutate: addStudentMutation } = useCreateStudent()
 
@@ -327,7 +328,8 @@ export const DashBoard: React.FC = () => {
     dailyAttendanceLoading ||
     studentsLoading ||
     statisticsLoading ||
-    attendancePerWeekLoading
+    attendancePerWeekLoading ||
+    chartDataLoading
   ) {
     return (
       <Content className=" min-h-screen flex justify-center items-center">
@@ -361,9 +363,9 @@ export const DashBoard: React.FC = () => {
       {/* min-h-screen => min-height : 100vh */}
       {contextHolder}
       <Sidebar selectedMenuKey={selectedMenuKey} onMenuClick={onMenuClick} />
-      <Layout className="flex flex-col flex-1">
+      <Layout className="ml-[250px] mt-[64px] h-screen overflow-hidden">
         <HeadBanner />
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto p-5 h-full">
           <Content className="px-10 py-5">
             {selectedMenuKey === 'dashboard' && (
               <>
@@ -444,7 +446,7 @@ export const DashBoard: React.FC = () => {
                 <Input
                   className="my-5"
                   size="large"
-                  placeholder="Timothée"
+                  placeholder="Rechercher un étudiant"
                   value={search}
                   onChange={onSearchChange}
                 />
@@ -500,6 +502,8 @@ export const DashBoard: React.FC = () => {
                 </Form>
               </>
             )}
+
+            {selectedMenuKey === 'totalHoursPerRange' && <AttendanceHours />}
             <EditStudentModal
               student={selectedStudent}
               visible={isModalVisible}

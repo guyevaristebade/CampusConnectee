@@ -357,8 +357,7 @@ export const fetchDailyAttendance = async (): Promise<ResponseType> => {
     return responsePayload
 }
 
-//renvoyer des vrai date pour calculer ce qu'il y à faire
-export const getAttendanceByRangeDate = async (
+export const getAttendancesByRangeDate = async (
     dates: IRangeDateType
 ): Promise<ResponseType> => {
     let responsePayload: ResponseType = {
@@ -369,58 +368,61 @@ export const getAttendanceByRangeDate = async (
     try {
         const startDate = dates.startDate
         const endDate = dates.endDate
+        // Convertir en objets Date JavaScript pour éviter les erreurs de timezone
+        const start = moment(startDate).startOf('day').toDate()
+        const end = moment(endDate).endOf('day').toDate()
 
-        const attendances = await Attendance.find({
-            createdAt: { $gte: startDate, $lte: endDate },
-        })
-
-        if (attendances.length == 0) {
-            responsePayload.status = 404
-            responsePayload.data = []
-            return responsePayload
-        }
-
-        responsePayload.data = attendances
-    } catch (e: any) {
-        responsePayload.success = false
-        responsePayload.status = 500
-        responsePayload.msg = e.message
-    }
-
-    return responsePayload
-}
-
-export const fetchAllAttendanceByRangeDate = async (
-    rageDate: IRangeDateType
-): Promise<ResponseType> => {
-    let responsePayload: ResponseType = {
-        success: true,
-        status: 200,
-    }
-
-    try {
-        const start = new Date(rageDate.startDate)
-        const end = new Date(rageDate.endDate)
-
-        const attendances = await Attendance.find({
-            createdAt: {
-                $gte: start,
-                $lte: end,
+        const attendances = await Attendance.aggregate([
+            {
+                $match: {
+                    // Filtrer les enregistrements en fonction de la plage de dates
+                    createdAt: {
+                        $gte: start,
+                        $lte: end,
+                    },
+                },
             },
-        })
-
-        if (attendances.length == 0) {
-            responsePayload.status = 404
-            responsePayload.data = []
-            responsePayload.msg = 'Aucun enregistrement trouvé'
-            return responsePayload
-        }
+            {
+                $group: {
+                    // Grouper les enregistrements par student_id et calculer la somme des heures totales
+                    _id: '$student_id',
+                    total_hours: { $sum: '$total_hours' },
+                },
+            },
+            {
+                $lookup: {
+                    // Jointure avec la collection `students` pour récupérer les détails de l'utilisateur
+                    from: 'students',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'studentInfos',
+                },
+            },
+            {
+                $unwind: {
+                    // Déplie les détails de l'utilisateur
+                    path: '$studentInfos',
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $project: {
+                    // Projection pour formater les données de sortie de manière appropriée pour l'interface utilisateur
+                    first_name: '$studentInfos.first_name',
+                    last_name: '$studentInfos.last_name',
+                    total_hours: 1,
+                },
+            },
+            {
+                $sort: { last_name: 1 }, // Trier par last_name dans l'ordre croissant
+            },
+        ])
 
         responsePayload.data = attendances
     } catch (e: any) {
         responsePayload.success = false
         responsePayload.status = 500
-        responsePayload.msg = e.message
+        responsePayload.msg = e
     }
 
     return responsePayload
