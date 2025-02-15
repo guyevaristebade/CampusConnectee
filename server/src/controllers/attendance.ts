@@ -408,9 +408,9 @@ export const getAttendancesByRangeDate = async (
             {
                 $project: {
                     // Projection pour formater les données de sortie de manière appropriée pour l'interface utilisateur
+                    total_hours: { $round: ['$total_hours', 2] },
                     first_name: '$studentInfos.first_name',
                     last_name: '$studentInfos.last_name',
-                    total_hours: 1,
                 },
             },
             {
