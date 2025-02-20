@@ -12,7 +12,7 @@ export const ArrivalPage: React.FC = () => {
   const [form] = Form.useForm()
   const navigate = useNavigate()
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const attendanceFormMutation = useMutation({
     mutationFn: registeredArrival,
     onSuccess: (response) => {
@@ -20,7 +20,7 @@ export const ArrivalPage: React.FC = () => {
         message.success('Bienvenue !')
         queryClient.invalidateQueries({ queryKey: ['attendance'] })
         setShowConfetti(true)
-        setTimeout(() => setShowConfetti(false), 3000)
+        setTimeout(() => setShowConfetti(false), 1000)
         form.resetFields()
       } else {
         message.error(response.msg)
@@ -80,8 +80,8 @@ export const ArrivalPage: React.FC = () => {
 
   if (studentsLoading) {
     return (
-      <Content className="flex justify-center h-screen py-10 bg-[#2c2a2a]">
-        <Spin size="large" />
+      <Content className="flex justify-center h-screen py-10 bg-transparent">
+        <Spin size="large" percent="auto" fullscreen />
       </Content>
     )
   }

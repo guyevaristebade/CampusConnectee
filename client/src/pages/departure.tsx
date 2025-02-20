@@ -89,7 +89,7 @@ export const DeparturePage: React.FC = () => {
   if (studentsLoading) {
     return (
       <Content className="flex justify-center py-10 bg-transparent">
-        <Spin size="large" />
+        <Spin size="large" percent="auto" fullscreen />
       </Content>
     )
   }
