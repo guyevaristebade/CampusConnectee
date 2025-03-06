@@ -108,7 +108,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         items={
           user?.permissions === 'Administrator' ? menuItemsAdmin : menuItems
         }
-        className="bg-white"
+        className="bg-red-600 text-white"
       />
     </Sider>
   )
