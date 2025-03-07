@@ -2,10 +2,14 @@ import { Response, Request, Router } from 'express'
 import {
     deleteAllAttendance,
     deleteAllStudent,
+    deleteUser,
     editStudent,
+    editUser,
 } from '../controllers'
 import { ResponseType } from '../types'
 import { createStudentWithXlsxFile } from '../services'
+import { authenticated } from '../middlewares'
+import { isAdmin } from '../middlewares/isAdmin'
 
 export const AdminRouter = Router()
 
@@ -41,3 +45,14 @@ AdminRouter.post('/upload-student', async (req: Request, res: Response) => {
             })
         })
 })
+
+AdminRouter.delete(
+    '/edit-user/:id',
+    authenticated,
+    isAdmin,
+    async (req: Request, res: Response) => {
+        const { id } = req.params
+        const response: ResponseType = await deleteUser(id)
+        return res.status(response.status as number).send(response)
+    }
+)

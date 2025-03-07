@@ -5,11 +5,11 @@ import { Foot } from './footer'
 import { Layout } from 'antd'
 
 export const Main: React.FC = () => {
-  return (
-    <Layout className="min-h-screen bg-white">
-      <NavBar />
-      <Outlet />
-      <Foot />
-    </Layout>
-  )
+    return (
+        <Layout className="min-h-screen bg-white">
+            <NavBar />
+            <Outlet />
+            <Foot />
+        </Layout>
+    )
 }

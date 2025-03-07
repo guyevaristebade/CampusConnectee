@@ -4,19 +4,19 @@ import { IChildren } from '../types'
 import { useLocation } from '../hooks'
 
 export const LocationGuard = ({ children }: IChildren) => {
-  const { isInCampus } = useLocation()
-  const [shouldRedirect, setShouldRedirect] = useState(false)
+    const { isInCampus } = useLocation()
+    const [shouldRedirect, setShouldRedirect] = useState(false)
 
-  useEffect(() => {
-    console.log('isInCampus = ', isInCampus)
-    if (!isInCampus) {
-      setShouldRedirect(true)
+    useEffect(() => {
+        console.log('isInCampus = ', isInCampus)
+        if (!isInCampus) {
+            setShouldRedirect(true)
+        }
+    }, [isInCampus])
+
+    if (shouldRedirect) {
+        return <Navigate to="/not-authorized" />
     }
-  }, [isInCampus])
 
-  if (shouldRedirect) {
-    return <Navigate to="/not-authorized" />
-  }
-
-  return <>{children}</>
+    return <>{children}</>
 }

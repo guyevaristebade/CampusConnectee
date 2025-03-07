@@ -119,7 +119,9 @@ export const fetchAllUsers = async (req: Request): Promise<ResponseType> => {
     }
 
     try {
-        const users = await User.find().select('-password')
+        const users = await User.find()
+            .select('-password')
+            .sort({ username: 1 })
         const usersWithOutCurrentUser = users.filter(
             (user) => user.username !== (req as any).user.user.username
         )

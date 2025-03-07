@@ -9,107 +9,112 @@ import { useNavigate } from 'react-router-dom'
 const { Content } = Layout
 
 export const ArrivalPage: React.FC = () => {
-  const [form] = Form.useForm()
-  const navigate = useNavigate()
+    const [form] = Form.useForm()
+    const navigate = useNavigate()
 
-  const queryClient = useQueryClient()
-  const attendanceFormMutation = useMutation({
-    mutationFn: registeredArrival,
-    onSuccess: (response) => {
-      if (response.success) {
-        message.success('Bienvenue !')
-        queryClient.invalidateQueries({ queryKey: ['attendance'] })
-        setShowConfetti(true)
-        setTimeout(() => setShowConfetti(false), 3000)
-        form.resetFields()
-      } else {
-        message.error(response.msg)
-      }
-    },
-    onError: (error) => {
-      message.error("Erreur lors de l'enregistrement de l'arrivée")
-    },
-  })
-  const [showConfetti, setShowConfetti] = useState(false)
-  const [windowSize, setWindowSize] = useState<windowSizeType>({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  })
+    const queryClient = useQueryClient()
+    const attendanceFormMutation = useMutation({
+        mutationFn: registeredArrival,
+        onSuccess: (response) => {
+            if (response.success) {
+                message.success('Bienvenue !')
+                queryClient.invalidateQueries({ queryKey: ['attendance'] })
+                setShowConfetti(true)
+                setTimeout(() => setShowConfetti(false), 3000)
+                form.resetFields()
+            } else {
+                message.error(response.msg)
+            }
+        },
+        onError: (error) => {
+            message.error("Erreur lors de l'enregistrement de l'arrivée")
+        },
+    })
+    const [showConfetti, setShowConfetti] = useState(false)
+    const [windowSize, setWindowSize] = useState<windowSizeType>({
+        width: window.innerWidth,
+        height: window.innerHeight,
+    })
 
-  const {
-    data: students,
-    error: studentsError,
-    isLoading: studentsLoading,
-  } = useQuery({ queryKey: ['students'], queryFn: fetchAllStudents })
+    const {
+        data: students,
+        error: studentsError,
+        isLoading: studentsLoading,
+    } = useQuery({ queryKey: ['students'], queryFn: fetchAllStudents })
 
-  // Mémorise le tableau de nom d'étudiant pour éviter les rendu inutile
-  const studentOptions = useMemo(
-    () =>
-      Array.isArray(students)
-        ? students.map((student: IStudentType) => ({
-            value: student._id,
-            label: `${student.last_name.toUpperCase()} ${student.first_name.charAt(0).toUpperCase()}${student.first_name.slice(1)}`,
-          }))
-        : [],
-    [students]
-  )
-
-  const handleRetry = () => {
-    navigate('/arrival')
-  }
-
-  // Formulaire d'entrée des informations d'arrivée
-  const onFinish = (values: IArrival) => {
-    attendanceFormMutation.mutate(values)
-  }
-
-  if (studentsError) {
-    return (
-      <Content className="flex justify-center py-10 bg-transparent">
-        <Result
-          title="Oups une erreur s'est produite"
-          extra={
-            <Button type="primary" onClick={handleRetry}>
-              Rechargez la page
-            </Button>
-          }
-        />
-      </Content>
+    // Mémorise le tableau de nom d'étudiant pour éviter les rendu inutile
+    const studentOptions = useMemo(
+        () =>
+            Array.isArray(students)
+                ? students.map((student: IStudentType) => ({
+                      value: student._id,
+                      label: `${student.last_name.toUpperCase()} ${student.first_name.charAt(0).toUpperCase()}${student.first_name.slice(1)}`,
+                  }))
+                : [],
+        [students]
     )
-  }
 
-  if (studentsLoading) {
+    const handleRetry = () => {
+        navigate('/arrival')
+    }
+
+    // Formulaire d'entrée des informations d'arrivée
+    const onFinish = (values: IArrival) => {
+        attendanceFormMutation.mutate(values)
+    }
+
+    if (studentsError) {
+        return (
+            <Content className="flex justify-center py-10 bg-transparent">
+                <Result
+                    title="Oups une erreur s'est produite"
+                    extra={
+                        <Button type="primary" onClick={handleRetry}>
+                            Rechargez la page
+                        </Button>
+                    }
+                />
+            </Content>
+        )
+    }
+
+    if (studentsLoading) {
+        return (
+            <Content className="flex justify-center h-screen py-10 bg-[#2c2a2a]">
+                <Spin size="large" />
+            </Content>
+        )
+    }
+
     return (
-      <Content className="flex justify-center h-screen py-10 bg-[#2c2a2a]">
-        <Spin size="large" />
-      </Content>
+        <>
+            <Panel />
+            <Content className="flex justify-center py-10 bg-white">
+                {/* Affiche les confettis si showConfetti est true */}
+                {showConfetti && (
+                    <Confetti
+                        width={windowSize.width}
+                        height={windowSize.height}
+                    />
+                )}
+                <Row className="text-center max-w-md w-full">
+                    {/* max-w-md : max-width : 448px */}
+                    <Col span={24}>
+                        <AttendanceForm
+                            onFinish={onFinish}
+                            firstFieldName="student_id"
+                            studentOptions={
+                                Array.isArray(studentOptions)
+                                    ? studentOptions
+                                    : []
+                            }
+                            buttonText="Arrivé"
+                            buttonColor="#000091"
+                            form={form}
+                        />
+                    </Col>
+                </Row>
+            </Content>
+        </>
     )
-  }
-
-  return (
-    <>
-      <Panel />
-      <Content className="flex justify-center py-10 bg-white">
-        {/* Affiche les confettis si showConfetti est true */}
-        {showConfetti && (
-          <Confetti width={windowSize.width} height={windowSize.height} />
-        )}
-        <Row className="text-center max-w-md w-full">
-          {/* max-w-md : max-width : 448px */}
-          <Col span={24}>
-            <AttendanceForm
-              onFinish={onFinish}
-              firstFieldName="student_id"
-              studentOptions={
-                Array.isArray(studentOptions) ? studentOptions : []
-              }
-              buttonText="Arrivé"
-              buttonColor="#000091"
-              form={form}
-            />
-          </Col>
-        </Row>
-      </Content>
-    </>
-  )
 }
