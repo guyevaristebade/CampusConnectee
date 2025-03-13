@@ -1,6 +1,7 @@
 import express, { Router, Request, Response } from 'express'
 import { ResponseType } from '../types'
 import {
+    deleteDailyAttendance,
     fetchDailyAttendance,
     getAttendancesByRangeDate,
     getStatistics,
@@ -9,7 +10,7 @@ import {
     registerStudentDeparture,
 } from '../controllers'
 import { io } from '..'
-import { timeRestriction } from '../middlewares'
+import { authenticated, isAdmin, timeRestriction } from '../middlewares'
 
 export const FeeRouter: Router = express.Router()
 
@@ -58,3 +59,14 @@ FeeRouter.get('/statistics', async (req: Request, res: Response) => {
     const response: ResponseType = await getStatistics()
     res.status(response.status as number).send(response)
 })
+
+FeeRouter.delete(
+    '/daily-attendance/:id',
+    authenticated,
+    async (req: Request, res: Response) => {
+        const response: ResponseType = await deleteDailyAttendance(
+            req.params.id
+        )
+        res.status(response.status as number).send(response)
+    }
+)

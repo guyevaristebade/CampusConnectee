@@ -64,3 +64,23 @@ export const useFetchAllAttendanceByRangeDate = () => {
         },
     })
 }
+
+const deleteDailyAttendanceById = async (
+    id: string
+): Promise<ResponseType<any>> => {
+    const response = await instance.delete(`/attendance/daily-attendance/${id}`)
+    return response.data
+}
+
+export const useDeleteDailyAttendance = () => {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: deleteDailyAttendanceById,
+        onSuccess() {
+            queryClient.invalidateQueries({
+                queryKey: ['dailyAttendance'],
+            })
+        },
+    })
+}

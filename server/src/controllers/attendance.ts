@@ -9,6 +9,7 @@ import {
 import { Attendance, Student } from '../models'
 import { getDate, timeDifferenceInDecimal } from '../services'
 import moment from 'moment-timezone'
+import { isValidObjectId } from 'mongoose'
 
 export const registerStudentArrival = async (
     arrivalData: IArrival
@@ -423,6 +424,33 @@ export const getAttendancesByRangeDate = async (
         responsePayload.success = false
         responsePayload.status = 500
         responsePayload.msg = e
+    }
+
+    return responsePayload
+}
+
+export const deleteDailyAttendance = async (
+    id: string
+): Promise<ResponseType> => {
+    let responsePayload: ResponseType = {
+        success: true,
+        status: 200,
+    }
+
+    try {
+        if (!isValidObjectId(id)) {
+            responsePayload.success = false
+            responsePayload.status = 400
+            responsePayload.msg = 'ID invalide'
+            return responsePayload
+        }
+
+        await Attendance.findByIdAndDelete(id)
+        responsePayload.msg = 'Enregistrement supprimé avec succès'
+    } catch (e: any) {
+        responsePayload.success = false
+        responsePayload.status = 500
+        responsePayload.msg = e.message
     }
 
     return responsePayload

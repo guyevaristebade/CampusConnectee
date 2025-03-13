@@ -7,7 +7,12 @@ import {
     HeadBanner,
     Sidebar,
 } from '../components'
-import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
+import {
+    CheckCircleOutlined,
+    CloseCircleOutlined,
+    DeleteFilled,
+    EditOutlined,
+} from '@ant-design/icons'
 import { exportToExcel } from '../utils'
 import { IStudent, IStudentData, IStudentType } from '../types'
 import { DataTable, StudentList } from '../components'
@@ -27,8 +32,10 @@ import {
     notification,
     Spin,
     Result,
+    Popconfirm,
+    Tooltip,
 } from 'antd'
-import { fetchStatistics, useChartData } from '../api'
+import { fetchStatistics, useChartData, useDeleteDailyAttendance } from '../api'
 import { useQuery } from '@tanstack/react-query'
 import {
     useCreateStudent,
@@ -81,6 +88,8 @@ export const DashBoard: React.FC = () => {
 
     const { mutate: deleteStudentMutation } = useDeleteStudent()
 
+    const { mutate: deleteAttendanceMutation } = useDeleteDailyAttendance()
+
     if (studentsError) {
         api['error']({
             message: "Notification d'erreur",
@@ -90,108 +99,6 @@ export const DashBoard: React.FC = () => {
             icon: <CheckCircleOutlined style={{ color: 'green' }} />,
         })
     }
-
-    const dailyAttendanceColumns = [
-        {
-            title: 'Nom',
-            dataIndex: 'last_name',
-            key: 'last_name',
-            align: 'center',
-            className: 'text-center',
-        },
-        {
-            title: 'Prénom',
-            dataIndex: 'first_name',
-            key: 'first_name_1',
-            align: 'center',
-            className: 'text-center',
-        },
-        {
-            title: "Heure d'arrivée",
-            dataIndex: 'arrival_time',
-            key: 'arrival_time_1',
-            align: 'center',
-            className: 'text-center',
-        },
-        {
-            title: 'Heure de départ',
-            dataIndex: 'departure_time',
-            key: 'departure_time_1',
-            align: 'center',
-            className: 'text-center',
-        },
-        {
-            title: "Total d'heures",
-            dataIndex: 'total_hours',
-            key: 'total_hours_1',
-            align: 'center',
-            className: 'text-center',
-        },
-        {
-            title: 'Statut',
-            dataIndex: 'status',
-            key: 'status_1',
-            align: 'center',
-            className: 'text-center',
-            render: (text: string) =>
-                text === 'completed' ? (
-                    <Tag color="green">Terminé</Tag>
-                ) : (
-                    <Tag color="orange">En cours</Tag>
-                ),
-        },
-    ]
-
-    const weeklyAttendanceColumns = [
-        {
-            title: 'Nom',
-            dataIndex: 'last_name',
-            key: 'last_name_2',
-            align: 'center',
-            className: 'text-center',
-        },
-        {
-            title: 'Prénom',
-            dataIndex: 'first_name',
-            key: 'first_name_2',
-            align: 'center',
-            className: 'text-center',
-        },
-        {
-            title: "Total d'heure",
-            dataIndex: 'total_hours',
-            align: 'center',
-            key: 'total_hours_2',
-            className: 'text-center',
-            render: (value: number) => {
-                const color = value < 12 ? 'red' : 'green'
-                return (
-                    <Tag color={color} className="w-[50px] text-center">
-                        {value}
-                    </Tag>
-                )
-            },
-        },
-    ]
-
-    const studentColumns = [
-        { title: 'Nom', dataIndex: 'last_name', key: 'last_name' },
-        { title: 'Prénom', dataIndex: 'first_name', key: 'first_name' },
-        {
-            title: 'Action',
-            dataIndex: 'action',
-            key: 'action',
-            render: (_: any, record: IStudent) => (
-                <Button
-                    type="default"
-                    className="bg-red-600 text-white cursor-pointer"
-                    onClick={() => onDeleteStudent(record._id)}
-                >
-                    Supprimer
-                </Button>
-            ),
-        },
-    ]
 
     const onAddStudent = () => {
         const studentData: IStudentData = form.getFieldsValue()
@@ -263,6 +170,166 @@ export const DashBoard: React.FC = () => {
     const handleRetry = () => {
         window.location.reload()
     }
+
+    const handleDeleteDailyAttendance = (id: string) => {
+        deleteAttendanceMutation(id, {
+            onSuccess: () => {
+                api['success']({
+                    message: 'Notification de suppression',
+                    description: 'Émargement supprimé avec succès',
+                    showProgress: true,
+                    duration: 5,
+                    icon: <CheckCircleOutlined style={{ color: 'green' }} />,
+                })
+            },
+            onError: () => {
+                api['error']({
+                    message: 'Notification de suppression',
+                    description:
+                        "Une erreur s'est produite lors de la suppression",
+                    showProgress: true,
+                    duration: 5,
+                    icon: <CheckCircleOutlined style={{ color: 'red' }} />,
+                })
+            },
+        })
+    }
+
+    const dailyAttendanceColumns = [
+        {
+            title: 'Nom',
+            dataIndex: 'last_name',
+            key: 'last_name',
+            align: 'center',
+            className: 'text-center',
+        },
+        {
+            title: 'Prénom',
+            dataIndex: 'first_name',
+            key: 'first_name',
+            align: 'center',
+            className: 'text-center',
+        },
+        {
+            title: "Heure d'arrivée",
+            dataIndex: 'arrival_time',
+            key: 'arrival_time',
+            align: 'center',
+            className: 'text-center',
+        },
+        {
+            title: 'Heure de départ',
+            dataIndex: 'departure_time',
+            key: 'departure_time',
+            align: 'center',
+            className: 'text-center',
+        },
+        {
+            title: "Total d'heures",
+            dataIndex: 'total_hours',
+            key: 'total_hours',
+            align: 'center',
+            className: 'text-center',
+        },
+        {
+            title: 'Statut',
+            dataIndex: 'status',
+            key: 'status',
+            align: 'center',
+            className: 'text-center',
+            render: (text: string) =>
+                text === 'completed' ? (
+                    <Tag color="green">Terminé</Tag>
+                ) : (
+                    <Tag color="orange">En cours</Tag>
+                ),
+        },
+        {
+            title: 'Action',
+            dataIndex: 'action',
+            key: 'delete',
+            align: 'center',
+            className: 'text-center',
+            render: (_: any, record: any) => (
+                <div>
+                    <Popconfirm
+                        title="Êtes-vous sûr de vouloir supprimer cet élève?"
+                        onConfirm={() =>
+                            handleDeleteDailyAttendance(record._id)
+                        }
+                        okText="Oui"
+                        cancelText="Non"
+                    >
+                        <Button
+                            type="default"
+                            className="bg-red-600 text-white cursor-pointer"
+                            icon={<DeleteFilled />}
+                        />
+                    </Popconfirm>
+
+                    <Tooltip title="Fonctionnalité à venir">
+                        <Button
+                            type="default"
+                            className="bg-blue-600 text-white cursor-pointer ml-2"
+                            icon={<EditOutlined />}
+                            disabled
+                        />
+                    </Tooltip>
+                </div>
+            ),
+        },
+    ]
+
+    const weeklyAttendanceColumns = [
+        {
+            title: 'Nom',
+            dataIndex: 'last_name',
+            key: 'last_name_2',
+            align: 'center',
+            className: 'text-center',
+        },
+        {
+            title: 'Prénom',
+            dataIndex: 'first_name',
+            key: 'first_name_2',
+            align: 'center',
+            className: 'text-center',
+        },
+        {
+            title: "Total d'heure",
+            dataIndex: 'total_hours',
+            align: 'center',
+            key: 'total_hours_2',
+            className: 'text-center',
+            render: (value: number) => {
+                const color = value < 12 ? 'red' : 'green'
+                return (
+                    <Tag color={color} className="w-[50px] text-center">
+                        {value}
+                    </Tag>
+                )
+            },
+        },
+    ]
+
+    const studentColumns = [
+        { title: 'Nom', dataIndex: 'last_name', key: 'last_name' },
+        { title: 'Prénom', dataIndex: 'first_name', key: 'first_name' },
+        {
+            title: 'Action',
+            dataIndex: 'action',
+            key: 'action',
+            render: (_: any, record: IStudent) => (
+                <Button
+                    type="default"
+                    className="bg-red-600 text-white cursor-pointer"
+                    onClick={() => onDeleteStudent(record._id)}
+                >
+                    Supprimer
+                </Button>
+            ),
+        },
+    ]
 
     const items: TabsProps['items'] = [
         {
