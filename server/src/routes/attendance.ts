@@ -2,6 +2,7 @@ import express, { Router, Request, Response } from 'express'
 import { ResponseType } from '../types'
 import {
     deleteDailyAttendance,
+    editArrivalTime,
     fetchDailyAttendance,
     getAttendancesByRangeDate,
     getStatistics,
@@ -70,3 +71,9 @@ FeeRouter.delete(
         res.status(response.status as number).send(response)
     }
 )
+
+FeeRouter.put('/edit-arrival-time/:id', async (req: Request, res: Response) => {
+    const { id } = req.params
+    const response: ResponseType = await editArrivalTime(id, req.body)
+    res.status(response.status as number).send(response)
+})

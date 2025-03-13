@@ -455,3 +455,36 @@ export const deleteDailyAttendance = async (
 
     return responsePayload
 }
+
+export const editArrivalTime = async (
+    id: string,
+    arrival_data: { arrival_time: string }
+): Promise<ResponseType> => {
+    let responsePayload: ResponseType = {
+        success: true,
+        status: 200,
+    }
+
+    try {
+        if (!isValidObjectId(id)) {
+            responsePayload.success = false
+            responsePayload.status = 400
+            responsePayload.msg = 'ID invalide'
+            return responsePayload
+        }
+
+        const t = await Attendance.findByIdAndUpdate(
+            id,
+            { arrival_time: arrival_data.arrival_time },
+            { new: true }
+        )
+        responsePayload.msg = "Heure d'arrivée modifiée avec succès"
+        responsePayload.data = t
+    } catch (e: any) {
+        responsePayload.success = false
+        responsePayload.status = 500
+        responsePayload.msg = e.message
+    }
+
+    return responsePayload
+}

@@ -84,3 +84,33 @@ export const useDeleteDailyAttendance = () => {
         },
     })
 }
+
+const editArrivalTime = async (
+    id: string,
+    arrivalData: { arrival_time: string }
+): Promise<ResponseType<any>> => {
+    const response = await instance.put(
+        `/attendance/edit-arrival-time/${id}`,
+        arrivalData
+    )
+    return response.data
+}
+
+export const useEditArrivalTime = () => {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: ({
+            id,
+            arrivalData,
+        }: {
+            id: string
+            arrivalData: { arrival_time: string }
+        }) => editArrivalTime(id, arrivalData),
+        onSuccess() {
+            queryClient.invalidateQueries({
+                queryKey: ['dailyAttendance'],
+            })
+        },
+    })
+}

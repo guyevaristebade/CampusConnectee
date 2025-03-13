@@ -3,6 +3,7 @@ import { socket } from '../utils'
 import {
     AttendanceChart,
     AttendanceHours,
+    EditArrivalTimeModal,
     EditStudentModal,
     HeadBanner,
     Sidebar,
@@ -55,6 +56,9 @@ export const DashBoard: React.FC = () => {
     const [selectedStudent, setSelectedStudent] = useState<IStudent | null>(
         null
     )
+    const [isEditModalVisible, setIsEditModalVisible] = useState(false)
+    const [selectedAttendance, setSelectedAttendance] = useState<any>(null)
+
     const [search, setSearch] = useState<string>('')
     const [api, contextHolder] = notification.useNotification()
 
@@ -144,6 +148,11 @@ export const DashBoard: React.FC = () => {
             : null
         setSelectedStudent(newStudent)
         setIsModalVisible(true)
+    }
+
+    const onEditAttendance = (record: any) => {
+        setSelectedAttendance(record)
+        setIsEditModalVisible(true)
     }
 
     const handleDownloadXLSX = (data: any[], title: string) => {
@@ -267,14 +276,12 @@ export const DashBoard: React.FC = () => {
                         />
                     </Popconfirm>
 
-                    <Tooltip title="Fonctionnalité à venir">
-                        <Button
-                            type="default"
-                            className="bg-blue-600 text-white cursor-pointer ml-2"
-                            icon={<EditOutlined />}
-                            disabled
-                        />
-                    </Tooltip>
+                    <Button
+                        type="default"
+                        className="bg-blue-600 text-white cursor-pointer ml-2"
+                        icon={<EditOutlined />}
+                        onClick={() => onEditAttendance(record)}
+                    />
                 </div>
             ),
         },
@@ -601,6 +608,12 @@ export const DashBoard: React.FC = () => {
                             student={selectedStudent}
                             visible={isModalVisible}
                             onCancel={() => setIsModalVisible(false)}
+                        />
+                        <EditArrivalTimeModal
+                            api={api}
+                            visible={isEditModalVisible}
+                            onCancel={() => setIsEditModalVisible(false)}
+                            attendance={selectedAttendance}
                         />
                     </Content>
                 </div>
