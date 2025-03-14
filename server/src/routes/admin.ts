@@ -4,10 +4,8 @@ import {
     deleteAllStudent,
     deleteUser,
     editStudent,
-    editUser,
 } from '../controllers'
 import { ResponseType } from '../types'
-import { createStudentWithXlsxFile } from '../services'
 import { authenticated } from '../middlewares'
 import { isAdmin } from '../middlewares/isAdmin'
 
@@ -28,22 +26,6 @@ AdminRouter.put('/edit-student/:id', async (req: Request, res: Response) => {
     const student = req.body
     const response: ResponseType = await editStudent(id, student)
     return res.status(response.status as number).send(response)
-})
-
-AdminRouter.post('/upload-student', async (req: Request, res: Response) => {
-    createStudentWithXlsxFile(process.env.FILE_PATH as string)
-        .then(() => {
-            return res.status(200).send({
-                success: true,
-                msg: 'Les étudiants ont été ajoutés avec succès',
-            })
-        })
-        .catch((error) => {
-            return res.status(400).send({
-                success: false,
-                msg: "Une erreur s'est produite veuillez contactez nos développeurs",
-            })
-        })
 })
 
 AdminRouter.delete(

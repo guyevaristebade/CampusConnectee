@@ -1,6 +1,5 @@
 import { Attendance, Student, User } from '../models'
 import { ResponseType, IStudentData, IUser } from '../types'
-import { createStudentWithXlsxFile } from '../services'
 
 export const deleteAllAttendance = async (): Promise<ResponseType> => {
     let responsePayload: ResponseType = {
@@ -50,25 +49,25 @@ export const editStudent = async (
     return responsePayload
 }
 
-export const creatUserWithFile = async (
-    filePath: string
-): Promise<ResponseType> => {
-    let responsePayload: ResponseType = {
-        success: true,
-        status: 200,
-    }
+// export const creatUserWithFile = async (
+//     filePath: string
+// ): Promise<ResponseType> => {
+//     let responsePayload: ResponseType = {
+//         success: true,
+//         status: 200,
+//     }
 
-    try {
-        await createStudentWithXlsxFile(filePath)
-    } catch (error: any) {
-        responsePayload.status = 400
-        responsePayload.success = false
-        responsePayload.msg =
-            "Une erreur s'est produite veuillez contactez nos développeurs"
-    }
+//     try {
+//         await createStudentWithXlsxFile(filePath)
+//     } catch (error: any) {
+//         responsePayload.status = 400
+//         responsePayload.success = false
+//         responsePayload.msg =
+//             "Une erreur s'est produite veuillez contactez nos développeurs"
+//     }
 
-    return responsePayload
-}
+//     return responsePayload
+// }
 
 // controlleur pour supprimer tout les étudiant  deleteAllStudent
 export const deleteAllStudent = async (): Promise<ResponseType> => {

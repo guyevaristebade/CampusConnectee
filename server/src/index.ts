@@ -7,7 +7,7 @@ import {
     AdminRouter,
     StatisticsRouter,
 } from './routes'
-import cron from 'node-cron'
+
 import cookieParser from 'cookie-parser'
 import compression from 'compression'
 import bodyParser from 'body-parser'
@@ -51,13 +51,13 @@ app.use('/api/attendance', FeeRouter)
 app.use('/api/student', StudentRouter)
 app.use('/api/statistics', StatisticsRouter)
 
-if (process.env.NODE_ENV === 'production') {
-    cron.schedule('*/10 8-17 * * 1-5', () => {
-        console.log(
-            'Running a task every 30 minutes from 8:00 to 17:30 PM from Monday to Friday'
-        )
-    })
-}
+// if (process.env.NODE_ENV === 'production') {
+//     cron.schedule('*/10 8-17 * * 1-5', () => {
+//         console.log(
+//             'Running a task every 30 minutes from 8:00 to 17:30 PM from Monday to Friday'
+//         )
+//     })
+// }
 
 // Connexion à la base de données et démarrage du serveur
 connectDB().then(() => {
