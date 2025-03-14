@@ -102,10 +102,10 @@ export const router = createBrowserRouter([
         path: '/not-authorized',
         element: <NotAuthorizedPage />,
     },
-    {
-        path: '/maintenance',
-        element: <MaintenancePage />,
-    },
+    // {
+    //     path: '/maintenance',
+    //     element: <MaintenancePage />,
+    // },
     {
         path: '/*',
         element: <Unknown />,

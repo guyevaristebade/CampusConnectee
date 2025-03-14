@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { DataTable } from '../components'
-import { Tag } from 'antd'
+import { Button, message, Result, Spin, Tag } from 'antd'
 import { Typography } from 'antd'
 import { exportToExcel } from '../utils'
 import { useTotalStudentHoursPerWeek } from '../api'
+import { Layout } from 'antd'
 
+const { Content } = Layout
 const { Title } = Typography
 
 export const TotalHourPerWeekPage = () => {
@@ -50,23 +52,36 @@ export const TotalHourPerWeekPage = () => {
         const xlsx = exportToExcel(data, title)
         if (xlsx) {
             alert('Fichier téléchargé avec succès')
-            // api['success']({
-            //     message: 'Notification de téléchargement',
-            //     description: 'Fichier téléchargé avec succès',
-            //     showProgress: true,
-            //     duration: 5,
-            //     icon: <CheckCircleOutlined style={{ color: 'green' }} />,
-            // })
+            message.success('Fichier téléchargé avec succès')
         } else {
             alert('Une erreur est survenue lors du téléchargement du fichier')
-            // api['error']({
-            //     message: 'Notification de téléchargement',
-            //     description: 'Fichier téléchargé avec succès',
-            //     showProgress: true,
-            //     duration: 5,
-            //     icon: <CheckCircleOutlined style={{ color: 'green' }} />,
-            // })
+            message.error(
+                'Une erreur est survenue lors du téléchargement du fichier'
+            )
         }
+    }
+
+    if (attendancePerWeekError) {
+        return (
+            <Content>
+                <Result
+                    status="error"
+                    title="Erreur lors du chargement des données"
+                    subTitle="Veuillez réessayer plus tard"
+                />
+                <Button type="primary" onClick={() => window.location.reload()}>
+                    Réessayer
+                </Button>
+            </Content>
+        )
+    }
+
+    if (attendancePerWeekLoading) {
+        return (
+            <Content>
+                <Spin size="large" />
+            </Content>
+        )
     }
 
     return (

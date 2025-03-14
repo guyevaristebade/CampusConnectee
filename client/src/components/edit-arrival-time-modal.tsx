@@ -1,4 +1,4 @@
-import { Form, Modal, Popconfirm, TimePicker } from 'antd'
+import { Form, message, Modal, Popconfirm, TimePicker } from 'antd'
 import dayjs from 'dayjs'
 import { useEffect } from 'react'
 import { useEditArrivalTime } from '../api'
@@ -36,18 +36,14 @@ export const EditArrivalTimeModal = ({
                 {
                     onSuccess() {
                         onCancel()
-                        api['success']({
-                            message:
-                                "Notification de modification d'heure d'arrivée",
-                            description:
-                                "L'heure d'arrivée a été modifiée avec succès",
-                            showProgress: true,
-                            icon: (
-                                <CheckCircleOutlined
-                                    style={{ color: 'green' }}
-                                />
-                            ),
-                        })
+                        message.success(
+                            "L'heure d'arrivée a été modifiée avec succès"
+                        )
+                    },
+                    onError() {
+                        message.error(
+                            "Une erreur s'est produite lors de la modification de l'heure d'arrivée"
+                        )
                     },
                 }
             )

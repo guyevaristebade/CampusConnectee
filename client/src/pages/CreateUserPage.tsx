@@ -15,7 +15,7 @@ export const CreateUserPage = () => {
                 message.success('Utilisateur créé avec succès')
             },
             onError: (error: any) => {
-                message.error(error.response.data.message)
+                message.error("Une erreur s'est produite")
             },
         })
     }

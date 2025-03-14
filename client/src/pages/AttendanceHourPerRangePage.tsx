@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { DatePicker, Table, Button, message, Result, Typography } from 'antd'
+import { DatePicker, Table, Button, message, Typography, Tag } from 'antd'
 import { useFetchAllAttendanceByRangeDate } from '../api'
 import { IRangeDateType } from '../types'
 import { exportToExcel, formatNumber } from '../utils'
@@ -43,7 +43,6 @@ export const AttendanceHourPerRangePage = () => {
                 },
             })
         }
-        console.log(dateRange)
     }, [dateRange, rangeMutation])
 
     return (
@@ -55,44 +54,41 @@ export const AttendanceHourPerRangePage = () => {
                 size="large"
                 className="mb-5 mr-2.5"
             />
+            <Table
+                dataSource={data}
+                rowKey="_id"
+                columns={[
+                    {
+                        title: 'Nom',
+                        dataIndex: 'last_name',
+                        key: 'last_name',
+                        align: 'center',
+                        className: 'text-center',
+                    },
+                    {
+                        title: 'Prénom',
+                        dataIndex: 'first_name',
+                        key: 'first_name',
+                        align: 'center',
+                        className: 'text-center',
+                    },
+                    {
+                        title: 'Heures de présence',
+                        dataIndex: 'total_hours',
+                        key: 'total_hours',
+                        align: 'center',
+                        className: 'text-center',
+                        render: (text: any) => (
+                            <Tag color={text > 12 ? 'green' : 'red'}>
+                                {text}
+                            </Tag>
+                        ),
+                    },
+                ]}
+            />
 
-            {!data.length ? (
-                <Result
-                    status="404"
-                    title="Sélectionnez une plage de dates pour afficher les données"
-                />
-            ) : (
-                <Table
-                    dataSource={data}
-                    loading={!data.length}
-                    rowKey="_id"
-                    columns={[
-                        {
-                            title: 'Nom',
-                            dataIndex: 'last_name',
-                            key: 'last_name',
-                            align: 'center',
-                            className: 'text-center',
-                        },
-                        {
-                            title: 'Prénom',
-                            dataIndex: 'first_name',
-                            key: 'first_name',
-                            align: 'center',
-                            className: 'text-center',
-                        },
-                        {
-                            title: 'Heures de présence',
-                            dataIndex: 'total_hours',
-                            key: 'total_hours',
-                            align: 'center',
-                            className: 'text-center',
-                        },
-                    ]}
-                />
-            )}
             <Button
-                className="bg-[#000091] p-6 text-white"
+                className="bg-[#000091] p-6 text-white mt-20"
                 htmlType="submit"
                 disabled={dateRange === null}
                 loading={isPending}

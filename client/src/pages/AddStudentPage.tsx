@@ -41,7 +41,7 @@ export const AddStudentPage = () => {
                         },
                     ]}
                 >
-                    <Input size="large" />
+                    <Input size="large" placeholder="Henry" />
                 </Form.Item>
                 <Form.Item
                     name="last_name"
@@ -53,7 +53,7 @@ export const AddStudentPage = () => {
                         },
                     ]}
                 >
-                    <Input size="large" />
+                    <Input size="large" placeholder="PICKFORD" />
                 </Form.Item>
                 <Form.Item className="col-span-2 flex justify-end">
                     <Button

@@ -1,5 +1,10 @@
-import React, { createContext, useEffect, useState } from 'react'
-import { IChildren, IUserData } from '../types'
+import React, {
+    createContext,
+    PropsWithChildren,
+    useEffect,
+    useState,
+} from 'react'
+import { IUserData } from '../types'
 import { useIsLoggedIn } from '../hooks'
 
 interface AuthProviderProps {
@@ -13,7 +18,7 @@ export const AuthContext: React.Context<AuthProviderProps> =
         setUser: () => {},
     })
 
-export const AuthContextProvider = ({ children }: IChildren) => {
+export const AuthContextProvider = ({ children }: PropsWithChildren) => {
     const [user, setUser] = useState<IUserData | null>(null)
     const { data } = useIsLoggedIn()
 
