@@ -6,7 +6,7 @@ import { exportToExcel, formatNumber } from '../utils'
 const { RangePicker } = DatePicker
 const { Title } = Typography
 
-export const AttendanceHours: React.FC = () => {
+export const AttendanceHourPerRangePage = () => {
     const [dateRange, setDateRange] = useState<IRangeDateType | null>(null)
     const [data, setData] = useState<any>([])
     const { mutate: rangeMutation, isPending } =

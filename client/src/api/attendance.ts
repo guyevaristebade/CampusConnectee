@@ -1,7 +1,7 @@
 import { message } from 'antd'
 import { IArrival, IDeparture, IRangeDateType, ResponseType } from '../types'
 import { instance } from '../utils'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export const registeredArrival = async (
     arrivalData: IArrival
@@ -30,6 +30,13 @@ export const fetchStatistics = async (): Promise<ResponseType<any>> => {
     return response.data
 }
 
+export const useStatistics = () => {
+    return useQuery({
+        queryKey: ['statistics'],
+        queryFn: fetchStatistics,
+    })
+}
+
 export const fetchTotalSTudentHoursPerWeek = async (): Promise<
     ResponseType<any>
 > => {
@@ -37,6 +44,13 @@ export const fetchTotalSTudentHoursPerWeek = async (): Promise<
         '/attendance/student/total_hours_per_week'
     )
     return response.data.data
+}
+
+export const useTotalStudentHoursPerWeek = () => {
+    return useQuery({
+        queryKey: ['totalStudentHoursPerWeek'],
+        queryFn: fetchTotalSTudentHoursPerWeek,
+    })
 }
 
 export const fetchAllAttendanceByRangeDate = async (

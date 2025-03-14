@@ -8,9 +8,9 @@ export const useDailyAttendance = () => {
     })
 }
 
-export const useTotalStudentHoursPerWeek = () => {
-    return useQuery({
-        queryKey: ['totalStudentHoursPerWeek'],
-        queryFn: fetchTotalSTudentHoursPerWeek,
-    })
-}
+// export const useTotalStudentHoursPerWeek = () => {
+//     return useQuery({
+//         queryKey: ['totalStudentHoursPerWeek'],
+//         queryFn: fetchTotalSTudentHoursPerWeek,
+//     })
+// }

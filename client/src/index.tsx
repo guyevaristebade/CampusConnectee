@@ -1,21 +1,19 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
-import App from './App'
-import { BrowserRouter } from 'react-router-dom'
+import { RouterProvider } from 'react-router-dom'
 import { AuthContextProvider } from './context'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { router } from './router'
 
 const queryClient = new QueryClient()
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <AuthContextProvider>
-          <App />
-        </AuthContextProvider>
-      </QueryClientProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+    <React.StrictMode>
+        <QueryClientProvider client={queryClient}>
+            <AuthContextProvider>
+                <RouterProvider router={router} />
+            </AuthContextProvider>
+        </QueryClientProvider>
+    </React.StrictMode>
 )

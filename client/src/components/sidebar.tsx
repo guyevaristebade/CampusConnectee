@@ -10,6 +10,7 @@ import { PiStudentDuotone, PiListBulletsBold } from 'react-icons/pi'
 import { TfiPlus } from 'react-icons/tfi'
 import { Layout, Image, Menu } from 'antd'
 import { useAuth } from '../hooks'
+import { useNavigate } from 'react-router-dom'
 
 const { Sider } = Layout
 
@@ -83,16 +84,44 @@ const menuItemsAdmin: MenuItemsType[] = [
     },
 ]
 
-interface SidebarProps {
-    selectedMenuKey: string
-    onMenuClick: (item: any) => void
-}
-
-export const Sidebar: React.FC<SidebarProps> = ({
-    selectedMenuKey,
-    onMenuClick,
-}) => {
+export const Sidebar = () => {
+    const navigate = useNavigate()
     const { user } = useAuth()
+
+    const onMenuClick = ({ key }: { key: string }) => {
+        switch (key) {
+            case 'dashboard':
+                if (user?.permissions === 'Administrator') {
+                    navigate('/admin')
+                } else {
+                    navigate('/')
+                }
+                break
+            case 'dailyAttendance':
+                navigate('/attendance/daily')
+                break
+            case 'totalHoursPerWeek':
+                navigate('/attendance/weekly')
+                break
+            case 'totalHoursPerRange':
+                navigate('/attendance/range')
+                break
+            case 'studentList':
+                navigate('/students')
+                break
+            case 'addStudent':
+                navigate('/add-student')
+                break
+            case 'createUser':
+                navigate('/admin/create-user')
+                break
+            case 'userList':
+                navigate('/admin/users')
+                break
+            default:
+                break
+        }
+    }
     return (
         <Sider
             width={250}
@@ -103,13 +132,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
             <Menu
                 mode="inline"
-                selectedKeys={[selectedMenuKey]}
-                onClick={onMenuClick}
                 items={
                     user?.permissions === 'Administrator'
                         ? menuItemsAdmin
                         : menuItems
                 }
+                onClick={onMenuClick}
                 className="bg-white"
             />
         </Sider>

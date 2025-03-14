@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query'
 import { ResponseType } from '../types'
 import { instance } from '../utils'
 
@@ -7,10 +8,13 @@ export const isLoggedIn = async (): Promise<ResponseType<any>> => {
 }
 
 export const fetchAllUsers = async (): Promise<ResponseType<any>> => {
-    try {
-        const response = await instance.get('/auth/users')
-        return response.data.data
-    } catch (error: any) {
-        return error.response.data
-    }
+    const response = await instance.get('/auth/users')
+    return response.data
+}
+
+export const useUsers = () => {
+    return useQuery({
+        queryKey: ['users'],
+        queryFn: fetchAllUsers,
+    })
 }

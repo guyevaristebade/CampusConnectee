@@ -1,12 +1,9 @@
-import React from 'react'
+import React, { PropsWithChildren } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../hooks'
 import { useLocation } from 'react-router-dom'
-interface PrivateRouteProps {
-    children: React.ReactNode
-}
 
-export const PrivateRoute = ({ children }: PrivateRouteProps) => {
+export const PrivateRoute = ({ children }: PropsWithChildren) => {
     const { user } = useAuth()
     let location = useLocation()
 
@@ -15,15 +12,11 @@ export const PrivateRoute = ({ children }: PrivateRouteProps) => {
     }
 
     if (
-        user.permissions === 'Administrator' &&
-        location.pathname !== '/admin'
+        location.pathname.startsWith('/admin') &&
+        user.permissions !== 'Administrator'
     ) {
-        return <Navigate to="/admin" replace />
-    }
-
-    if (user.permissions !== 'Administrator' && location.pathname !== '/') {
         return <Navigate to="/" replace />
     }
 
-    return <>{children}</> // 🔥 Rendre le contenu protégé !
+    return <>{children}</>
 }

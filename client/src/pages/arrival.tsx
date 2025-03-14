@@ -8,7 +8,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 const { Content } = Layout
 
-export const ArrivalPage: React.FC = () => {
+export const ArrivalPage = () => {
     const [form] = Form.useForm()
     const navigate = useNavigate()
 
