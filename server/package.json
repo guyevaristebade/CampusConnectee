@@ -49,8 +49,7 @@
         "node-cron": "^3.0.3",
         "npm": "^10.9.0",
         "path": "^0.12.7",
-        "socket.io": "^4.8.1",
-        "xlsx": "^0.18.5"
+        "socket.io": "^4.8.1"
     },
     "devDependencies": {
         "prettier": "3.4.2",
