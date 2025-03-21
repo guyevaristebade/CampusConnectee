@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchDailyAttendance, fetchTotalSTudentHoursPerWeek } from '../api'
+import { fetchDailyAttendance } from '../api'
 
 export const useDailyAttendance = () => {
     return useQuery({
@@ -7,10 +7,3 @@ export const useDailyAttendance = () => {
         queryFn: fetchDailyAttendance,
     })
 }
-
-// export const useTotalStudentHoursPerWeek = () => {
-//     return useQuery({
-//         queryKey: ['totalStudentHoursPerWeek'],
-//         queryFn: fetchTotalSTudentHoursPerWeek,
-//     })
-// }

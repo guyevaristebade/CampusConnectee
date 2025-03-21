@@ -16,18 +16,14 @@ export const ArrivalPage = () => {
     const attendanceFormMutation = useMutation({
         mutationFn: registeredArrival,
         onSuccess: (response) => {
-            if (response.success) {
-                message.success('Bienvenue !')
-                queryClient.invalidateQueries({ queryKey: ['attendance'] })
-                setShowConfetti(true)
-                setTimeout(() => setShowConfetti(false), 3000)
-                form.resetFields()
-            } else {
-                message.error(response.msg)
-            }
+            queryClient.invalidateQueries({ queryKey: ['attendance'] })
+            setShowConfetti(true)
+            message.success(response.msg, 10)
+            setTimeout(() => setShowConfetti(false), 5000)
+            form.resetFields()
         },
-        onError: (error) => {
-            message.error("Erreur lors de l'enregistrement de l'arrivée")
+        onError: (error: any) => {
+            message.error(error?.response?.data.msg, 10)
         },
     })
     const [showConfetti, setShowConfetti] = useState(false)

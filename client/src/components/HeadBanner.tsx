@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Layout, Image } from 'antd'
+import { Button, Layout } from 'antd'
 import { LogoutOutlined } from '@ant-design/icons'
 import { useAuth } from '../hooks'
 import { useLogout } from '../hooks/use-logout'

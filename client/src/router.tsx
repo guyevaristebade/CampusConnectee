@@ -3,27 +3,29 @@ import { createBrowserRouter } from 'react-router-dom'
 import {
     ArrivalPage,
     Login,
-    MaintenancePage,
     NotAuthorizedPage,
     Unknown,
     DailyAttendancePage,
     TotalHourPerWeekPage,
+    DeparturePage,
+    AddStudentPage,
+    StudentListPage,
+    AttendanceHourPerRangePage,
+    CreateUserPage,
+    UserListPage,
+    DashboardHome,
+} from './pages'
+import { RootLayout } from './components'
+import {
+    PublicRoute,
+    PrivateRoute,
     DashBoardLayout,
     AdminstratorLayout,
-} from './pages'
-import { Main } from './components'
-import { DeparturePage, DashboardHome } from './pages'
-import { PublicRoute } from './components/public-route'
-import { PrivateRoute } from './components/private-route'
-import { StudentListPage } from './pages/StudentListPage'
-import { AddStudentPage } from './pages/AddStudentPage'
-import { AttendanceHourPerRangePage } from './pages/AttendanceHourPerRangePage'
-import { CreateUserPage } from './pages/CreateUserPage'
-import { UserListPage } from './pages/UserListPage'
+} from './components'
 
 export const router = createBrowserRouter([
     {
-        element: <Main />,
+        element: <RootLayout />,
         children: [
             {
                 path: 'arrival',

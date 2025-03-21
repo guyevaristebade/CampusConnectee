@@ -1,7 +1,7 @@
 import React from 'react'
 import { Image } from 'antd'
 import Logo from '../assets/campus_connecte.png'
-export const NavBar: React.FC = () => {
+export const NavBar = () => {
     return (
         <div className="bg-white shadow-lg flex items-center gap-4 w-full rounded-md transition-all p-2">
             <Image

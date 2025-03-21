@@ -5,9 +5,10 @@ import {
     ClockCircleOutlined,
     PlusOutlined,
     CalendarOutlined,
+    UnorderedListOutlined,
+    UserAddOutlined,
+    UserOutlined,
 } from '@ant-design/icons'
-import { PiStudentDuotone, PiListBulletsBold } from 'react-icons/pi'
-import { TfiPlus } from 'react-icons/tfi'
 import { Layout, Image, Menu } from 'antd'
 import { useAuth } from '../hooks'
 import { useNavigate } from 'react-router-dom'
@@ -50,17 +51,17 @@ const menuItems: MenuItemsType[] = [
     {
         key: 'student',
         label: 'Student',
-        icon: <PiStudentDuotone />,
+        icon: <UserOutlined />,
         children: [
             {
                 key: 'studentList',
                 label: 'Liste des étudiants',
-                icon: <PiListBulletsBold />,
+                icon: <UnorderedListOutlined />,
             },
             {
                 key: 'addStudent',
                 label: 'Enregistrer un étudiant',
-                icon: <TfiPlus />,
+                icon: <PlusOutlined />,
             },
         ],
     },
@@ -74,12 +75,12 @@ const menuItemsAdmin: MenuItemsType[] = [
     },
     {
         key: 'createUser',
-        icon: <PlusOutlined />,
+        icon: <UserAddOutlined />,
         label: 'Créer un utilisateur',
     },
     {
         key: 'userList',
-        icon: <PiListBulletsBold />,
+        icon: <UnorderedListOutlined />,
         label: 'Liste des utilisateurs',
     },
 ]

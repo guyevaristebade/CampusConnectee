@@ -12,11 +12,7 @@ export const StudentListPage = () => {
         null
     )
     const { mutate: deleteStudentMutation } = useDeleteStudent()
-    const {
-        data: students,
-        error: studentsError,
-        isLoading: studentsLoading,
-    } = useStudent()
+    const { data: students } = useStudent()
 
     const onDeleteStudent = (id: string) => {
         deleteStudentMutation(id)

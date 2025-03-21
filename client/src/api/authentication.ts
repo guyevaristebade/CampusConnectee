@@ -1,7 +1,6 @@
 import { instance } from '../utils'
 import { ResponseType, UserLogin, UserRegister } from '../types'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { FormInstance } from 'antd'
+import { useMutation } from '@tanstack/react-query'
 
 // login
 export const login = async (

@@ -13,11 +13,7 @@ export const DailyAttendancePage = () => {
 
     const { mutate: deleteAttendanceMutation } = useDeleteDailyAttendance()
 
-    const {
-        data: dailyAttendance,
-        isLoading: dailyAttendanceLoading,
-        error: dailyAttendanceError,
-    } = useDailyAttendance()
+    const { data: dailyAttendance } = useDailyAttendance()
 
     const handleDeleteDailyAttendance = (id: string) => {
         deleteAttendanceMutation(id, {

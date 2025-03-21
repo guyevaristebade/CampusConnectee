@@ -74,7 +74,26 @@ export const createStudent = async (
     }
 
     try {
-        const newStudent = new Student(sanitizeFilter(student))
+        const existingStudent = await Student.findOne({
+            first_name: student.first_name,
+            last_name: student.last_name,
+        })
+
+        if (existingStudent) {
+            responsePayload.status = 400
+            responsePayload.success = false
+            responsePayload.msg = 'Cet étudiant existe déjà !'
+            return responsePayload
+        }
+
+        const newStudent = new Student(
+            sanitizeFilter({
+                last_name: student.last_name.toUpperCase(),
+                first_name:
+                    student.first_name.charAt(0).toUpperCase() +
+                    student.first_name.slice(1),
+            })
+        )
         await newStudent.save()
         responsePayload.data = newStudent
         responsePayload.msg = 'Etudiant crée avec succès !'

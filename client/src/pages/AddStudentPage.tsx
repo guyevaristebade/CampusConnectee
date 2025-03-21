@@ -1,8 +1,7 @@
-import { Button, Form, Input, Typography } from 'antd'
 import React from 'react'
+import { Button, Form, Input, Typography } from 'antd'
 import { IStudentData } from '../types'
 import { useCreateStudent } from '../hooks'
-import { Layout } from 'antd'
 const { Title } = Typography
 
 export const AddStudentPage = () => {
